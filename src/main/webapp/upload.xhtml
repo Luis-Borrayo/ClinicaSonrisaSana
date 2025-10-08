@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Clinica Sonrisa Sana - Subir Archivos S3</title>
+</h:head>
+<h:body>
+    <h1>🏥 Clinica Sonrisa Sana - AWS S3 Upload</h1>
+
+    <p:growl id="growl" showDetail="true" life="5000"/>
+
+    <!-- PRUEBA DE CONEXIÓN -->
+    <h:form id="testForm">
+        <div style="padding: 20px; border: 2px solid blue; margin: 20px 0; background: white;">
+            <h3>🔍 Prueba de Conexión AWS S3</h3>
+            <p:commandButton value="🔍 Probar Conexión S3"
+                             action="#{fileUploadView.testS3Connection}"
+                             update="growl"
+                             styleClass="p-button-primary"/>
+        </div>
+    </h:form>
+
+    <!-- SUBIDA BÁSICA -->
+    <h:form id="basicUploadForm" enctype="multipart/form-data">
+        <div style="padding: 20px; border: 2px solid green; margin: 20px 0; background: white;">
+            <h3>📁 Subir Archivo a AWS S3</h3>
+
+            <p:fileUpload value="#{fileUploadView.file}"
+                          mode="simple"
+                          skinSimple="true"
+                          sizeLimit="10485760"/> <!-- 10MB -->
+
+            <p:commandButton value="🚀 Subir a AWS S3"
+                             action="#{fileUploadView.upload}"
+                             ajax="false"
+                             styleClass="p-button-success"
+                             style="margin-top: 10px;"/>
+        </div>
+    </h:form>
+
+    <!-- SUBIDA CON AJAX -->
+    <h:form id="ajaxUploadForm">
+        <div style="padding: 20px; border: 2px solid orange; margin: 20px 0; background: white;">
+            <h3>⚡ Subida Rápida con AJAX</h3>
+
+            <p:fileUpload value="#{fileUploadView.file}"
+                          mode="advanced"
+                          dragDropSupport="true"
+                          update="growl"
+                          fileLimit="1"
+                          sizeLimit="10485760"
+                          allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|docx?|xlsx?|txt)$/"
+                          listener="#{fileUploadView.handleFileUpload}"
+                          label="Seleccionar archivo"
+                          uploadLabel="Subir a S3"
+                          cancelLabel="Cancelar"/>
+        </div>
+    </h:form>
+
+    <!-- RESULTADO -->
+    <h:form id="resultForm">
+        <p:panel rendered="#{not empty fileUploadView.uploadedFileUrl}"
+                 style="padding: 20px; border: 2px solid #28a745; margin: 20px 0; background: #d4edda;">
+            <h3>✅ ¡Archivo Subido Exitosamente!</h3>
+            <p><strong>URL en S3:</strong></p>
+            <p:outputLabel value="#{fileUploadView.uploadedFileUrl}"
+                           style="font-weight: bold; color: #1976d2; display: block; margin: 10px 0;"/>
+            <p:commandButton value="📎 Abrir en AWS S3"
+                             onclick="window.open('#{fileUploadView.uploadedFileUrl}', '_blank')"
+                             styleClass="p-button-outlined p-button-help"/>
+        </p:panel>
+    </h:form>
+
+</h:body>
+</html>
