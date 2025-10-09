@@ -1,6 +1,6 @@
-package sevice;
+package com.luisborrayo.clinicasonrisasana.services;
 
-import config.AppConfig;
+import com.luisborrayo.clinicasonrisasana.config.AppConfig;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import software.amazon.awssdk.core.sync.RequestBody;

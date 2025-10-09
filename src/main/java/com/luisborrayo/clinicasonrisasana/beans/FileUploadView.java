@@ -1,4 +1,4 @@
-package beans;
+package com.luisborrayo.clinicasonrisasana.beans;
 
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -8,7 +8,7 @@ import jakarta.inject.Named;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
 import org.primefaces.model.file.UploadedFiles;
-import sevice.S3Service;
+import com.luisborrayo.clinicasonrisasana.services.S3Service;
 
 import java.io.IOException;
 import java.io.Serializable;
