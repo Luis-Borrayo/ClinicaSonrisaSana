@@ -2,59 +2,153 @@ package com.luisborrayo.clinicasonrisasana.services.impl;
 
 import com.luisborrayo.clinicasonrisasana.model.User;
 import com.luisborrayo.clinicasonrisasana.repositories.IUserRepository;
-import com.luisborrayo.clinicasonrisasana.repositories.impl.UseRepository;
-import com.luisborrayo.clinicasonrisasana.services.IUserService;
-import jakarta.ws.rs.PUT;
 
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class UserService implements IUserService {
-    private final IUserRepository repo = new UseRepository();
+public class UserService implements IUserRepository {
 
-    @Override
-    public List<User> list(int page, int size) {
-        int offset = (Math.max(page, 1) - 1) * size;
-        return repo.findAll(offset, size);
+    private Connection getConnection() throws SQLException {
+        String url = "jdbc:mysql://localhost:3306/clinicadb";
+        String user = "root";
+        String password = "12345";
+        return DriverManager.getConnection(url, user, password);
     }
 
     @Override
-    public int totalpaginas(int size) {
-        {
-            int total = repo.countAll();
-            return (int) Math.ceil(total / (double) size);
+    public List<User> findAll(int offset, int size) {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM users LIMIT ? OFFSET ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, size);
+            stmt.setInt(2, offset);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
+
+    @Override
+    public Optional<User> findById(int id) {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return Optional.of(mapResultSetToUser(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+
+    // ✅ Mantén SOLO esta versión, y déjala pública
+    @Override
+    public Optional<User> findByUsername(String usuario) {
+        String sql = "SELECT * FROM users WHERE usuario = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, usuario);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return Optional.of(mapResultSetToUser(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+
+    // ✅ Usa este método para el login
+    public Optional<User> getByUser(String usuario) {
+        return findByUsername(usuario);
+    }
+
+    @Override
+    public boolean existsByUsername(String usuario) {
+        String sql = "SELECT COUNT(*) FROM users WHERE usuario = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, usuario);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public int countAll() {
+        String sql = "SELECT COUNT(*) FROM users";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public void deleteById(int id) {
+        String sql = "DELETE FROM users WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    @Override
-    public Optional<User> getById(int id) {
-        return repo.findById(id);
-    }
-    @Override
-    public Optional<User> getByUser(String usuario){
-        return repo.findByUsername(usuario);
-    }
-    @Override
-    public void save(User user){
-        if(user.getId() == null){
-            if (repo.existsByUsername(user.getUsuario()))
-                throw new RuntimeException("Usuario ya existe");
-            repo.create(user);
-        }else {
-            repo.update(user);
+    public void create(User user) {
+        String sql = "INSERT INTO users (usuario, password, role, active) VALUES (?, ?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, user.getUsuario());
+            stmt.setString(2, user.getPassword());
+            stmt.setString(3, user.getRole().name());
+            stmt.setBoolean(4, user.isActive());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
-    @Override
-    public void delete(int id, int currentUserId){
-        if (id == currentUserId)
-            throw new RuntimeException("No puede eliminar su proppio usuario.");
-            repo.deleteById(id);
+
+    public void update(User user) {
+        String sql = "UPDATE users SET usuario = ?, password = ?, role = ?, active = ? WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, user.getUsuario());
+            stmt.setString(2, user.getPassword());
+            stmt.setString(3, user.getRole().name());
+            stmt.setBoolean(4, user.isActive());
+            stmt.setInt(5, user.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
-    @Override
-    public boolean validateLogin(String usuario, String password){
-        return repo.findByUsername(usuario)
-                .filter(User::isActive)
-                .filter(u -> u .getPassword().equals(password))
-                .isPresent();
+
+    private User mapResultSetToUser(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setId(rs.getInt("id"));
+        user.setUsuario(rs.getString("usuario"));
+        user.setPassword(rs.getString("password"));
+        user.setActive(rs.getBoolean("active"));
+        return user;
     }
 }

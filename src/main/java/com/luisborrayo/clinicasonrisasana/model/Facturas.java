@@ -33,7 +33,7 @@ public class Facturas {
     @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "paciente_id", nullable = false)
-    private Paciente paciente;
+    private Pacientes paciente;
 
     @NotNull
     @ManyToOne(optional = false)
@@ -82,7 +82,7 @@ public class Facturas {
 
     public Facturas() {}
 
-    public Facturas(Paciente paciente, Odontologo odontologo, Cita cita, Tratamiento tratamiento,
+    public Facturas(Pacientes paciente, Odontologo odontologo, Cita cita, Tratamiento tratamiento,
                    BigDecimal subtotal, BigDecimal descuento, Seguro seguro,
                    BigDecimal pagosParciales, BigDecimal total, EstadoPago estadoPago, LocalDateTime fechaEmision) {
         this.paciente = paciente;
@@ -101,8 +101,8 @@ public class Facturas {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Paciente getPaciente() { return paciente; }
-    public void setPaciente(Paciente paciente) { this.paciente = paciente; }
+    public Pacientes getPaciente() { return paciente; }
+    public void setPaciente(Pacientes paciente) { this.paciente = paciente; }
 
     public Odontologo getOdontologo() { return odontologo; }
     public void setOdontologo(Odontologo odontologo) { this.odontologo = odontologo; }
