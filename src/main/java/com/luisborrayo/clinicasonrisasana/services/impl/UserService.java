@@ -51,7 +51,6 @@ public class UserService implements IUserRepository {
         return Optional.empty();
     }
 
-    // ✅ Mantén SOLO esta versión, y déjala pública
     @Override
     public Optional<User> findByUsername(String usuario) {
         String sql = "SELECT * FROM users WHERE usuario = ?";
@@ -68,7 +67,6 @@ public class UserService implements IUserRepository {
         return Optional.empty();
     }
 
-    // ✅ Usa este método para el login
     public Optional<User> getByUser(String usuario) {
         return findByUsername(usuario);
     }
