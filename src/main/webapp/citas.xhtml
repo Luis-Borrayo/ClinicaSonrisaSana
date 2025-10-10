@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>Gestión de Citas</title>
+</h:head>
+
+<h:body>
+    <h1>Gestión de Citas</h1>
+
+    <!-- Agregar el componente messages en la parte superior -->
+    <p:messages id="messages" autoUpdate="true" />
+
+    <!-- Formulario para nueva cita -->
+    <p:panel header="Nueva Cita">
+        <h:form id="citaForm">
+            <p:panelGrid columns="2">
+                <p:outputLabel value="Paciente:" for="paciente" />
+                <p:selectOneMenu id="paciente" value="#{citasBean.pacienteId}" required="true" requiredMessage="Seleccione un paciente">
+                    <f:selectItem itemLabel="Seleccione paciente" itemValue="" />
+                    <f:selectItems value="#{citasBean.pacientes}" var="paciente"
+                                   itemLabel="#{paciente.nombre}" itemValue="#{paciente.id}" />
+                </p:selectOneMenu>
+
+                <p:outputLabel value="Odontólogo:" for="odontologo" />
+                <p:selectOneMenu id="odontologo" value="#{citasBean.odontologoId}" required="true" requiredMessage="Seleccione un odontólogo">
+                    <f:selectItem itemLabel="Seleccione odontólogo" itemValue="" />
+                    <f:selectItems value="#{citasBean.odontologos}" var="odontologo"
+                                   itemLabel="#{odontologo.nombre}" itemValue="#{odontologo.id}" />
+                </p:selectOneMenu>
+
+                <p:outputLabel value="Tratamiento:" for="tratamiento" />
+                <p:selectOneMenu id="tratamiento" value="#{citasBean.tratamientoId}">
+                    <f:selectItem itemLabel="Seleccione tratamiento" itemValue="" />
+                    <f:selectItems value="#{citasBean.tratamientos}" var="tratamiento"
+                                   itemLabel="#{tratamiento.nombre}" itemValue="#{tratamiento.id}" />
+                </p:selectOneMenu>
+
+                <p:outputLabel value="Fecha y Hora:" for="fecha" />
+                <p:calendar id="fecha" value="#{citasBean.nuevaCita.fechaCita}"
+                            pattern="dd/MM/yyyy HH:mm" required="true" requiredMessage="Seleccione fecha y hora" />
+
+                <p:outputLabel value="Estado:" for="estado" />
+                <p:selectOneMenu id="estado" value="#{citasBean.nuevaCita.estado}" required="true" requiredMessage="Seleccione estado">
+                    <f:selectItem itemLabel="Seleccione estado" itemValue="" />
+                    <f:selectItem itemLabel="Programada" itemValue="PROGRAMADA" />
+                    <f:selectItem itemLabel="Completada" itemValue="COMPLETADA" />
+                    <f:selectItem itemLabel="Cancelada" itemValue="CANCELADA" />
+                </p:selectOneMenu>
+
+                <p:outputLabel value="Observaciones:" for="observaciones" />
+                <p:inputTextarea id="observaciones" value="#{citasBean.nuevaCita.observaciones}" rows="3" cols="50" />
+            </p:panelGrid>
+
+            <p:commandButton value="Guardar" action="#{citasBean.guardarCita}"
+                             update="@form citasTable :messages" process="@form" />
+        </h:form>
+    </p:panel>
+
+    <!-- Lista de citas -->
+    <p:panel header="Lista de Citas">
+        <p:dataTable id="citasTable" value="#{citasBean.citas}" var="cita"
+                     emptyMessage="No hay citas registradas">
+            <p:column headerText="ID" width="80">
+                <h:outputText value="#{cita.id}" />
+            </p:column>
+
+            <p:column headerText="Paciente">
+                <h:outputText value="#{cita.paciente.nombre}" />
+            </p:column>
+
+            <p:column headerText="Odontólogo">
+                <h:outputText value="#{cita.odontologo.nombre}" />
+            </p:column>
+
+            <p:column headerText="Tratamiento">
+                <h:outputText value="#{cita.tratamiento != null ? cita.tratamiento.nombre : 'N/A'}" />
+            </p:column>
+
+            <p:column headerText="Fecha" width="180">
+                <h:outputText value="#{cita.fechaCita}">
+                    <!-- ✅ CONVERTER CORREGIDO -->
+                    <f:converter converterId="localDateTimeConverter" />
+                </h:outputText>
+            </p:column>
+
+            <p:column headerText="Estado" width="120">
+                <h:outputText value="#{cita.estado}" />
+            </p:column>
+
+            <p:column headerText="Acciones" width="100">
+                <p:commandButton icon="pi pi-trash" action="#{citasBean.eliminarCita}"
+                                 update="citasTable :messages" process="@this">
+                    <f:setPropertyActionListener target="#{citasBean.citaSeleccionada}" value="#{cita}" />
+                </p:commandButton>
+            </p:column>
+        </p:dataTable>
+    </p:panel>
+</h:body>
+</html>
