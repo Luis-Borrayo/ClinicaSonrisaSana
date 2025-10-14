@@ -1,76 +1,241 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
 <h:head>
     <title>Clinica Sonrisa Sana - Subir Archivos S3</title>
+    <style>
+        .layout-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+            padding: 20px 0;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            background: #ffffff;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 2rem;
+            box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+            border-radius: 6px;
+            margin-bottom: 2rem;
+        }
+
+        .mt-0 {
+            margin-top: 0 !important;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .upload-section {
+            padding: 20px;
+            border: 2px solid;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .test-section {
+            border-color: #3498db;
+            background: #e8f4fd !important;
+        }
+
+        .basic-upload-section {
+            border-color: #27ae60;
+            background: #eafaf1 !important;
+        }
+
+        .ajax-upload-section {
+            border-color: #f39c12;
+            background: #fef9e7 !important;
+        }
+
+        .success-section {
+            border-color: #28a745;
+            background: #d4edda !important;
+        }
+
+        .files-section {
+            border-color: #9b59b6;
+            background: #f4ecf7 !important;
+        }
+
+        .clinic-header {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3498db;
+        }
+
+        /* NUEVO ESTILO PARA EL ENCABEZADO DEL SIDEBAR */
+        .clinic-logo {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            margin-bottom: 20px;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .clinic-logo h3 {
+            margin: 0;
+            color: white;
+            font-size: 1.3rem;
+        }
+
+        .clinic-logo p {
+            margin: 5px 0 0 0;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .file-icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+
+        .file-actions {
+            text-align: center;
+        }
+    </style>
 </h:head>
 <h:body>
-    <h1>🏥 Clinica Sonrisa Sana - AWS S3 Upload</h1>
+    <div class="layout-container">
+        <!-- MENÚ LATERAL -->
+        <div class="sidebar">
+            <!-- ENCABEZADO CON EL COLOR AZUL GRADIENT -->
+            <div class="clinic-logo">
+                <h3>🏥 Clínica Sonrisa Sana</h3>
+                <p>Gestión Dental</p>
+            </div>
 
-    <p:growl id="growl" showDetail="true" life="5000"/>
-
-    <!-- PRUEBA DE CONEXIÓN -->
-    <h:form id="testForm">
-        <div style="padding: 20px; border: 2px solid blue; margin: 20px 0; background: white;">
-            <h3>🔍 Prueba de Conexión AWS S3</h3>
-            <p:commandButton value="🔍 Probar Conexión S3"
-                             action="#{fileUploadView.testS3Connection}"
-                             update="growl"
-                             styleClass="p-button-primary"/>
+            <!-- FORM AGREGADO PARA EL MENÚ -->
+            <h:form id="menuForm">
+                <p:tabMenu activeIndex="1" style="width:100%" orientation="left">
+                    <p:menuitem value="Inicio" outcome="/index?faces-redirect=true" icon="pi pi-fw pi-home">
+                        <f:param name="i" value="0"/>
+                    </p:menuitem>
+                    <p:menuitem value="Subir Archivos S3" outcome="/upload?faces-redirect=true" icon="pi pi-fw pi-cloud-upload">
+                        <f:param name="i" value="1"/>
+                    </p:menuitem>
+                    <p:menuitem value="Gestión de Citas" outcome="/citas?faces-redirect=true" icon="pi pi-fw pi-calendar">
+                        <f:param name="i" value="2"/>
+                    </p:menuitem>
+                    <p:menuitem value="Pacientes" outcome="/pacientes?faces-redirect=true" icon="pi pi-fw pi-users" disabled="true">
+                        <f:param name="i" value="3"/>
+                    </p:menuitem>
+                    <p:menuitem value="Configuración" outcome="/config?faces-redirect=true" icon="pi pi-fw pi-cog" disabled="true">
+                        <f:param name="i" value="4"/>
+                    </p:menuitem>
+                </p:tabMenu>
+            </h:form>
         </div>
-    </h:form>
 
-    <!-- SUBIDA BÁSICA -->
-    <h:form id="basicUploadForm" enctype="multipart/form-data">
-        <div style="padding: 20px; border: 2px solid green; margin: 20px 0; background: white;">
-            <h3>📁 Subir Archivo a AWS S3</h3>
+        <!-- CONTENIDO PRINCIPAL -->
+        <div class="main-content">
+            <h1 class="clinic-header">📁 Subir Archivos a AWS S3</h1>
 
-            <p:fileUpload value="#{fileUploadView.file}"
-                          mode="simple"
-                          skinSimple="true"
-                          sizeLimit="10485760"/> <!-- 10MB -->
+            <p:growl id="growl" showDetail="true" life="5000"/>
 
-            <p:commandButton value="🚀 Subir a AWS S3"
-                             action="#{fileUploadView.upload}"
-                             ajax="false"
-                             styleClass="p-button-success"
-                             style="margin-top: 10px;"/>
+            <!-- SUBIDA BÁSICA -->
+            <h:form id="basicUploadForm" enctype="multipart/form-data">
+                <div class="upload-section basic-upload-section">
+                    <h3 class="section-title">📁 Subir Archivo a AWS S3</h3>
+
+                    <p:fileUpload value="#{fileUploadView.file}"
+                                  mode="simple"
+                                  skinSimple="true"
+                                  sizeLimit="10485760"/> <!-- 10MB -->
+
+                    <p:commandButton value="🚀 Subir a AWS S3"
+                                     action="#{fileUploadView.upload}"
+                                     ajax="false"
+                                     styleClass="p-button-success"
+                                     style="margin-top: 10px;"/>
+                    <p style="margin-top: 10px; color: #666; font-style: italic;">
+                        Subida simple de archivos (máximo 10MB)
+                    </p>
+                </div>
+            </h:form>
+
+            <!-- NUEVA SECCIÓN: LISTA DE ARCHIVOS EN S3 -->
+            <h:form id="filesForm">
+                <div class="upload-section files-section">
+                    <h3 class="section-title">📂 Archivos en el Bucket S3</h3>
+
+                    <div style="margin-bottom: 15px;">
+                        <p:commandButton value="🔄 Actualizar Lista"
+                                         action="#{fileUploadView.listarArchivosS3}"
+                                         update="archivosTable :growl"
+                                         styleClass="p-button-info"
+                                         icon="pi pi-refresh"/>
+                        <p:outputLabel value=" Total de archivos: #{fileUploadView.totalArchivos}"
+                                       style="margin-left: 15px; font-weight: bold;"/>
+                    </div>
+
+                    <p:dataTable id="archivosTable" value="#{fileUploadView.archivosS3}" var="archivo"
+                                 emptyMessage="No hay archivos en el bucket S3"
+                                 paginator="true" rows="10"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15">
+
+                        <p:column headerText="Archivo" width="40%">
+                            <span class="file-icon">
+                                <h:outputText value="📄" rendered="#{not archivo.folder}"/>
+                                <h:outputText value="📁" rendered="#{archivo.folder}"/>
+                            </span>
+                            <h:outputText value="#{archivo.nombre}"/>
+                        </p:column>
+
+                        <p:column headerText="Tamaño" width="20%">
+                            <h:outputText value="#{archivo.tamanioFormateado}" />
+                        </p:column>
+
+                        <p:column headerText="Última Modificación" width="25%">
+                            <!-- CORREGIDO: Usar fechaModificacion en lugar de ultimaModificacion -->
+                            <h:outputText value="#{archivo.fechaModificacion}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Acciones" width="15%" style="text-align: center;">
+                            <p:commandButton icon="pi pi-download"
+                                             action="#{fileUploadView.descargarArchivo(archivo)}"
+                                             styleClass="p-button-success p-button-outlined p-button-sm"
+                                             title="Descargar"
+                                             rendered="#{not archivo.folder}">
+                            </p:commandButton>
+
+                            <p:commandButton icon="pi pi-trash"
+                                             action="#{fileUploadView.eliminarArchivo(archivo)}"
+                                             styleClass="p-button-danger p-button-outlined p-button-sm"
+                                             title="Eliminar"
+                                             update="archivosTable :growl"
+                                             oncomplete="if(args &amp;&amp; !args.validationFailed) { PF('archivosTable').filter(); }">
+                                <f:setPropertyActionListener target="#{fileUploadView.archivoSeleccionado}" value="#{archivo}" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </h:form>
         </div>
-    </h:form>
-
-    <!-- SUBIDA CON AJAX -->
-    <h:form id="ajaxUploadForm">
-        <div style="padding: 20px; border: 2px solid orange; margin: 20px 0; background: white;">
-            <h3>⚡ Subida Rápida con AJAX</h3>
-
-            <p:fileUpload value="#{fileUploadView.file}"
-                          mode="advanced"
-                          dragDropSupport="true"
-                          update="growl"
-                          fileLimit="1"
-                          sizeLimit="10485760"
-                          allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|docx?|xlsx?|txt)$/"
-                          listener="#{fileUploadView.handleFileUpload}"
-                          label="Seleccionar archivo"
-                          uploadLabel="Subir a S3"
-                          cancelLabel="Cancelar"/>
-        </div>
-    </h:form>
-
-    <!-- RESULTADO -->
-    <h:form id="resultForm">
-        <p:panel rendered="#{not empty fileUploadView.uploadedFileUrl}"
-                 style="padding: 20px; border: 2px solid #28a745; margin: 20px 0; background: #d4edda;">
-            <h3>✅ ¡Archivo Subido Exitosamente!</h3>
-            <p><strong>URL en S3:</strong></p>
-            <p:outputLabel value="#{fileUploadView.uploadedFileUrl}"
-                           style="font-weight: bold; color: #1976d2; display: block; margin: 10px 0;"/>
-            <p:commandButton value="📎 Abrir en AWS S3"
-                             onclick="window.open('#{fileUploadView.uploadedFileUrl}', '_blank')"
-                             styleClass="p-button-outlined p-button-help"/>
-        </p:panel>
-    </h:form>
-
+    </div>
 </h:body>
 </html>
