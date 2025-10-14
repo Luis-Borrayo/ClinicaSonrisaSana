@@ -1,15 +1,18 @@
 package com.luisborrayo.clinicasonrisasana.services;
 
 import com.luisborrayo.clinicasonrisasana.config.AppConfig;
+import com.luisborrayo.clinicasonrisasana.model.ArchivoS3;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.ListBucketsRequest;
-import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.InputStream;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -20,6 +23,8 @@ public class S3Service {
 
     @Inject
     private AppConfig appConfig;
+
+    // ... (tus métodos existentes permanecen igual)
 
     public String uploadFile(InputStream fileStream, String fileName, String contentType) {
         try {
@@ -38,7 +43,6 @@ public class S3Service {
                     .contentType(contentType)
                     .build();
 
-            // ✅ CORREGIDO: Usar RequestBody.fromBytes con el tamaño correcto
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(fileBytes));
 
             System.out.println("✅ ARCHIVO SUBIDO - Key: " + key +
@@ -54,10 +58,7 @@ public class S3Service {
 
     public boolean testConnection() {
         try {
-            // Intenta listar buckets para verificar conexión
             s3Client.listBuckets();
-
-            // Verifica específicamente que nuestro bucket existe
             try {
                 s3Client.listObjectsV2(b -> b.bucket(appConfig.getBucketName()));
                 System.out.println("✅ CONEXIÓN S3 EXITOSA - Bucket encontrado: " + appConfig.getBucketName());
@@ -66,7 +67,6 @@ public class S3Service {
                 System.err.println("❌ Bucket no encontrado: " + appConfig.getBucketName());
                 return false;
             }
-
         } catch (Exception e) {
             System.err.println("❌ ERROR DE CONEXIÓN S3: " + e.getMessage());
             return false;
@@ -80,8 +80,90 @@ public class S3Service {
                 fileKey);
     }
 
-    // ✅ MÉTODO NUEVO - ESTE ES EL QUE FALTABA
     public String getBucketName() {
         return appConfig.getBucketName();
+    }
+
+    // NUEVOS MÉTODOS PARA LISTAR ARCHIVOS
+
+    public List<ArchivoS3> listarArchivos() {
+        List<ArchivoS3> archivos = new ArrayList<>();
+
+        try {
+            ListObjectsV2Request request = ListObjectsV2Request.builder()
+                    .bucket(appConfig.getBucketName())
+                    .build();
+
+            ListObjectsV2Response response = s3Client.listObjectsV2(request);
+
+            for (S3Object s3Object : response.contents()) {
+                String nombre = extraerNombreArchivo(s3Object.key());
+                boolean esCarpeta = s3Object.key().endsWith("/");
+
+                ArchivoS3 archivo = new ArchivoS3(
+                        nombre,
+                        s3Object.key(),
+                        s3Object.size(),
+                        s3Object.lastModified(),
+                        esCarpeta,
+                        null // El content type no viene en la lista
+                );
+
+                archivos.add(archivo);
+            }
+
+            System.out.println("✅ Listados " + archivos.size() + " archivos del bucket S3");
+
+        } catch (Exception e) {
+            System.err.println("❌ Error listando archivos S3: " + e.getMessage());
+            throw new RuntimeException("Error listando archivos del bucket S3", e);
+        }
+
+        return archivos;
+    }
+
+    private String extraerNombreArchivo(String key) {
+        if (key.contains("/")) {
+            return key.substring(key.lastIndexOf("/") + 1);
+        }
+        return key;
+    }
+
+    public InputStream descargarArchivo(String key) {
+        try {
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(appConfig.getBucketName())
+                    .key(key)
+                    .build();
+
+            ResponseInputStream<GetObjectResponse> response = s3Client.getObject(getObjectRequest);
+            System.out.println("✅ Descargando archivo: " + key);
+            return response;
+
+        } catch (Exception e) {
+            System.err.println("❌ Error descargando archivo: " + e.getMessage());
+            throw new RuntimeException("Error descargando archivo desde S3", e);
+        }
+    }
+
+    public boolean eliminarArchivo(String key) {
+        try {
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                    .bucket(appConfig.getBucketName())
+                    .key(key)
+                    .build();
+
+            s3Client.deleteObject(deleteObjectRequest);
+            System.out.println("✅ Archivo eliminado: " + key);
+            return true;
+
+        } catch (Exception e) {
+            System.err.println("❌ Error eliminando archivo: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public String obtenerNombreArchivoDesdeKey(String key) {
+        return extraerNombreArchivo(key);
     }
 }
