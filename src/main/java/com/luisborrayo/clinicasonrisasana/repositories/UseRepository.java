@@ -1,9 +1,7 @@
-package com.luisborrayo.clinicasonrisasana.repositories.impl;
+package com.luisborrayo.clinicasonrisasana.repositories;
 
 import com.luisborrayo.clinicasonrisasana.database.Dbconexion;
 import com.luisborrayo.clinicasonrisasana.model.User;
-import com.luisborrayo.clinicasonrisasana.repositories.IUserRepository;
-import com.luisborrayo.clinicasonrisasana.services.IUserService;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

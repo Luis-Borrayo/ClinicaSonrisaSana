@@ -2,9 +2,8 @@ package com.luisborrayo.clinicasonrisasana.services.impl;
 
 import com.luisborrayo.clinicasonrisasana.model.User;
 import com.luisborrayo.clinicasonrisasana.repositories.IUserRepository;
-import com.luisborrayo.clinicasonrisasana.repositories.impl.UseRepository;
+import com.luisborrayo.clinicasonrisasana.repositories.UseRepository;
 import com.luisborrayo.clinicasonrisasana.services.IUserService;
-import jakarta.ws.rs.PUT;
 
 import java.util.List;
 import java.util.Optional;

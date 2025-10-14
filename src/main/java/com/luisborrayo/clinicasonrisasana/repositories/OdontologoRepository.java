@@ -27,7 +27,7 @@ public class OdontologoRepository {
                 odontologo.setId(rs.getLong("id"));
                 odontologo.setNombre(rs.getString("nombre"));
                 odontologo.setEspecialidad(rs.getString("especialidad"));
-                odontologo.setMatricula(rs.getString("matricula"));
+                odontologo.setColegiado(rs.getString("colegiado"));
                 odontologos.add(odontologo);
             }
 
@@ -56,7 +56,7 @@ public class OdontologoRepository {
                 odontologo.setId(rs.getLong("id"));
                 odontologo.setNombre(rs.getString("nombre"));
                 odontologo.setEspecialidad(rs.getString("especialidad"));
-                odontologo.setMatricula(rs.getString("matricula"));
+                odontologo.setColegiado(rs.getString("colegiado"));
                 return odontologo;
             }
 

@@ -1,7 +1,7 @@
 package com.luisborrayo.clinicasonrisasana.controllers;
 
 import com.luisborrayo.clinicasonrisasana.model.User;
-import com.luisborrayo.clinicasonrisasana.repositories.impl.UseRepository;
+import com.luisborrayo.clinicasonrisasana.repositories.UseRepository;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
