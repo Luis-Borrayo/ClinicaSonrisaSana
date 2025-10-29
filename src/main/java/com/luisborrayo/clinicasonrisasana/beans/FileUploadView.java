@@ -12,6 +12,7 @@ import com.luisborrayo.clinicasonrisasana.services.S3Service;
 import com.luisborrayo.clinicasonrisasana.model.ArchivoS3;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
@@ -29,6 +30,7 @@ public class FileUploadView implements Serializable {
     private String uploadedFileUrl;
     private String message;
     private List<ArchivoS3> archivosS3;
+    private ArchivoS3 archivoSeleccionado; // AGREGAR ESTE ATRIBUTO
 
     // MÉTODO PARA LISTAR ARCHIVOS
     public void listarArchivosS3() {
@@ -47,50 +49,99 @@ public class FileUploadView implements Serializable {
         }
     }
 
-    // MÉTODO PARA DESCARGAR ARCHIVO
+    // MÉTODO CORREGIDO PARA DESCARGAR ARCHIVO
     public void descargarArchivo(ArchivoS3 archivo) {
         try {
-            // Aquí podrías implementar la descarga directa
-            // Por ahora, mostramos la URL
-            String url = s3Service.getFileUrl(archivo.getKey());
+            // Obtener el stream del archivo desde S3
+            InputStream fileStream = s3Service.descargarArchivo(archivo.getKey());
 
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Descargar Archivo",
-                            "URL para descargar: " + url));
+            // Configurar la respuesta HTTP para descarga
+            FacesContext facesContext = FacesContext.getCurrentInstance();
+            jakarta.servlet.http.HttpServletResponse response =
+                    (jakarta.servlet.http.HttpServletResponse) facesContext.getExternalContext().getResponse();
 
-            // Para descarga automática, necesitaríamos un método diferente
-            System.out.println("📥 Descargar archivo: " + archivo.getNombre() + " | URL: " + url);
+            // Configurar headers para descarga
+            response.reset();
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition",
+                    "attachment; filename=\"" + archivo.getNombre() + "\"");
+            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            response.setHeader("Pragma", "no-cache");
+            response.setHeader("Expires", "0");
+
+            // Copiar el stream del archivo a la respuesta
+            try (InputStream input = fileStream;
+                 java.io.OutputStream output = response.getOutputStream()) {
+
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = input.read(buffer)) != -1) {
+                    output.write(buffer, 0, bytesRead);
+                }
+                output.flush();
+            }
+
+            // Indicar que la respuesta está completa
+            facesContext.responseComplete();
 
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                            "No se pudo preparar la descarga: " + e.getMessage()));
+                            "No se pudo descargar el archivo: " + e.getMessage()));
             e.printStackTrace();
         }
     }
 
-    // MÉTODO PARA ELIMINAR ARCHIVO
-    public void eliminarArchivo(ArchivoS3 archivo) {
-        try {
-            boolean eliminado = s3Service.eliminarArchivo(archivo.getKey());
+    // MÉTODO CORREGIDO PARA ELIMINAR ARCHIVO
+    public void eliminarArchivo() {
+        if (archivoSeleccionado != null) {
+            try {
+                boolean eliminado = s3Service.eliminarArchivo(archivoSeleccionado.getKey());
 
-            if (eliminado) {
-                // Remover de la lista local
-                archivosS3.remove(archivo);
+                if (eliminado) {
+                    // Remover de la lista local
+                    archivosS3.remove(archivoSeleccionado);
 
-                FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Archivo Eliminado",
-                                "Archivo '" + archivo.getNombre() + "' eliminado correctamente"));
-            } else {
+                    FacesContext.getCurrentInstance().addMessage(null,
+                            new FacesMessage(FacesMessage.SEVERITY_INFO, "Archivo Eliminado",
+                                    "Archivo '" + archivoSeleccionado.getNombre() + "' eliminado correctamente"));
+
+                    // Limpiar la selección
+                    archivoSeleccionado = null;
+                } else {
+                    FacesContext.getCurrentInstance().addMessage(null,
+                            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                                    "No se pudo eliminar el archivo '" + archivoSeleccionado.getNombre() + "'"));
+                }
+
+            } catch (Exception e) {
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                                "No se pudo eliminar el archivo '" + archivo.getNombre() + "'"));
+                                "Error eliminando archivo: " + e.getMessage()));
+                e.printStackTrace();
             }
+        }
+    }
+
+    // MÉTODO PARA PREPARAR ELIMINACIÓN (seleccionar archivo antes de eliminar)
+    public void prepararEliminacion(ArchivoS3 archivo) {
+        this.archivoSeleccionado = archivo;
+    }
+
+    // MÉTODO PARA ABRIR ARCHIVO EN NUEVA PESTAÑA
+    public void abrirArchivo(ArchivoS3 archivo) {
+        try {
+            String url = s3Service.getFileUrl(archivo.getKey());
+
+            // Ejecutar JavaScript para abrir en nueva pestaña
+            FacesContext context = FacesContext.getCurrentInstance();
+            String script = "window.open('" + url + "', '_blank');";
+            context.getPartialViewContext().getEvalScripts().add(script);
 
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                            "Error eliminando archivo: " + e.getMessage()));
+                            "No se pudo abrir el archivo: " + e.getMessage()));
             e.printStackTrace();
         }
     }
@@ -108,8 +159,17 @@ public class FileUploadView implements Serializable {
         return archivosS3 != null ? archivosS3.size() : 0;
     }
 
-    // ... (tus métodos existentes upload, handleFileUpload, testS3Connection permanecen igual)
+    // GETTERS y SETTERS
+    public UploadedFile getFile() { return file; }
+    public void setFile(UploadedFile file) { this.file = file; }
+    public UploadedFiles getFiles() { return files; }
+    public void setFiles(UploadedFiles files) { this.files = files; }
+    public String getUploadedFileUrl() { return uploadedFileUrl; }
+    public String getMessage() { return message; }
+    public ArchivoS3 getArchivoSeleccionado() { return archivoSeleccionado; }
+    public void setArchivoSeleccionado(ArchivoS3 archivoSeleccionado) { this.archivoSeleccionado = archivoSeleccionado; }
 
+    // ... (tus métodos existentes upload, handleFileUpload, testS3Connection permanecen igual)
     public void upload() {
         if (file != null && file.getSize() > 0) {
             try {
@@ -209,12 +269,4 @@ public class FileUploadView implements Serializable {
             e.printStackTrace();
         }
     }
-
-    // Getters y Setters existentes
-    public UploadedFile getFile() { return file; }
-    public void setFile(UploadedFile file) { this.file = file; }
-    public UploadedFiles getFiles() { return files; }
-    public void setFiles(UploadedFiles files) { this.files = files; }
-    public String getUploadedFileUrl() { return uploadedFileUrl; }
-    public String getMessage() { return message; }
 }

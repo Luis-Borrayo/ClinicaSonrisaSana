@@ -61,10 +61,6 @@ public class Paciente {
     @JoinColumn(name = "odontologo_id", nullable = false)
     private Odontologo odontologo;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "seguro", nullable = false)
-    private Facturas.Seguro seguro;
 
     @NotNull
     @Column(name = "fecha_creacion", nullable = false)
@@ -78,7 +74,7 @@ public class Paciente {
 
     public Paciente(Long id, Long dpi, String nombre, String apellido, LocalDate fechaNacimiento,
                      Long edad, String contacto, String direccion, String alergias, String condiciones,
-                     String observaciones, Odontologo odontologo, Facturas.Seguro seguro,
+                     String observaciones, Odontologo odontologo,
                      LocalDate fechaCreacion, LocalDate fechaEdicion) {
         this.id = id;
         this.dpi = dpi;
@@ -92,7 +88,6 @@ public class Paciente {
         this.condiciones = condiciones;
         this.observaciones = observaciones;
         this.odontologo = odontologo;
-        this.seguro = seguro;
         this.fechaCreacion = fechaCreacion;
         this.fechaEdicion = fechaEdicion;
     }
@@ -191,14 +186,6 @@ public class Paciente {
 
     public void setOdontologo(Odontologo odontologo) {
         this.odontologo = odontologo;
-    }
-
-    public Facturas.Seguro getSeguro() {
-        return seguro;
-    }
-
-    public void setSeguro(Facturas.Seguro seguro) {
-        this.seguro = seguro;
     }
 
     public LocalDate getFechaCreacion() {

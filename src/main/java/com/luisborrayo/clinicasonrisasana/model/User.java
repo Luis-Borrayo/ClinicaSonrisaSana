@@ -46,7 +46,7 @@ public class User {
     @Column(nullable = false)
     private boolean active = true;
 
-    public User() {}
+    public User(int id, String correo, String nombres, String apellidos, String usuario, String password, String role, boolean active) {}
 
     public User(String correo, String nombres, String apellidos, String usuario, String password, Role role, boolean active) {
         this.correo = correo;

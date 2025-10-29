@@ -25,7 +25,6 @@ public class OdontologoRepository {
             while (rs.next()) {
                 Odontologo odontologo = new Odontologo();
                 odontologo.setId(rs.getLong("id"));
-                odontologo.setNombre(rs.getString("nombre"));
                 odontologo.setEspecialidad(rs.getString("especialidad"));
                 odontologo.setColegiado(rs.getString("colegiado"));
                 odontologos.add(odontologo);
@@ -54,7 +53,6 @@ public class OdontologoRepository {
             if (rs.next()) {
                 Odontologo odontologo = new Odontologo();
                 odontologo.setId(rs.getLong("id"));
-                odontologo.setNombre(rs.getString("nombre"));
                 odontologo.setEspecialidad(rs.getString("especialidad"));
                 odontologo.setColegiado(rs.getString("colegiado"));
                 return odontologo;

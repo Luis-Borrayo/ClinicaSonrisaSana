@@ -80,16 +80,12 @@ public class CitasRepository {
                 Paciente paciente = new Paciente();
                 paciente.setId(rs.getLong("paciente_id"));
                 paciente.setNombre(rs.getString("paciente_nombre"));
-                paciente.setEmail(rs.getString("paciente_email"));
-                paciente.setTelefono(rs.getString("paciente_telefono"));
                 cita.setPaciente(paciente);
 
                 // Crear y asignar Odontologo
                 Odontologo odontologo = new Odontologo();
                 odontologo.setId(rs.getLong("odontologo_id"));
-                odontologo.setNombre(rs.getString("odontologo_nombre"));
                 odontologo.setEspecialidad(rs.getString("odontologo_especialidad"));
-                odontologo.setMatricula(rs.getString("odontologo_matricula"));
                 cita.setOdontologo(odontologo);
 
                 // Crear y asignar Tratamiento (si existe)

@@ -26,8 +26,6 @@ public class PacienteRepository {
                 Paciente paciente = new Paciente();
                 paciente.setId(rs.getLong("id"));
                 paciente.setNombre(rs.getString("nombre"));
-                paciente.setEmail(rs.getString("email"));
-                paciente.setTelefono(rs.getString("telefono"));
                 pacientes.add(paciente);
             }
 
@@ -55,8 +53,6 @@ public class PacienteRepository {
                 Paciente paciente = new Paciente();
                 paciente.setId(rs.getLong("id"));
                 paciente.setNombre(rs.getString("nombre"));
-                paciente.setEmail(rs.getString("email"));
-                paciente.setTelefono(rs.getString("telefono"));
                 return paciente;
             }
 

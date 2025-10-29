@@ -85,7 +85,7 @@ public class UseRepository implements IUserRepository {
             ps.setString(3, user.getApellidos());
             ps.setString(4, user.getUsuario());
             ps.setString(5, user.getPassword());
-            ps.setString(6, user.getRole());
+            ps.setString(6, user.getRole().name());
             ps.setBoolean(7, user.isActive());
             ps.executeUpdate();
         }catch (SQLException e){
@@ -101,7 +101,7 @@ public class UseRepository implements IUserRepository {
             ps.setString(3, user.getApellidos());
             ps.setString(4, user.getUsuario());
             ps.setString(5, user.getPassword());
-            ps.setString(6, user.getRole());
+            ps.setString(6, user.getRole().name());
             ps.setBoolean(7, user.isActive());
             ps.setInt(8, user.getId());
             ps.executeUpdate();
