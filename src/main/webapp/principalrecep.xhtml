@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Panel de Recepción - Clínica Sonrisa Sana</title>
+    <meta charset="UTF-8"/>
+    <h:outputStylesheet name="css/dashboard.css"/>
+</h:head>
+
+<h:body styleClass="dashboard-body #{loginBean.currentUserRoleLowerCase}">
+    <h:form id="frmRecepcion">
+        <p:growl id="msgs" showDetail="true"/>
+
+        <div class="header">
+            <h2>Bienvenida, #{loginBean.currentUserFullName}</h2>
+            <p>Rol: #{loginBean.currentUserRole}</p>
+            <p:commandButton value="Cerrar Sesión"
+                             icon="pi pi-sign-out"
+                             action="#{loginBean.logout}"
+                             ajax="false"
+                             styleClass="logout-btn"/>
+        </div>
+
+        <p:separator/>
+
+        <div class="content">
+            <h3>Panel de Recepción</h3>
+
+            <p:button value="Registrar Paciente"
+                      icon="pi pi-user-plus"
+                      outcome="/views/registroPaciente.xhtml"/>
+
+            <p:button value="Agendar Cita"
+                      icon="pi pi-calendar-plus"
+                      outcome="/views/citas.xhtml"/>
+        </div>
+    </h:form>
+</h:body>
+</html>

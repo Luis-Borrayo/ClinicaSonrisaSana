@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core">
+
+<h:head>
+    <title>Panel de Administración - Clínica Sonrisa Sana</title>
+    <meta charset="UTF-8" />
+</h:head>
+
+<h:body style="background-color:#f9f9f9; font-family:'Segoe UI', sans-serif;">
+    <h:form id="frmAdmin">
+
+        <!-- Encabezado -->
+        <p:panel style="background-color:#1976d2; color:white; padding:1rem 2rem; border-radius:0;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h:outputText value="Panel de Administración" style="font-size:1.25rem;" />
+
+                <div style="text-align:right;">
+                    <div>Bienvenido, <b>#{loginBean.currentUserFullName}</b></div>
+                    <div>Rol: #{loginBean.currentUserRole}</div>
+
+                    <p:commandButton id="btnLogout" value="Cerrar Sesión"
+                                     icon="pi pi-sign-out"
+                                     action="#{loginBean.logout}"
+                                     ajax="false"
+                                     styleClass="ui-button-danger ui-button-raised"
+                                     style="margin-top:0.5rem;" />
+                </div>
+            </div>
+        </p:panel>
+
+        <!-- Contenido central -->
+        <p:panel style="padding:2rem; margin-top:1rem; background-color:white; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+            <h:panelGrid columns="1" style="width:100%; margin-bottom:1rem; text-align:center;">
+                <h:outputText value="Clínica Sonrisa Sana" style="color:#1976d2; font-size:1.5rem;" />
+            </h:panelGrid>
+
+            <p:separator style="margin-bottom:1.5rem;" />
+
+            <div class="ui-g" style="text-align:center;">
+
+                <!-- Gestión de Usuarios -->
+                <div class="ui-g-12 ui-md-4" style="margin-bottom:1.25rem;">
+                    <p:card header="Gestión de Usuarios" style="min-height:170px;">
+                        <f:facet name="subtitle">
+                            <h:outputText value="Administrar cuentas, roles y accesos" />
+                        </f:facet>
+
+                        <p:commandButton value="Abrir" icon="pi pi-arrow-right"
+                                         ajax="false"
+                                         outcome="/paginas/usuarios/usuarios.xhtml" />
+                    </p:card>
+                </div>
+
+                <!-- Reportes -->
+                <div class="ui-g-12 ui-md-4" style="margin-bottom:1.25rem;">
+                    <p:card header="Reportes" style="min-height:170px;">
+                        <f:facet name="subtitle">
+                            <h:outputText value="Visualiza las estadísticas de la clínica" />
+                        </f:facet>
+
+                        <p:commandButton value="Abrir" icon="pi pi-chart-line"
+                                         ajax="false"
+                                         outcome="/paginas/reportes/reportes.xhtml" />
+                    </p:card>
+                </div>
+
+                <!-- Citas -->
+                <div class="ui-g-12 ui-md-4" style="margin-bottom:1.25rem;">
+                    <p:card header="Citas" style="min-height:170px;">
+                        <f:facet name="subtitle">
+                            <h:outputText value="Gestión de citas médicas y odontológicas" />
+                        </f:facet>
+
+                        <p:commandButton value="Abrir" icon="pi pi-calendar"
+                                         ajax="false"
+                                         outcome="/paginas/citas/citas.xhtml" />
+                    </p:card>
+                </div>
+
+                <!-- Facturación -->
+                <div class="ui-g-12 ui-md-4" style="margin-bottom:1.25rem;">
+                    <p:card header="Facturación" style="min-height:170px;">
+                        <f:facet name="subtitle">
+                            <h:outputText value="Registro y control de pagos" />
+                        </f:facet>
+
+                        <p:commandButton value="Abrir" icon="pi pi-dollar"
+                                         ajax="false"
+                                         outcome="/paginas/facturacion/facturacion.xhtml" />
+                    </p:card>
+                </div>
+
+                <!-- Configuraciones -->
+                <div class="ui-g-12 ui-md-4" style="margin-bottom:1.25rem;">
+                    <p:card header="Configuraciones" style="min-height:170px;">
+                        <f:facet name="subtitle">
+                            <h:outputText value="Ajustes del sistema y parámetros generales" />
+                        </f:facet>
+
+                        <p:commandButton value="Abrir" icon="pi pi-cog"
+                                         ajax="false"
+                                         outcome="/paginas/configuracion/configuracion.xhtml" />
+                    </p:card>
+                </div>
+            </div>
+        </p:panel>
+
+        <!-- Pie de página -->
+        <p:panel style="background-color:#1976d2; color:white; text-align:center; padding:1rem; margin-top:2rem;">
+            <h:outputText value="© 2025 Clínica Sonrisa Sana — Todos los derechos reservados" />
+        </p:panel>
+    </h:form>
+</h:body>
+</html>

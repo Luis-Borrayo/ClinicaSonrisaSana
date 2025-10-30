@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Clínica Sonrisa Sana - Iniciar Sesión</title>
+    <meta charset="UTF-8"/>
+</h:head>
+
+<h:body style="display:flex; justify-content:center; align-items:center; height:100vh; background-color:#f9f9f9;">
+
+    <h:form id="frmLogin">
+        <p:growl id="messages" showDetail="true" life="4000"/>
+
+        <p:card style="width:350px; padding:2rem; border-radius:14px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+            <h2 style="text-align:center; color:#1976d2;">Clínica Sonrisa Sana</h2>
+            <p style="text-align:center; color:#666;">Acceso al Sistema</p>
+
+            <p:separator style="margin:1rem 0;" />
+
+            <p:panelGrid columns="1" columnClasses="ui-fluid" style="width:100%;">
+                <p:outputLabel for="usuario" value="Usuario" />
+                <p:inputText id="usuario"
+                             value="#{loginBean.usuario}"
+                             placeholder="Ingresa tu usuario"
+                             required="true" />
+
+                <p:outputLabel for="password" value="Contraseña" />
+                <p:password id="password"
+                            value="#{loginBean.password}"
+                            placeholder="Ingresa tu contraseña"
+                            feedback="false"
+                            required="true" />
+
+                <div style="margin-top:0.5rem;">
+                    <p:selectBooleanCheckbox id="rememberMe"
+                                             value="#{loginBean.rememberMe}"
+                                             itemLabel="Recordarme" />
+                </div>
+
+                <p:commandButton value="Iniciar Sesión"
+                                 icon="pi pi-sign-in"
+                                 action="#{loginBean.login}"
+                                 update="messages"
+                                 ajax="false"
+                                 style="margin-top:1rem; width:100%;"
+                                 styleClass="ui-button-raised ui-button-primary" />
+            </p:panelGrid>
+        </p:card>
+    </h:form>
+</h:body>
+</html>

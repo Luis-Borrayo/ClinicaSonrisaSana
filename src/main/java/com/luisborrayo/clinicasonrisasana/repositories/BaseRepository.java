@@ -1,64 +1,81 @@
 package com.luisborrayo.clinicasonrisasana.repositories;
 
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityTransaction;
+
 import java.util.List;
-import java.util.Optional;
+import java.util.function.Consumer;
 
 public abstract class BaseRepository<T, ID> {
 
-    @PersistenceContext
+    @Inject
     protected EntityManager em;
 
     protected abstract Class<T> entity();
 
-    public List<T> findAll() {
-        return em.createQuery("SELECT e FROM " + entity().getSimpleName() + " e", entity())
-                .getResultList();
+    public void tx(Consumer<EntityManager> work) {
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            work.accept(em);
+            tx.commit();
+        } catch (RuntimeException ex) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            throw ex;
+        }
     }
 
-    public T find(ID id) {
+    public T save(T e) {
+        tx(entityManager -> {
+            Object id = entityManager.getEntityManagerFactory()
+                    .getPersistenceUnitUtil()
+                    .getIdentifier(e);
+            if (id == null) {
+                entityManager.persist(e);   // nuevo
+            } else {
+                entityManager.merge(e);     // existente
+            }
+        });
+        return e;
+    }
+
+    public T findId(ID id) {
         return em.find(entity(), id);
     }
 
-    public Optional<T> findOptional(ID id) {
-        return Optional.ofNullable(em.find(entity(), id));
-    }
-
-    @Transactional
-    public T save(T entity) {
-        if (isNew(entity)) {
-            em.persist(entity);
-            return entity;
-        } else {
-            return em.merge(entity);
-        }
-    }
-
-    @Transactional
-    public void delete(T entity) {
-        if (em.contains(entity)) {
-            em.remove(entity);
-        } else {
-            em.remove(em.merge(entity));
-        }
-    }
-
-    @Transactional
-    public void deleteById(ID id) {
-        T entity = find(id);
-        if (entity != null) {
-            delete(entity);
-        }
-    }
-
-    private boolean isNew(T entity) {
+    public void update(T entity) {
         try {
-            Object id = em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
-            return id == null || (id instanceof Number && ((Number) id).longValue() == 0);
+            em.getTransaction().begin();
+            em.merge(entity);
+            em.getTransaction().commit();
         } catch (Exception e) {
-            return true;
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RuntimeException("Error al actualizar entidad: " + e.getMessage(), e);
         }
+    }
+
+    public void delete(ID id) {
+        try {
+            em.getTransaction().begin();
+            T entity = em.find(entity(), id);
+            if (entity != null) {
+                em.remove(entity);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RuntimeException("Error al eliminar entidad: " + e.getMessage(), e);
+        }
+    }
+
+    public List<T> findAll() {
+        return em.createQuery("FROM " + entity().getSimpleName(), entity()).getResultList();
     }
 }

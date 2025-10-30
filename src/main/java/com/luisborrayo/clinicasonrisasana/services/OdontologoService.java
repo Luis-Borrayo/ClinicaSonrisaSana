@@ -13,10 +13,10 @@ public class OdontologoService {
     private OdontologoRepository odontologoRepository;
 
     public List<Odontologo> obtenerTodosLosOdontologos() {
-        return odontologoRepository.buscarTodos();
+        return odontologoRepository.findAll();
     }
 
     public Odontologo obtenerOdontologoPorId(Long id) {
-        return odontologoRepository.buscarPorId(id);
+        return odontologoRepository.findId(id);
     }
 }

@@ -1,7 +1,7 @@
 package com.luisborrayo.clinicasonrisasana.services;
 
-import com.luisborrayo.clinicasonrisasana.model.Paciente;
-import com.luisborrayo.clinicasonrisasana.repositories.PacienteRepository;
+import com.luisborrayo.clinicasonrisasana.model.Pacientes;
+import com.luisborrayo.clinicasonrisasana.repositories.PacientesRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.List;
@@ -10,13 +10,13 @@ import java.util.List;
 public class PacienteService {
 
     @Inject
-    private PacienteRepository pacienteRepository;
+    private PacientesRepository pacienteRepository;
 
-    public List<Paciente> obtenerTodosLosPacientes() {
-        return pacienteRepository.buscarTodos();
+    public List<Pacientes> obtenerTodosLosPacientes() {
+        return pacienteRepository.findAll();
     }
 
-    public Paciente obtenerPacientePorId(Long id) {
-        return pacienteRepository.buscarPorId(id);
+    public Pacientes obtenerPacientePorId(Long id) {
+        return pacienteRepository.findId(id);
     }
 }

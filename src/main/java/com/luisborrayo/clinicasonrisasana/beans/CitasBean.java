@@ -34,7 +34,7 @@ public class CitasBean implements Serializable {
     private Citas citaSeleccionada;
     private Citas nuevaCita;
 
-    private List<Paciente> pacientes;
+    private List<Pacientes> pacientes;
     private List<Odontologo> odontologos;
     private List<Tratamiento> tratamientos;
 
@@ -90,7 +90,7 @@ public class CitasBean implements Serializable {
             System.out.println("Estado: " + nuevaCita.getEstado());
 
             // Buscar las entidades por ID
-            Paciente paciente = pacienteService.obtenerPacientePorId(pacienteId);
+            Pacientes paciente = pacienteService.obtenerPacientePorId(pacienteId);
             Odontologo odontologo = odontologoService.obtenerOdontologoPorId(odontologoId);
             Tratamiento tratamiento = tratamientoId != null ?
                     tratamientoService.obtenerTratamientoPorId(tratamientoId) : null;
@@ -142,7 +142,6 @@ public class CitasBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, detail));
     }
 
-    // Getters y Setters
     public List<Citas> getCitas() { return citas; }
     public void setCitas(List<Citas> citas) { this.citas = citas; }
 
@@ -152,7 +151,7 @@ public class CitasBean implements Serializable {
     public Citas getNuevaCita() { return nuevaCita; }
     public void setNuevaCita(Citas nuevaCita) { this.nuevaCita = nuevaCita; }
 
-    public List<Paciente> getPacientes() { return pacientes; }
+    public List<Pacientes> getPacientes() { return pacientes; }
     public List<Odontologo> getOdontologos() { return odontologos; }
     public List<Tratamiento> getTratamientos() { return tratamientos; }
 

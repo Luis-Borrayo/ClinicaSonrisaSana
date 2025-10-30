@@ -19,7 +19,7 @@ public class User {
     private Integer id;
 
     @NotBlank
-    @Email(message = "Debe ingresar un correo válido")
+    @Email(message = "Debe ingresar un correo valido")
     @Column(unique = true, nullable = false)
     private String correo;
 
@@ -36,7 +36,7 @@ public class User {
     private String usuario;
 
     @NotBlank
-    @Size(min = 6, message = "La contraseña debe contener al menos 6 caracteres")
+    @Size(min = 6, message = "La contraseÃ±a debe contener al menos 6 caracteres")
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -46,7 +46,7 @@ public class User {
     @Column(nullable = false)
     private boolean active = true;
 
-    public User(int id, String correo, String nombres, String apellidos, String usuario, String password, String role, boolean active) {}
+    public User() {}
 
     public User(String correo, String nombres, String apellidos, String usuario, String password, Role role, boolean active) {
         this.correo = correo;
@@ -59,44 +59,67 @@ public class User {
     }
 
     public Integer getId() {
-        return id; }
+        return id;
+    }
     public void setId(Integer id) {
-        this.id = id; }
+        this.id = id;
+    }
 
     public String getCorreo() {
-        return correo; }
+        return correo;
+    }
     public void setCorreo(String correo) {
-        this.correo = correo; }
+        this.correo = correo;
+    }
 
     public String getNombres() {
-        return nombres; }
+        return nombres;
+    }
     public void setNombres(String nombres) {
-        this.nombres = nombres; }
+        this.nombres = nombres;
+    }
 
     public String getApellidos() {
-        return apellidos; }
+        return apellidos;
+    }
     public void setApellidos(String apellidos) {
-        this.apellidos = apellidos; }
+        this.apellidos = apellidos;
+    }
 
     public String getUsuario() {
-        return usuario; }
+        return usuario;
+    }
     public void setUsuario(String usuario) {
-        this.usuario = usuario; }
+        this.usuario = usuario;
+    }
 
     public String getPassword() {
-        return password; }
+        return password;
+    }
     public void setPassword(String password) {
-        this.password = password; }
+        this.password = password;
+    }
 
     public Role getRole() {
-        return role; }
+        return role;
+    }
     public void setRole(Role role) {
-        this.role = role; }
+        this.role = role;
+    }
+
+    public Role getRol() {
+        return role;
+    }
+    public void setRol(Role rol) {
+        this.role = rol;
+    }
 
     public boolean isActive() {
-        return active; }
+        return active;
+    }
     public void setActive(boolean active) {
-        this.active = active; }
+        this.active = active;
+    }
 
     @Override
     public String toString() {

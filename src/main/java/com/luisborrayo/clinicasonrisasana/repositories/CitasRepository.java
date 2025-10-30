@@ -1,157 +1,153 @@
 package com.luisborrayo.clinicasonrisasana.repositories;
 
-import com.luisborrayo.clinicasonrisasana.database.Dbconexion;
-import com.luisborrayo.clinicasonrisasana.model.*;
+import com.luisborrayo.clinicasonrisasana.model.Citas;
+import com.luisborrayo.clinicasonrisasana.model.Odontologo;
+import com.luisborrayo.clinicasonrisasana.repositories.BaseRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import java.sql.*;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
-public class CitasRepository {
+public class CitasRepository extends BaseRepository<Citas, Long> {
+
+    @Override
+    protected Class<Citas> entity() {
+        return Citas.class;
+    }
+
+    @Inject
+    private EntityManager em;
+
+    public CitasRepository() {
+    }
 
     // CREATE
     public void crear(Citas cita) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-
+        EntityTransaction tx = em.getTransaction();
         try {
-            conn = Dbconexion.getConnection();
-            String sql = "INSERT INTO citas (paciente_id, odontologo_id, tratamiento_id, fechacita, estado, observaciones) VALUES (?, ?, ?, ?, ?, ?)";
-            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-
-            stmt.setLong(1, cita.getPaciente().getId());
-            stmt.setLong(2, cita.getOdontologo().getId());
-            if (cita.getTratamiento() != null) {
-                stmt.setLong(3, cita.getTratamiento().getId());
-            } else {
-                stmt.setNull(3, Types.BIGINT);
+            if (!tx.isActive()) {
+                tx.begin();
             }
-            stmt.setTimestamp(4, Timestamp.valueOf(cita.getFechaCita()));
-            stmt.setString(5, cita.getEstado());
-            stmt.setString(6, cita.getObservaciones());
-
-            stmt.executeUpdate();
-
-            // Obtener el ID generado
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                cita.setId(rs.getLong(1));
+            em.persist(cita);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
             }
-
-        } catch (SQLException e) {
             throw new RuntimeException("Error creando cita: " + e.getMessage(), e);
-        } finally {
-            Dbconexion.closeResources(conn, stmt, null);
         }
     }
 
-    // READ - Buscar todas las citas
     public List<Citas> buscarTodas() {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        List<Citas> citas = new ArrayList<>();
+        return em.createQuery(
+                        "SELECT c FROM Citas c " +
+                                "LEFT JOIN FETCH c.paciente " +
+                                "LEFT JOIN FETCH c.odontologo " +
+                                "LEFT JOIN FETCH c.tratamiento " +
+                                "ORDER BY c.fechaCita DESC",
+                        Citas.class)
+                .getResultList();
+    }
 
+    public void actualizar(Citas cita) {
+        EntityTransaction tx = em.getTransaction();
         try {
-            conn = Dbconexion.getConnection();
-            String sql = """
-                SELECT c.*, p.nombre as paciente_nombre, p.email as paciente_email, p.telefono as paciente_telefono,
-                       o.nombre as odontologo_nombre, o.especialidad as odontologo_especialidad, o.matricula as odontologo_matricula,
-                       t.nombre as tratamiento_nombre, t.descripcion as tratamiento_descripcion, t.costo as tratamiento_costo
-                FROM citas c
-                LEFT JOIN pacientes p ON c.paciente_id = p.id
-                LEFT JOIN odontologos o ON c.odontologo_id = o.id
-                LEFT JOIN tratamientos t ON c.tratamiento_id = t.id
-                ORDER BY c.fechacita DESC
-                """;
-            stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                Citas cita = new Citas();
-                cita.setId(rs.getLong("id"));
-                cita.setFechaCita(rs.getTimestamp("fechacita").toLocalDateTime());
-                cita.setEstado(rs.getString("estado"));
-                cita.setObservaciones(rs.getString("observaciones"));
-
-                // Crear y asignar Paciente
-                Paciente paciente = new Paciente();
-                paciente.setId(rs.getLong("paciente_id"));
-                paciente.setNombre(rs.getString("paciente_nombre"));
-                cita.setPaciente(paciente);
-
-                // Crear y asignar Odontologo
-                Odontologo odontologo = new Odontologo();
-                odontologo.setId(rs.getLong("odontologo_id"));
-                odontologo.setEspecialidad(rs.getString("odontologo_especialidad"));
-                cita.setOdontologo(odontologo);
-
-                // Crear y asignar Tratamiento (si existe)
-                Long tratamientoId = rs.getLong("tratamiento_id");
-                if (!rs.wasNull()) {
-                    Tratamiento tratamiento = new Tratamiento();
-                    tratamiento.setId(tratamientoId);
-                    tratamiento.setNombre(rs.getString("tratamiento_nombre"));
-                    tratamiento.setDescripcion(rs.getString("tratamiento_descripcion"));
-                    tratamiento.setCosto(rs.getDouble("tratamiento_costo"));
-                    cita.setTratamiento(tratamiento);
-                }
-
-                citas.add(cita);
+            if (!tx.isActive()) {
+                tx.begin();
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error buscando citas: " + e.getMessage(), e);
-        } finally {
-            Dbconexion.closeResources(conn, stmt, rs);
-        }
-        return citas;
-    }
-
-    // DELETE
-    public void eliminar(Long id) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-
-        try {
-            conn = Dbconexion.getConnection();
-            String sql = "DELETE FROM citas WHERE id = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setLong(1, id);
-            stmt.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error eliminando cita: " + e.getMessage(), e);
-        } finally {
-            Dbconexion.closeResources(conn, stmt, null);
+            em.merge(cita);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            throw new RuntimeException("Error actualizando cita: " + e.getMessage(), e);
         }
     }
 
-    // Verificar si existe cita en horario
     public boolean existeCitaEnHorario(Odontologo odontologo, LocalDateTime fechaCita) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        Long count = em.createQuery(
+                        "SELECT COUNT(c) FROM Citas c WHERE c.odontologo.id = :odontologoId " +
+                                "AND c.fechaCita = :fechaCita AND c.estado != :estadoCancelado",
+                        Long.class)
+                .setParameter("odontologoId", odontologo.getId())
+                .setParameter("fechaCita", fechaCita)
+                .setParameter("estadoCancelado", Citas.Estados.CANCELADA)
+                .getSingleResult();
 
-        try {
-            conn = Dbconexion.getConnection();
-            String sql = "SELECT COUNT(*) FROM citas WHERE odontologo_id = ? AND fechacita = ? AND estado != 'CANCELADA'";
-            stmt = conn.prepareStatement(sql);
-            stmt.setLong(1, odontologo.getId());
-            stmt.setTimestamp(2, Timestamp.valueOf(fechaCita));
-            rs = stmt.executeQuery();
+        return count > 0;
+    }
 
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
+    public List<Citas> buscarPorOdontologo(Long odontologoId) {
+        return em.createQuery(
+                        "SELECT c FROM Citas c " +
+                                "LEFT JOIN FETCH c.paciente " +
+                                "LEFT JOIN FETCH c.odontologo " +
+                                "LEFT JOIN FETCH c.tratamiento " +
+                                "WHERE c.odontologo.id = :odontologoId " +
+                                "ORDER BY c.fechaCita DESC",
+                        Citas.class)
+                .setParameter("odontologoId", odontologoId)
+                .getResultList();
+    }
 
-        } catch (SQLException e) {
-            throw new RuntimeException("Error verificando horario: " + e.getMessage(), e);
-        } finally {
-            Dbconexion.closeResources(conn, stmt, rs);
-        }
-        return false;
+    public List<Citas> buscarPorPaciente(Long pacienteId) {
+        return em.createQuery(
+                        "SELECT c FROM Citas c " +
+                                "LEFT JOIN FETCH c.paciente " +
+                                "LEFT JOIN FETCH c.odontologo " +
+                                "LEFT JOIN FETCH c.tratamiento " +
+                                "WHERE c.paciente.id = :pacienteId " +
+                                "ORDER BY c.fechaCita DESC",
+                        Citas.class)
+                .setParameter("pacienteId", pacienteId)
+                .getResultList();
+    }
+
+    public List<Citas> buscarPorEstado(Citas.Estados estado) {
+        return em.createQuery(
+                        "SELECT c FROM Citas c " +
+                                "LEFT JOIN FETCH c.paciente " +
+                                "LEFT JOIN FETCH c.odontologo " +
+                                "LEFT JOIN FETCH c.tratamiento " +
+                                "WHERE c.estado = :estado " +
+                                "ORDER BY c.fechaCita DESC",
+                        Citas.class)
+                .setParameter("estado", estado)
+                .getResultList();
+    }
+
+    public List<Citas> buscarCitasDelDia(Long odontologoId, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        return em.createQuery(
+                        "SELECT c FROM Citas c " +
+                                "LEFT JOIN FETCH c.paciente " +
+                                "LEFT JOIN FETCH c.odontologo " +
+                                "LEFT JOIN FETCH c.tratamiento " +
+                                "WHERE c.odontologo.id = :odontologoId " +
+                                "AND c.fechaCita BETWEEN :fechaInicio AND :fechaFin " +
+                                "ORDER BY c.fechaCita ASC",
+                        Citas.class)
+                .setParameter("odontologoId", odontologoId)
+                .setParameter("fechaInicio", fechaInicio)
+                .setParameter("fechaFin", fechaFin)
+                .getResultList();
+    }
+
+    public List<Citas> buscarCitasPendientes() {
+        return em.createQuery(
+                        "SELECT c FROM Citas c " +
+                                "LEFT JOIN FETCH c.paciente " +
+                                "LEFT JOIN FETCH c.odontologo " +
+                                "LEFT JOIN FETCH c.tratamiento " +
+                                "WHERE c.estado = :estadoPendiente " +
+                                "AND c.fechaCita >= :fechaActual " +
+                                "ORDER BY c.fechaCita ASC",
+                        Citas.class)
+                .setParameter("estadoPendiente", Citas.Estados.PENDIENTE)
+                .setParameter("fechaActual", LocalDateTime.now())
+                .getResultList();
     }
 }

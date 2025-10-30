@@ -1,13 +1,16 @@
 package com.luisborrayo.clinicasonrisasana.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "pacientes")
-public class Paciente {
+public class Pacientes {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,6 +43,11 @@ public class Paciente {
     @Column(nullable = false, length = 20)
     private String contacto;
 
+    @NotBlank
+    @Email(message = "Debe ingresar un correo valido")
+    @Column(unique = true, nullable = false)
+    private String correo;
+
     @NotNull
     @Size(max = 255)
     @Column(nullable = false, length = 255)
@@ -61,6 +69,10 @@ public class Paciente {
     @JoinColumn(name = "odontologo_id", nullable = false)
     private Odontologo odontologo;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "seguro", nullable = false)
+    private Facturas.Seguro seguro;
 
     @NotNull
     @Column(name = "fecha_creacion", nullable = false)
@@ -70,11 +82,11 @@ public class Paciente {
     @Column(name = "fecha_edicion", nullable = false)
     private LocalDate fechaEdicion;
 
-    public Paciente() {}
+    public Pacientes() {}
 
-    public Paciente(Long id, Long dpi, String nombre, String apellido, LocalDate fechaNacimiento,
-                     Long edad, String contacto, String direccion, String alergias, String condiciones,
-                     String observaciones, Odontologo odontologo,
+    public Pacientes(Long id, Long dpi, String nombre, String apellido, LocalDate fechaNacimiento,
+                     Long edad, String contacto, String correo, String direccion, String alergias, String condiciones,
+                     String observaciones, Odontologo odontologo, Facturas.Seguro seguro,
                      LocalDate fechaCreacion, LocalDate fechaEdicion) {
         this.id = id;
         this.dpi = dpi;
@@ -83,11 +95,13 @@ public class Paciente {
         this.fechaNacimiento = fechaNacimiento;
         this.edad = edad;
         this.contacto = contacto;
+        this.correo = correo;
         this.direccion = direccion;
         this.alergias = alergias;
         this.condiciones = condiciones;
         this.observaciones = observaciones;
         this.odontologo = odontologo;
+        this.seguro = seguro;
         this.fechaCreacion = fechaCreacion;
         this.fechaEdicion = fechaEdicion;
     }
@@ -148,6 +162,13 @@ public class Paciente {
         this.contacto = contacto;
     }
 
+    public String getCorreo() {
+        return correo;
+    }
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
     public String getDireccion() {
         return direccion;
     }
@@ -186,6 +207,14 @@ public class Paciente {
 
     public void setOdontologo(Odontologo odontologo) {
         this.odontologo = odontologo;
+    }
+
+    public Facturas.Seguro getSeguro() {
+        return seguro;
+    }
+
+    public void setSeguro(Facturas.Seguro seguro) {
+        this.seguro = seguro;
     }
 
     public LocalDate getFechaCreacion() {

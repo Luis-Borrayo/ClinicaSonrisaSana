@@ -1,21 +1,59 @@
 package com.luisborrayo.clinicasonrisasana.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "citas")
 public class Citas {
+
+    public enum Estados {
+        PENDIENTE,
+        CONFIRMADA,
+        CANCELADA,
+        REPROGRAMADA,
+        ATENDIDA
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Paciente paciente;
+
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "paciente_id", nullable = false)
+    private Pacientes paciente;
+
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "odontologo_id", nullable = false)
     private Odontologo odontologo;
+
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "tratamiento_id", nullable = false)
     private Tratamiento tratamiento;
+
+    @NotNull
+    @Column(name = "fechacita", nullable = false)
     private LocalDateTime fechaCita;
-    private String estado;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Estados estado;
+
+    @NotNull
+    @Lob
+    @Column(name = "observaciones", nullable = false)
     private String observaciones;
 
-    // Constructores
-    public Citas() {}
+    public Citas(){}
 
-    public Citas(Paciente paciente, Odontologo odontologo, Tratamiento tratamiento,
-                 LocalDateTime fechaCita, String estado, String observaciones) {
+    public Citas(Pacientes paciente, Odontologo odontologo, Tratamiento tratamiento,
+                 LocalDateTime fechaCita, Estados estado, String observaciones) {
         this.paciente = paciente;
         this.odontologo = odontologo;
         this.tratamiento = tratamiento;
@@ -24,12 +62,11 @@ public class Citas {
         this.observaciones = observaciones;
     }
 
-    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Paciente getPaciente() { return paciente; }
-    public void setPaciente(Paciente paciente) { this.paciente = paciente; }
+    public Pacientes getPaciente() { return paciente; }
+    public void setPaciente(Pacientes paciente) { this.paciente = paciente; }
 
     public Odontologo getOdontologo() { return odontologo; }
     public void setOdontologo(Odontologo odontologo) { this.odontologo = odontologo; }
@@ -40,9 +77,10 @@ public class Citas {
     public LocalDateTime getFechaCita() { return fechaCita; }
     public void setFechaCita(LocalDateTime fechaCita) { this.fechaCita = fechaCita; }
 
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
+    public Estados getEstado() { return estado; }
+    public void setEstado(Estados estado) { this.estado = estado; }
 
     public String getObservaciones() { return observaciones; }
     public void setObservaciones(String observaciones) { this.observaciones = observaciones; }
+
 }

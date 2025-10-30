@@ -13,7 +13,6 @@ public class CitasService {
     private CitasRepository citasRepository;
 
     public Citas crearCita(Citas cita) {
-        // Validar que no exista cita en el mismo horario
         if (citasRepository.existeCitaEnHorario(cita.getOdontologo(), cita.getFechaCita())) {
             throw new RuntimeException("El odontólogo ya tiene una cita programada en ese horario");
         }
@@ -22,11 +21,8 @@ public class CitasService {
         return cita;
     }
 
-    // ✅ AGREGAR ESTE MÉTODO FALTANTE
     public Citas actualizarCita(Citas cita) {
-        // Para JDBC simple, podemos eliminar y crear de nuevo
-        // O implementar un método update en el repository
-        citasRepository.eliminar(cita.getId());
+        citasRepository.delete(cita.getId());
         citasRepository.crear(cita);
         return cita;
     }
@@ -36,6 +32,6 @@ public class CitasService {
     }
 
     public void eliminarCita(Long id) {
-        citasRepository.eliminar(id);
+        citasRepository.delete(id);
     }
 }
