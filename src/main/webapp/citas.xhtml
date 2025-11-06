@@ -1,186 +1,449 @@
-<ui:composition template="/templates/template.xhtml"
-                xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
 
-    <ui:define name="content">
-        <h1>📅 Gestión de Citas</h1>
+<h:head>
+    <title>Gestión de Citas - Clínica Sonrisa Sana</title>
+    <meta charset="UTF-8"/>
+    <h:outputStylesheet>
+        * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        }
 
-        <h:outputStylesheet>
-            .card {
-            background: #ffffff;
-            padding: 2rem;
-            box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
-            border-radius: 6px;
-            margin-bottom: 2rem;
-            }
+        body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%);
+        min-height: 100vh;
+        }
 
-            .section-title {
-            color: #2c3e50;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            }
+        .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+        }
 
-            .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            }
+        /* Sidebar */
+        .sidebar {
+        width: 260px;
+        background: linear-gradient(180deg, #1976d2 0%, #1565c0 100%);
+        color: white;
+        padding: 0;
+        box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        height: 100vh;
+        left: 0;
+        top: 0;
+        }
 
-            .form-actions {
-            text-align: center;
-            margin-top: 1.5rem;
-            }
+        .sidebar-header {
+        padding: 2rem 1.5rem;
+        background: rgba(0,0,0,0.1);
+        border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
 
-            .full-width {
-            grid-column: 1 / -1;
-            }
+        .sidebar-header h2 {
+        font-size: 1.3rem;
+        margin-bottom: 0.3rem;
+        font-weight: 600;
+        }
 
-            @media (max-width: 768px) {
-            .form-grid {
-            grid-template-columns: 1fr;
-            }
-            }
+        .sidebar-header p {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        }
 
-            .actions-column {
-            text-align: center;
-            white-space: nowrap;
-            }
-        </h:outputStylesheet>
+        .sidebar-menu {
+        flex: 1;
+        padding: 1rem 0;
+        overflow-y: auto;
+        }
 
-        <p:messages id="messages" autoUpdate="true" />
+        .menu-item {
+        padding: 1rem 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        border-left: 4px solid transparent;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: white;
+        text-decoration: none;
+        }
 
-        <!-- Formulario para nueva cita -->
-        <div class="card">
-            <h3 class="section-title">➕ Nueva Cita</h3>
-            <h:form id="citaForm">
-                <div class="form-grid">
-                    <!-- Paciente -->
-                    <div class="form-field">
-                        <p:outputLabel value="Paciente:" for="paciente" />
-                        <p:selectOneMenu id="paciente" value="#{citasBean.pacienteId}" required="true"
-                                         requiredMessage="Seleccione un paciente" style="width: 100%">
-                            <f:selectItem itemLabel="Seleccione paciente" itemValue="" />
-                            <f:selectItems value="#{citasBean.pacientes}" var="paciente"
-                                           itemLabel="#{paciente.nombre}" itemValue="#{paciente.id}" />
-                        </p:selectOneMenu>
-                        <p:message for="paciente" display="icon" />
-                    </div>
+        .menu-item:hover {
+        background: rgba(255,255,255,0.1);
+        border-left-color: #64b5f6;
+        }
 
-                    <!-- Odontólogo -->
-                    <div class="form-field">
-                        <p:outputLabel value="Odontólogo:" for="odontologo" />
-                        <p:selectOneMenu id="odontologo" value="#{citasBean.odontologoId}" required="true"
-                                         requiredMessage="Seleccione un odontólogo" style="width: 100%">
-                            <f:selectItem itemLabel="Seleccione odontólogo" itemValue="" />
-                            <f:selectItems value="#{citasBean.odontologos}" var="odontologo"
-                                           itemLabel="#{odontologo.nombre}" itemValue="#{odontologo.id}" />
-                        </p:selectOneMenu>
-                        <p:message for="odontologo" display="icon" />
-                    </div>
+        .menu-item.active {
+        background: rgba(255,255,255,0.15);
+        border-left-color: white;
+        }
 
-                    <!-- Tratamiento -->
-                    <div class="form-field">
-                        <p:outputLabel value="Tratamiento:" for="tratamiento" />
-                        <p:selectOneMenu id="tratamiento" value="#{citasBean.tratamientoId}" style="width: 100%">
-                            <f:selectItem itemLabel="Seleccione tratamiento" itemValue="" />
-                            <f:selectItems value="#{citasBean.tratamientos}" var="tratamiento"
-                                           itemLabel="#{tratamiento.nombre}" itemValue="#{tratamiento.id}" />
-                        </p:selectOneMenu>
-                    </div>
+        .menu-item i {
+        font-size: 1.2rem;
+        }
 
-                    <!-- Fecha y Hora -->
-                    <div class="form-field">
-                        <p:outputLabel value="Fecha y Hora:" for="fecha" />
-                        <p:calendar id="fecha" value="#{citasBean.nuevaCita.fechaCita}"
-                                    pattern="dd/MM/yyyy HH:mm" required="true"
-                                    requiredMessage="Seleccione fecha y hora" style="width: 100%"
-                                    showTime="true" timeOnly="false" />
-                        <p:message for="fecha" display="icon" />
-                    </div>
+        .sidebar-footer {
+        padding: 1.5rem;
+        border-top: 2px solid rgba(255,255,255,0.1);
+        }
 
-                    <!-- Estado -->
-                    <div class="form-field">
-                        <p:outputLabel value="Estado:" for="estado" />
-                        <p:selectOneMenu id="estado" value="#{citasBean.nuevaCita.estado}" required="true"
-                                         requiredMessage="Seleccione estado" style="width: 100%">
-                            <f:selectItem itemLabel="Seleccione estado" itemValue="" />
-                            <f:selectItem itemLabel="Programada" itemValue="PROGRAMADA" />
-                            <f:selectItem itemLabel="Completada" itemValue="COMPLETADA" />
-                            <f:selectItem itemLabel="Cancelada" itemValue="CANCELADA" />
-                        </p:selectOneMenu>
-                        <p:message for="estado" display="icon" />
-                    </div>
+        /* Main Content */
+        .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        margin-left: 260px;
+        }
 
-                    <!-- Observaciones -->
-                    <div class="form-field full-width">
-                        <p:outputLabel value="Observaciones:" for="observaciones" />
-                        <p:inputTextarea id="observaciones" value="#{citasBean.nuevaCita.observaciones}"
-                                         rows="3" style="width: 100%" placeholder="Ingrese observaciones adicionales..." />
-                    </div>
+        /* Top Bar */
+        .top-bar {
+        background: white;
+        padding: 1.5rem 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        }
+
+        .top-bar h1 {
+        color: #1976d2;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        }
+
+        /* Content Area */
+        .content-area {
+        padding: 2rem;
+        flex: 1;
+        }
+
+        .card {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+        }
+
+        .section-title {
+        color: #1976d2;
+        border-bottom: 3px solid #1976d2;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        }
+
+        .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+        }
+
+        .form-field {
+        display: flex;
+        flex-direction: column;
+        }
+
+        .form-field label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        }
+
+        .form-actions {
+        text-align: center;
+        margin-top: 1.5rem;
+        }
+
+        .full-width {
+        grid-column: 1 / -1;
+        }
+
+        /* Buttons */
+        .p-button-success {
+        background: linear-gradient(135deg, #1976d2, #2196f3) !important;
+        border: none !important;
+        padding: 0.8rem 2rem !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        }
+
+        .p-button-success:hover {
+        background: linear-gradient(135deg, #1565c0, #1976d2) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(25, 118, 210, 0.4) !important;
+        }
+
+        .p-button-danger {
+        background: linear-gradient(135deg, #f44336, #e53935) !important;
+        border: none !important;
+        }
+
+        .p-button-danger:hover {
+        background: linear-gradient(135deg, #e53935, #d32f2f) !important;
+        }
+
+        .logout-btn {
+        background: linear-gradient(135deg, #f44336, #e53935) !important;
+        width: 100%;
+        border: none !important;
+        }
+
+        /* Table Styles */
+        .p-datatable .p-datatable-thead > tr > th {
+        background: linear-gradient(135deg, #1976d2, #2196f3) !important;
+        color: white !important;
+        font-weight: 600 !important;
+        padding: 1rem !important;
+        }
+
+        .p-datatable .p-datatable-tbody > tr {
+        transition: all 0.3s;
+        }
+
+        .p-datatable .p-datatable-tbody > tr:hover {
+        background: #e3f2fd !important;
+        }
+
+        /* Messages */
+        .ui-messages {
+        margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+        .sidebar {
+        width: 0;
+        overflow: hidden;
+        }
+
+        .main-content {
+        margin-left: 0;
+        }
+
+        .form-grid {
+        grid-template-columns: 1fr;
+        }
+        }
+    </h:outputStylesheet>
+</h:head>
+
+<h:body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>🦷 Sonrisa Sana</h2>
+                <p>Sistema de Gestión</p>
+            </div>
+
+            <div class="sidebar-menu">
+                <h:link outcome="principalrecep.xhtml" styleClass="menu-item">
+                    <i class="pi pi-home"></i>
+                    <span>Inicio</span>
+                </h:link>
+                <h:link outcome="citas.xhtml" styleClass="menu-item">
+                    <i class="pi pi-calendar"></i>
+                    <span>Gestión de Citas</span>
+                </h:link>
+                <h:link outcome="pacientes.xhtml" class="menu-item">
+                    <i class="pi pi-users"></i>
+                    <span>Pacientes</span>
+                </h:link>
+                <div class="menu-item">
+                    <i class="pi pi-user"></i>
+                    <span>Empleados</span>
                 </div>
-
-                <div class="form-actions">
-                    <p:commandButton value="💾 Guardar Cita" action="#{citasBean.guardarCita}"
-                                     update="@form :citasTable :messages" process="@form"
-                                     styleClass="p-button-success" icon="pi pi-save"/>
+                <div class="menu-item">
+                    <i class="pi pi-heart"></i>
+                    <span>Tratamientos</span>
                 </div>
-            </h:form>
+                <div class="menu-item">
+                    <i class="pi pi-shield"></i>
+                    <span>Seguros Médicos</span>
+                </div>
+                <div class="menu-item">
+                    <i class="pi pi-file"></i>
+                    <span>Facturación</span>
+                </div>
+                <div class="menu-item">
+                    <i class="pi pi-upload"></i>
+                    <span>Subir archivos S3</span>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <h:form>
+                    <p:commandButton value="Cerrar Sesión"
+                                     icon="pi pi-sign-out"
+                                     action="#{loginBean.logout}"
+                                     styleClass="logout-btn"/>
+                </h:form>
+            </div>
         </div>
 
-        <!-- Lista de citas -->
-        <div class="card">
-            <h3 class="section-title">📋 Lista de Citas</h3>
-            <p:dataTable id="citasTable" value="#{citasBean.citas}" var="cita"
-                         emptyMessage="No hay citas registradas" style="width: 100%"
-                         paginator="true" rows="10"
-                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                         rowsPerPageTemplate="5,10,15"
-                         styleClass="p-datatable-striped p-datatable-gridlines">
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <h1>
+                    <i class="pi pi-calendar"></i>
+                    Gestión de Citas
+                </h1>
+            </div>
 
-                <p:column headerText="ID" width="80" style="text-align: center;">
-                    <h:outputText value="#{cita.id}" />
-                </p:column>
+            <!-- Content Area -->
+            <div class="content-area">
+                <p:messages id="messages" autoUpdate="true" />
 
-                <p:column headerText="Paciente" sortBy="#{cita.paciente.nombre}">
-                    <h:outputText value="#{cita.paciente.nombre}" />
-                </p:column>
+                <!-- Formulario para nueva cita -->
+                <div class="card">
+                    <h3 class="section-title">
+                        <i class="pi pi-plus-circle"></i>
+                        Nueva Cita
+                    </h3>
+                    <h:form id="citaForm">
+                        <div class="form-grid">
+                            <!-- Paciente -->
+                            <div class="form-field">
+                                <p:outputLabel value="Paciente:" for="paciente" />
+                                <p:selectOneMenu id="paciente" value="#{citasBean.pacienteId}" required="true"
+                                                 requiredMessage="Seleccione un paciente" style="width: 100%">
+                                    <f:selectItem itemLabel="Seleccione paciente" itemValue="" />
+                                    <f:selectItems value="#{citasBean.pacientes}" var="paciente"
+                                                   itemLabel="#{paciente.nombre}" itemValue="#{paciente.id}" />
+                                </p:selectOneMenu>
+                                <p:message for="paciente" display="icon" />
+                            </div>
 
-                <p:column headerText="Odontólogo" sortBy="#{cita.odontologo.nombre}">
-                    <h:outputText value="#{cita.odontologo.nombre}" />
-                </p:column>
+                            <!-- Odontólogo -->
+                            <div class="form-field">
+                                <p:outputLabel value="Odontólogo:" for="odontologo" />
+                                <p:selectOneMenu id="odontologo" value="#{citasBean.odontologoId}" required="true"
+                                                 requiredMessage="Seleccione un odontólogo" style="width: 100%">
+                                    <f:selectItem itemLabel="Seleccione odontólogo" itemValue="" />
+                                    <f:selectItems value="#{citasBean.odontologos}" var="odontologo"
+                                                   itemLabel="#{odontologo.usuario.nombres} #{odontologo.usuario.apellidos}"
+                                                   itemValue="#{odontologo.id}" />
+                                </p:selectOneMenu>
+                                <p:message for="odontologo" display="icon" />
+                            </div>
 
-                <p:column headerText="Tratamiento" sortBy="#{cita.tratamiento.nombre}">
-                    <h:outputText value="#{cita.tratamiento != null ? cita.tratamiento.nombre : 'N/A'}" />
-                </p:column>
+                            <!-- Tratamiento -->
+                            <div class="form-field">
+                                <p:outputLabel value="Tratamiento:" for="tratamiento" />
+                                <p:selectOneMenu id="tratamiento" value="#{citasBean.tratamientoId}" style="width: 100%">
+                                    <f:selectItem itemLabel="Seleccione tratamiento" itemValue="" />
+                                    <f:selectItems value="#{citasBean.tratamientos}" var="tratamiento"
+                                                   itemLabel="#{tratamiento.nombre}" itemValue="#{tratamiento.id}" />
+                                </p:selectOneMenu>
+                            </div>
 
-                <p:column headerText="Fecha" width="180" sortBy="#{cita.fechaCita}">
-                    <!-- APLICACIÓN CORRECTA DEL CONVERTER -->
-                    <h:outputText value="#{cita.fechaCita}">
-                        <f:converter converterId="localDateTimeConverter" />
-                    </h:outputText>
-                </p:column>
+                            <!-- Fecha y Hora -->
+                            <div class="form-field">
+                                <p:outputLabel value="Fecha y Hora:" for="fecha" />
+                                <p:calendar id="fecha" value="#{citasBean.nuevaCita.fechaCita}"
+                                            pattern="dd/MM/yyyy HH:mm" required="true"
+                                            requiredMessage="Seleccione fecha y hora" style="width: 100%"
+                                            showTime="true" timeOnly="false" />
+                                <p:message for="fecha" display="icon" />
+                            </div>
 
-                <p:column headerText="Estado" width="120" sortBy="#{cita.estado}">
-                    <p:tag value="#{cita.estado}"
-                           severity="#{cita.estado == 'PROGRAMADA' ? 'warning' : cita.estado == 'COMPLETADA' ? 'success' : 'danger'}" />
-                </p:column>
+                            <!-- Estado -->
+                            <div class="form-field">
+                                <p:outputLabel value="Estado:" for="estado" />
+                                <p:selectOneMenu id="estado" value="#{citasBean.nuevaCita.estado}" required="true"
+                                                 requiredMessage="Seleccione estado" style="width: 100%">
+                                    <f:selectItem itemLabel="Seleccione estado" itemValue="" />
+                                    <f:selectItem itemLabel="Programada" itemValue="PROGRAMADA" />
+                                    <f:selectItem itemLabel="Completada" itemValue="COMPLETADA" />
+                                    <f:selectItem itemLabel="Cancelada" itemValue="CANCELADA" />
+                                </p:selectOneMenu>
+                                <p:message for="estado" display="icon" />
+                            </div>
 
-                <p:column headerText="Acciones" width="120" styleClass="actions-column">
-                    <p:commandButton icon="pi pi-trash"
-                                     action="#{citasBean.eliminarCita}"
-                                     update="citasTable :messages"
-                                     process="@this"
-                                     styleClass="p-button-danger p-button-outlined p-button-sm"
-                                     title="Eliminar cita">
-                        <f:setPropertyActionListener target="#{citasBean.citaSeleccionada}" value="#{cita}" />
-                    </p:commandButton>
-                </p:column>
-            </p:dataTable>
+                            <!-- Observaciones -->
+                            <div class="form-field full-width">
+                                <p:outputLabel value="Observaciones:" for="observaciones" />
+                                <p:inputTextarea id="observaciones" value="#{citasBean.nuevaCita.observaciones}"
+                                                 rows="3" style="width: 100%" placeholder="Ingrese observaciones adicionales..." />
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <p:commandButton value="Guardar Cita" action="#{citasBean.guardarCita}"
+                                             update="@form :citasTable :messages" process="@form"
+                                             styleClass="p-button-success" icon="pi pi-save"/>
+                        </div>
+                    </h:form>
+                </div>
+
+                <!-- Lista de citas -->
+                <div class="card">
+                    <h3 class="section-title">
+                        <i class="pi pi-list"></i>
+                        Lista de Citas
+                    </h3>
+                    <p:dataTable id="citasTable" value="#{citasBean.citas}" var="cita"
+                                 emptyMessage="No hay citas registradas" style="width: 100%"
+                                 paginator="true" rows="10"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15"
+                                 styleClass="p-datatable-striped p-datatable-gridlines">
+
+                        <p:column headerText="ID" width="80" style="text-align: center;">
+                            <h:outputText value="#{cita.id}" />
+                        </p:column>
+
+                        <p:column headerText="Paciente" sortBy="#{cita.paciente.nombre}">
+                            <h:outputText value="#{cita.paciente.nombre}" />
+                        </p:column>
+
+                        <p:column headerText="Odontólogo" sortBy="#{cita.odontologo.usuario.nombres}">
+                            <h:outputText value="#{cita.odontologo.usuario.nombres} #{cita.odontologo.usuario.apellidos}" />
+                        </p:column>
+
+                        <p:column headerText="Tratamiento" sortBy="#{cita.tratamiento.nombre}">
+                            <h:outputText value="#{cita.tratamiento != null ? cita.tratamiento.nombre : 'N/A'}" />
+                        </p:column>
+
+                        <p:column headerText="Fecha" width="180" sortBy="#{cita.fechaCita}">
+                            <h:outputText value="#{cita.fechaCita}">
+                                <f:converter converterId="localDateTimeConverter" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Estado" width="120" sortBy="#{cita.estado}">
+                            <p:tag value="#{cita.estado}"
+                                   severity="#{cita.estado == 'PROGRAMADA' ? 'warning' : cita.estado == 'COMPLETADA' ? 'success' : 'danger'}" />
+                        </p:column>
+
+                        <p:column headerText="Acciones" width="120" style="text-align: center;">
+                            <p:commandButton icon="pi pi-trash"
+                                             action="#{citasBean.eliminarCita}"
+                                             update="citasTable :messages"
+                                             process="@this"
+                                             styleClass="p-button-danger p-button-outlined p-button-sm"
+                                             title="Eliminar cita">
+                                <f:setPropertyActionListener target="#{citasBean.citaSeleccionada}" value="#{cita}" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
         </div>
-    </ui:define>
-</ui:composition>
+    </div>
+</h:body>
+</html>

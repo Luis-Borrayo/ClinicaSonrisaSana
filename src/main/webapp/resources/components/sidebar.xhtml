@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+<composite:interface>
+    <composite:attribute name="activePage" type="java.lang.String" required="true"/>
+</composite:interface>
+
+<composite:implementation>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="pi pi-heart"></i> Sonrisa Sana</h2>
+            <p>Sistema de Gestión</p>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="#{request.contextPath}/principalrecep.xhtml"
+               class="menu-item #{cc.attrs.activePage == 'inicio' ? 'active' : ''}">
+                <i class="pi pi-home"></i>
+                <span>Inicio</span>
+            </a>
+
+            <a href="#{request.contextPath}/citas.xhtml"
+               class="menu-item #{cc.attrs.activePage == 'citas' ? 'active' : ''}">
+                <i class="pi pi-calendar"></i>
+                <span>Gestión de Citas</span>
+            </a>
+
+            <a href="#{request.contextPath}/pacientes.xhtml"
+               class="menu-item #{cc.attrs.activePage == 'pacientes' ? 'active' : ''}">
+                <i class="pi pi-users"></i>
+                <span>Pacientes</span>
+            </a>
+
+            <a href="#" class="menu-item" onclick="return false;">
+                <i class="pi pi-user"></i>
+                <span>Empleados</span>
+            </a>
+
+            <a href="#" class="menu-item" onclick="return false;">
+                <i class="pi pi-heart"></i>
+                <span>Tratamientos</span>
+            </a>
+
+            <a href="#" class="menu-item" onclick="return false;">
+                <i class="pi pi-shield"></i>
+                <span>Seguros Médicos</span>
+            </a>
+
+            <a href="#" class="menu-item" onclick="return false;">
+                <i class="pi pi-file"></i>
+                <span>Facturación</span>
+            </a>
+
+            <a href="#" class="menu-item" onclick="return false;">
+                <i class="pi pi-upload"></i>
+                <span>Subir archivos S3</span>
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <!-- BOTÓN SIN PRIMEFACES - solo HTML/CSS -->
+            <a href="#{request.contextPath}/logout.xhtml" class="logout-btn-link">
+                <i class="pi pi-sign-out"></i>
+                <span>Cerrar Sesión</span>
+            </a>
+        </div>
+    </div>
+</composite:implementation>
+</html>

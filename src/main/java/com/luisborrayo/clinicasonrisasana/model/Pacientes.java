@@ -1,12 +1,11 @@
 package com.luisborrayo.clinicasonrisasana.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
+import jakarta.validation.constraints.Email;
 import java.time.LocalDate;
+import java.time.Period;
 
 @Entity
 @Table(name = "pacientes")
@@ -18,7 +17,7 @@ public class Pacientes {
 
     @NotNull
     @Column(unique = true, nullable = false, length = 13)
-    private Long dpi;
+    private String dpi; // Cambiado a String para mejor manejo
 
     @NotNull
     @Size(max = 60)
@@ -34,18 +33,19 @@ public class Pacientes {
     @Column(name = "fecha_nacimiento", nullable = false)
     private LocalDate fechaNacimiento;
 
-    @NotNull
-    @Column(nullable = false)
-    private Long edad;
+    // EDAD SE CALCULA AUTOMÁTICAMENTE - NO SE PERSISTE
+    @Transient
+    private Integer edad;
 
     @NotNull
     @Size(max = 20)
     @Column(nullable = false, length = 20)
     private String contacto;
 
-    @NotBlank
-    @Email(message = "Debe ingresar un correo valido")
-    @Column(unique = true, nullable = false)
+    // AGREGADO: Campo correo (si lo necesitas)
+    @Email(message = "Debe ingresar un correo válido")
+    @Size(max = 100)
+    @Column(length = 100)
     private String correo;
 
     @NotNull
@@ -75,7 +75,7 @@ public class Pacientes {
     private Facturas.Seguro seguro;
 
     @NotNull
-    @Column(name = "fecha_creacion", nullable = false)
+    @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDate fechaCreacion;
 
     @NotNull
@@ -84,26 +84,22 @@ public class Pacientes {
 
     public Pacientes() {}
 
-    public Pacientes(Long id, Long dpi, String nombre, String apellido, LocalDate fechaNacimiento,
-                     Long edad, String contacto, String correo, String direccion, String alergias, String condiciones,
-                     String observaciones, Odontologo odontologo, Facturas.Seguro seguro,
-                     LocalDate fechaCreacion, LocalDate fechaEdicion) {
-        this.id = id;
-        this.dpi = dpi;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.fechaNacimiento = fechaNacimiento;
-        this.edad = edad;
-        this.contacto = contacto;
-        this.correo = correo;
-        this.direccion = direccion;
-        this.alergias = alergias;
-        this.condiciones = condiciones;
-        this.observaciones = observaciones;
-        this.odontologo = odontologo;
-        this.seguro = seguro;
-        this.fechaCreacion = fechaCreacion;
-        this.fechaEdicion = fechaEdicion;
+    public Integer getEdad() {
+        if (fechaNacimiento != null) {
+            return Period.between(fechaNacimiento, LocalDate.now()).getYears();
+        }
+        return null;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        fechaCreacion = LocalDate.now();
+        fechaEdicion = LocalDate.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        fechaEdicion = LocalDate.now();
     }
 
     public Long getId() {
@@ -114,11 +110,11 @@ public class Pacientes {
         this.id = id;
     }
 
-    public Long getDpi() {
+    public String getDpi() {
         return dpi;
     }
 
-    public void setDpi(Long dpi) {
+    public void setDpi(String dpi) {
         this.dpi = dpi;
     }
 
@@ -138,6 +134,10 @@ public class Pacientes {
         this.apellido = apellido;
     }
 
+    public String getNombreCompleto() {
+        return nombre + " " + apellido;
+    }
+
     public LocalDate getFechaNacimiento() {
         return fechaNacimiento;
     }
@@ -146,13 +146,7 @@ public class Pacientes {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    public Long getEdad() {
-        return edad;
-    }
-
-    public void setEdad(Long edad) {
-        this.edad = edad;
-    }
+    // NO hay setter para edad - se calcula automáticamente
 
     public String getContacto() {
         return contacto;
@@ -165,6 +159,7 @@ public class Pacientes {
     public String getCorreo() {
         return correo;
     }
+
     public void setCorreo(String correo) {
         this.correo = correo;
     }
@@ -231,5 +226,17 @@ public class Pacientes {
 
     public void setFechaEdicion(LocalDate fechaEdicion) {
         this.fechaEdicion = fechaEdicion;
+    }
+
+    @Override
+    public String toString() {
+        return "Pacientes{" +
+                "id=" + id +
+                ", dpi='" + dpi + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", apellido='" + apellido + '\'' +
+                ", edad=" + getEdad() +
+                ", contacto='" + contacto + '\'' +
+                '}';
     }
 }

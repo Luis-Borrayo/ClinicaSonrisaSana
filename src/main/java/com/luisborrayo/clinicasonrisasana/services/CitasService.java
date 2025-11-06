@@ -4,6 +4,7 @@ import com.luisborrayo.clinicasonrisasana.model.Citas;
 import com.luisborrayo.clinicasonrisasana.repositories.CitasRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
 import java.util.List;
 
 @ApplicationScoped

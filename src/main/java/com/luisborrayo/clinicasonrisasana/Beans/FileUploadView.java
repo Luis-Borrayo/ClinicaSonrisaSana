@@ -1,5 +1,7 @@
-package com.luisborrayo.clinicasonrisasana.beans;
+package com.luisborrayo.clinicasonrisasana.Beans;
 
+import com.luisborrayo.clinicasonrisasana.model.ArchivoS3;
+import com.luisborrayo.clinicasonrisasana.services.S3Service;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
@@ -8,8 +10,6 @@ import jakarta.inject.Named;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
 import org.primefaces.model.file.UploadedFiles;
-import com.luisborrayo.clinicasonrisasana.services.S3Service;
-import com.luisborrayo.clinicasonrisasana.model.ArchivoS3;
 
 import java.io.IOException;
 import java.io.InputStream;

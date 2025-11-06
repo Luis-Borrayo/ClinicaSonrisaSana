@@ -1,10 +1,10 @@
 package com.luisborrayo.clinicasonrisasana.repositories;
 
 import com.luisborrayo.clinicasonrisasana.model.Tratamiento;
-import com.luisborrayo.clinicasonrisasana.repositories.BaseRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+
 import java.util.List;
 
 @ApplicationScoped

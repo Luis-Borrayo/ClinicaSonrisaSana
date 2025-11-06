@@ -1,40 +1,385 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core">
 
 <h:head>
     <title>Panel de Recepción - Clínica Sonrisa Sana</title>
     <meta charset="UTF-8"/>
-    <h:outputStylesheet name="css/dashboard.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%);
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1976d2 0%, #1565c0 100%);
+            color: white;
+            padding: 0;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            background: rgba(0,0,0,0.1);
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+
+        .sidebar-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-left-color: #64b5f6;
+        }
+
+        .menu-item.active {
+            background: rgba(255,255,255,0.15);
+            border-left-color: white;
+        }
+
+        .menu-item i {
+            font-size: 1.2rem;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 2px solid rgba(255,255,255,0.1);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-left: 260px;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info h3 {
+            color: #1976d2;
+            margin-bottom: 0.2rem;
+            font-size: 1.4rem;
+        }
+
+        .user-info p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 2rem;
+            flex: 1;
+        }
+
+        .welcome-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            border-left: 5px solid #1976d2;
+        }
+
+        .welcome-card h2 {
+            color: #1976d2;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-card p {
+            color: #666;
+        }
+
+        /* Action Cards */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(25,118,210,0.2);
+            border-color: #1976d2;
+        }
+
+        .action-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #1976d2, #2196f3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .action-card h3 {
+            color: #333;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .action-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* Buttons */
+        .ui-button {
+            background: linear-gradient(135deg, #1976d2, #2196f3) !important;
+            border: none !important;
+            padding: 0.8rem 2rem !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s !important;
+        }
+
+        .ui-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(25,118,210,0.3) !important;
+        }
+
+        .ui-button:disabled {
+            background: linear-gradient(135deg, #bdbdbd, #9e9e9e) !important;
+            cursor: not-allowed !important;
+            opacity: 0.6;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #f44336, #e53935) !important;
+            width: 100%;
+        }
+
+        /* Logo Area */
+        .logo-area {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .logo-smile {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        .logo-area h1 {
+            color: #1976d2;
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .smile-curve {
+            width: 200px;
+            height: 100px;
+            border-bottom: 5px solid #1976d2;
+            border-radius: 0 0 100px 100px;
+            margin: 0 auto;
+        }
+
+        .ui-growl {
+            top: 20px !important;
+            right: 20px !important;
+        }
+    </style>
 </h:head>
 
-<h:body styleClass="dashboard-body #{loginBean.currentUserRoleLowerCase}">
+<h:body>
     <h:form id="frmRecepcion">
-        <p:growl id="msgs" showDetail="true"/>
+        <p:growl id="msgs" showDetail="true" life="3000"/>
 
-        <div class="header">
-            <h2>Bienvenida, #{loginBean.currentUserFullName}</h2>
-            <p>Rol: #{loginBean.currentUserRole}</p>
-            <p:commandButton value="Cerrar Sesión"
-                             icon="pi pi-sign-out"
-                             action="#{loginBean.logout}"
-                             ajax="false"
-                             styleClass="logout-btn"/>
-        </div>
+        <div class="dashboard-container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h2>🦷 Sonrisa Sana</h2>
+                    <p>Sistema de Gestión</p>
+                </div>
 
-        <p:separator/>
+                <div class="sidebar-menu">
+                    <h:link outcome="principalrecep.xhtml" styleClass="menu-item">
+                        <i class="pi pi-home"></i>
+                        <span>Inicio</span>
+                    </h:link>
+                    <h:link outcome="citas.xhtml" styleClass="menu-item">
+                        <i class="pi pi-calendar"></i>
+                        <span>Gestión de Citas</span>
+                    </h:link>
+                    <h:link outcome="pacientes.xhtml" class="menu-item">
+                        <i class="pi pi-users"></i>
+                        <span>Pacientes</span>
+                    </h:link>
+                    <div class="menu-item">
+                        <i class="pi pi-user"></i>
+                        <span>Empleados</span>
+                    </div>
+                    <div class="menu-item">
+                        <i class="pi pi-heart"></i>
+                        <span>Tratamientos</span>
+                    </div>
+                    <div class="menu-item">
+                        <i class="pi pi-shield"></i>
+                        <span>Seguros Médicos</span>
+                    </div>
+                    <div class="menu-item">
+                        <i class="pi pi-file"></i>
+                        <span>Facturación</span>
+                    </div>
+                    <div class="menu-item">
+                        <i class="pi pi-file"></i>
+                        <span>Subir archivos S3</span>
+                    </div>
+                </div>
 
-        <div class="content">
-            <h3>Panel de Recepción</h3>
+                <div class="sidebar-footer">
+                    <p:commandButton value="Cerrar Sesión"
+                                     icon="pi pi-sign-out"
+                                     action="#{loginBean.logout}"
+                                     styleClass="logout-btn"/>
+                </div>
+            </div>
 
-            <p:button value="Registrar Paciente"
-                      icon="pi pi-user-plus"
-                      outcome="/views/registroPaciente.xhtml"/>
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Top Bar -->
+                <div class="top-bar">
+                    <div class="user-info">
+                        <h3>¡Bienvenida!</h3>
+                        <p>#{loginBean.currentUserFullName} - #{loginBean.currentUserRole}</p>
+                    </div>
+                    <div>
+                        <i class="pi pi-bell" style="font-size: 1.5rem; color: #1976d2; cursor: pointer;"></i>
+                    </div>
+                </div>
 
-            <p:button value="Agendar Cita"
-                      icon="pi pi-calendar-plus"
-                      outcome="/views/citas.xhtml"/>
+                <!-- Content Area -->
+                <div class="content-area">
+                    <div class="welcome-card">
+                        <h2>Panel de Recepción</h2>
+                        <p>Gestiona pacientes y citas desde este panel principal</p>
+                    </div>
+
+                    <div class="action-grid">
+                        <!-- Registrar Paciente Card -->
+                        <div class="action-card">
+                            <div class="action-icon">
+                                <i class="pi pi-user-plus"></i>
+                            </div>
+                            <h3>Registrar Paciente</h3>
+                            <p>Ingresa los datos de un nuevo paciente al sistema</p>
+                            <p:commandButton value="Próximamente"
+                                             icon="pi pi-clock"
+                                             disabled="true"
+                                             styleClass="ui-button-rounded"/>
+                        </div>
+
+                        <!-- Agendar Cita Card -->
+                        <div class="action-card">
+                            <div class="action-icon">
+                                <i class="pi pi-calendar-plus"></i>
+                            </div>
+                            <h3>Agendar Cita</h3>
+                            <p>Programa una nueva cita para un paciente</p>
+                            <p:commandButton value="Próximamente"
+                                             icon="pi pi-clock"
+                                             disabled="true"
+                                             styleClass="ui-button-rounded"/>
+                        </div>
+
+                        <!-- Ver Citas del Día Card -->
+                        <div class="action-card">
+                            <div class="action-icon">
+                                <i class="pi pi-calendar"></i>
+                            </div>
+                            <h3>Citas del Día</h3>
+                            <p>Consulta las citas programadas para hoy</p>
+                            <p:commandButton value="Ver Agenda"
+                                             icon="pi pi-arrow-right"
+                                             disabled="true"
+                                             styleClass="ui-button-rounded"/>
+                        </div>
+                    </div>
+
+                    <!-- Logo Area -->
+                    <div class="logo-area">
+                        <h1>Sonrisa Sana</h1>
+                        <div class="smile-curve"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </h:form>
 </h:body>

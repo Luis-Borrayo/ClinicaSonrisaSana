@@ -1,4 +1,4 @@
-package com.luisborrayo.clinicasonrisasana.beans;
+package com.luisborrayo.clinicasonrisasana.Beans;
 
 import com.luisborrayo.clinicasonrisasana.model.User;
 import com.luisborrayo.clinicasonrisasana.services.UserService;
@@ -39,6 +39,7 @@ public class LoginBean implements Serializable {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ExternalContext externalContext = facesContext.getExternalContext();
 
+        // Validar campos vacíos
         if (usuario == null || usuario.trim().isEmpty()) {
             facesContext.addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -70,6 +71,7 @@ public class LoginBean implements Serializable {
                         new FacesMessage(FacesMessage.SEVERITY_INFO,
                                 "Bienvenido", user.getNombres() + " " + user.getApellidos()));
 
+                // Redirigir según el rol del usuario - CORREGIDO para /views/
                 String contextPath = externalContext.getRequestContextPath();
                 String redirectPage = getRedirectPageByRole(user.getRole());
                 externalContext.redirect(contextPath + redirectPage);
@@ -95,15 +97,18 @@ public class LoginBean implements Serializable {
         }
     }
 
-
+    /**
+     * Determina la página de inicio según el rol del usuario
+     * CORREGIDO: Ahora apunta a /views/ en lugar de raíz
+     */
     private String getRedirectPageByRole(User.Role role) {
         switch (role) {
             case ADMINISTRADOR:
                 return "/principaladmin.xhtml";
             case ODONTOLOGO:
-                return "/principalodontologo.xhtml";
+                return "/principalmedic.xhtml";
             case RECEPCIONISTA:
-                return "/principalrecepcionista.xhtml";
+                return "/principalrecep.xhtml";
             default:
                 return "/login.xhtml";
         }

@@ -4,6 +4,7 @@ import com.luisborrayo.clinicasonrisasana.model.Tratamiento;
 import com.luisborrayo.clinicasonrisasana.repositories.TratamientoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.List;
 

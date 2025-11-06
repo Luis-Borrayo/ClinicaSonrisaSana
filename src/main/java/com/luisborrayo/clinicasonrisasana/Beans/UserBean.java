@@ -1,4 +1,4 @@
-package com.luisborrayo.clinicasonrisasana.beans;
+package com.luisborrayo.clinicasonrisasana.Beans;
 
 import com.luisborrayo.clinicasonrisasana.model.User;
 import com.luisborrayo.clinicasonrisasana.services.UserService;
@@ -14,6 +14,10 @@ import jakarta.validation.Validator;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * Bean para la administración de usuarios (CRUD)
+ * Usado en la página de gestión de usuarios
+ */
 @Named("userBean")
 @ViewScoped
 public class UserBean implements Serializable {
@@ -37,6 +41,9 @@ public class UserBean implements Serializable {
         confirmPassword = "";
     }
 
+    /**
+     * Obtener lista de todos los usuarios
+     */
     public List<User> getList() {
         try {
             return userService.listar();
@@ -49,6 +56,9 @@ public class UserBean implements Serializable {
         }
     }
 
+    /**
+     * Obtener solo usuarios activos
+     */
     public List<User> getListActivos() {
         try {
             return userService.listarActivos();
@@ -58,6 +68,9 @@ public class UserBean implements Serializable {
         }
     }
 
+    /**
+     * Preparar formulario para nuevo usuario
+     */
     public void newUser() {
         clearFacesMessages();
         selected = new User();
@@ -66,6 +79,9 @@ public class UserBean implements Serializable {
         dialogVisible = true;
     }
 
+    /**
+     * Editar usuario existente
+     */
     public void edit(User u) {
         clearFacesMessages();
         this.selected = u;
@@ -73,7 +89,11 @@ public class UserBean implements Serializable {
         dialogVisible = true;
     }
 
+    /**
+     * Guardar usuario (crear o actualizar)
+     */
     public void save() {
+        // Validar confirmación de contraseña
         if (!selected.getPassword().equals(confirmPassword)) {
             FacesContext.getCurrentInstance().addMessage("frmUsers:msgUser",
                     new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -82,6 +102,7 @@ public class UserBean implements Serializable {
             return;
         }
 
+        // Validar con Bean Validation
         Set<ConstraintViolation<User>> violations = validator.validate(selected);
 
         if (!violations.isEmpty()) {
@@ -100,6 +121,7 @@ public class UserBean implements Serializable {
         }
 
         try {
+            // Verificar si el usuario ya existe (solo para nuevos usuarios)
             if (selected.getId() == null) {
                 User existeUsuario = userService.buscarPorUsuario(selected.getUsuario());
                 if (existeUsuario != null) {
@@ -135,6 +157,9 @@ public class UserBean implements Serializable {
         }
     }
 
+    /**
+     * Eliminar usuario permanentemente
+     */
     public void delete(User u) {
         try {
             userService.eliminar(u);
@@ -149,6 +174,9 @@ public class UserBean implements Serializable {
         }
     }
 
+    /**
+     * Desactivar usuario (soft delete)
+     */
     public void desactivar(User u) {
         try {
             userService.desactivar(u);
@@ -163,6 +191,9 @@ public class UserBean implements Serializable {
         }
     }
 
+    /**
+     * Activar usuario
+     */
     public void activar(User u) {
         try {
             u.setActive(true);
@@ -178,7 +209,9 @@ public class UserBean implements Serializable {
         }
     }
 
-
+    /**
+     * Limpiar mensajes de JSF
+     */
     private void clearFacesMessages() {
         FacesContext ctx = FacesContext.getCurrentInstance();
         if (ctx == null) return;
@@ -188,7 +221,9 @@ public class UserBean implements Serializable {
         }
     }
 
-
+    /**
+     * Obtener etiquetas amigables para los campos
+     */
     private String getFieldLabel(String fieldName) {
         Map<String, String> labels = new HashMap<>();
         labels.put("correo", "Correo electrónico");
@@ -201,6 +236,8 @@ public class UserBean implements Serializable {
 
         return labels.getOrDefault(fieldName, fieldName);
     }
+
+    // ==================== GETTERS Y SETTERS ====================
 
     public User getSelected() {
         return selected;
@@ -226,6 +263,9 @@ public class UserBean implements Serializable {
         this.confirmPassword = confirmPassword;
     }
 
+    /**
+     * Obtener todos los roles disponibles para dropdown
+     */
     public User.Role[] getRoles() {
         return User.Role.values();
     }

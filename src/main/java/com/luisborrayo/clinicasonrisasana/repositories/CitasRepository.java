@@ -2,11 +2,11 @@ package com.luisborrayo.clinicasonrisasana.repositories;
 
 import com.luisborrayo.clinicasonrisasana.model.Citas;
 import com.luisborrayo.clinicasonrisasana.model.Odontologo;
-import com.luisborrayo.clinicasonrisasana.repositories.BaseRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+
 import java.time.LocalDateTime;
 import java.util.List;
 

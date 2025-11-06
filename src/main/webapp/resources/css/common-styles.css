@@ -1,0 +1,285 @@
+/* ========================================
+   COMMON STYLES - CLÍNICA SONRISA SANA
+   ======================================== */
+
+/* RESET Y BASE */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+/* DASHBOARD CONTAINER */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* MAIN CONTENT */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-left: 260px;
+}
+
+/* TOP BAR */
+.top-bar {
+    background: white;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-bar h1 {
+    color: #1976d2;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+}
+
+/* CONTENT AREA */
+.content-area {
+    padding: 2rem;
+    flex: 1;
+}
+
+/* CARDS */
+.card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+
+.section-title {
+    color: #1976d2;
+    border-bottom: 3px solid #1976d2;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+}
+
+/* FORMULARIOS */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-field label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+/* SEARCH BAR */
+.search-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.search-bar .form-field {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* BUTTONS - PRIMEFACES OVERRIDES */
+.p-button-success {
+    background: linear-gradient(135deg, #1976d2, #2196f3) !important;
+    border: none !important;
+    padding: 0.8rem 2rem !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+}
+
+.p-button-success:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1565c0, #1976d2) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(25, 118, 210, 0.4) !important;
+}
+
+.p-button-warning {
+    background: linear-gradient(135deg, #ff9800, #fb8c00) !important;
+    border: none !important;
+}
+
+.p-button-warning:hover:not(:disabled) {
+    background: linear-gradient(135deg, #fb8c00, #f57c00) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4) !important;
+}
+
+.p-button-danger {
+    background: linear-gradient(135deg, #f44336, #e53935) !important;
+    border: none !important;
+}
+
+.p-button-danger:hover:not(:disabled) {
+    background: linear-gradient(135deg, #e53935, #d32f2f) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4) !important;
+}
+
+.p-button-secondary {
+    background: linear-gradient(135deg, #757575, #616161) !important;
+    border: none !important;
+}
+
+.p-button-secondary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #616161, #424242) !important;
+}
+
+/* TABLE STYLES */
+.p-datatable .p-datatable-thead > tr > th {
+    background: linear-gradient(135deg, #1976d2, #2196f3) !important;
+    color: white !important;
+    font-weight: 600 !important;
+    padding: 1rem !important;
+}
+
+.p-datatable .p-datatable-tbody > tr {
+    transition: all 0.3s ease;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover {
+    background: #e3f2fd !important;
+    transform: scale(1.01);
+}
+
+/* MESSAGES */
+.ui-messages {
+    margin-bottom: 1rem;
+}
+
+.p-messages {
+    margin-bottom: 1rem;
+}
+
+/* TAGS */
+.p-tag {
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+    }
+
+    .content-area {
+        padding: 1rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        padding: 1.5rem;
+    }
+
+    .top-bar {
+        padding: 1rem;
+    }
+
+    .top-bar h1 {
+        font-size: 1.4rem;
+    }
+
+    .search-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .p-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .section-title {
+        font-size: 1.1rem;
+    }
+
+    .card {
+        padding: 1rem;
+    }
+}
+
+/* LOADING SPINNER */
+.loading-spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #1976d2;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 2rem auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* UTILITIES */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-left { text-align: left; }
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }

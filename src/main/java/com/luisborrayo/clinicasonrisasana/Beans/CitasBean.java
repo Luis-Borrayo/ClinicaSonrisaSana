@@ -1,13 +1,20 @@
-package com.luisborrayo.clinicasonrisasana.beans;
+package com.luisborrayo.clinicasonrisasana.Beans;
 
-import com.luisborrayo.clinicasonrisasana.model.*;
-import com.luisborrayo.clinicasonrisasana.services.*;
+import com.luisborrayo.clinicasonrisasana.model.Citas;
+import com.luisborrayo.clinicasonrisasana.model.Odontologo;
+import com.luisborrayo.clinicasonrisasana.model.Pacientes;
+import com.luisborrayo.clinicasonrisasana.model.Tratamiento;
+import com.luisborrayo.clinicasonrisasana.services.CitasService;
+import com.luisborrayo.clinicasonrisasana.services.OdontologoService;
+import com.luisborrayo.clinicasonrisasana.services.PacienteService;
+import com.luisborrayo.clinicasonrisasana.services.TratamientoService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

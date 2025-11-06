@@ -4,6 +4,7 @@ import com.luisborrayo.clinicasonrisasana.model.Odontologo;
 import com.luisborrayo.clinicasonrisasana.repositories.OdontologoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
 import java.util.List;
 
 @ApplicationScoped

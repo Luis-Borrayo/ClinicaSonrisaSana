@@ -15,43 +15,52 @@ public class UserService {
 
     public UserService() { }
 
+    // Listar todos los usuarios
     public List<User> listar() {
         return userRepository.findAll();
     }
 
+    // Listar solo usuarios activos
     public List<User> listarActivos() {
         return userRepository.findActivos();
     }
 
+    // Guardar o actualizar usuario
     public User guardar(User u) {
         return userRepository.save(u);
     }
 
+    // Eliminar usuario por ID (Integer porque User.id es Integer)
     public void eliminar(Integer id) {
         if (id != null) {
             userRepository.delete(id.longValue()); // Convertir Integer a Long para BaseRepository
         }
     }
 
+    // Eliminar por entidad
     public void eliminar(User user) {
         if (user != null && user.getId() != null) {
             userRepository.delete(user.getId().longValue()); // Convertir Integer a Long
         }
     }
 
+    // Buscar por ID
     public User buscarPorId(Integer id) {
         if (id == null) return null;
         return userRepository.findId(id.longValue()); // Convertir Integer a Long
     }
 
+    // Buscar por usuario
     public User buscarPorUsuario(String usuario) {
         return userRepository.findByUsuario(usuario);
     }
 
+    // Buscar por correo
     public User buscarPorCorreo(String correo) {
         return userRepository.findByCorreo(correo);
     }
 
+    // Autenticar usuario
     public User autenticar(String usuario, String password) {
         User user = userRepository.findByUsuario(usuario);
         if (user != null && user.isActive() && user.getPassword().equals(password)) {
@@ -60,18 +69,22 @@ public class UserService {
         return null;
     }
 
+    // Desactivar usuario (soft delete)
     public void desactivar(User user) {
         userRepository.desactivar(user);
     }
 
+    // Cambiar contraseña
     public void cambiarContrasena(User user, String nuevaContrasena) {
         userRepository.cambiarContrasena(user, nuevaContrasena);
     }
 
+    // Asignar rol
     public void asignarRol(User user, User.Role rol) {
         userRepository.asignarRol(user, rol);
     }
 
+    // Listar usuarios por rol
     public List<User> listarPorRol(User.Role rol) {
         return userRepository.findByRole(rol);
     }
