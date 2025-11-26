@@ -54,7 +54,8 @@
                 <span>Facturación</span>
             </a>
 
-            <a href="#" class="menu-item" onclick="return false;">
+            <a href="#{request.contextPath}/upload.xhtml"
+               class="menu-item #{cc.attrs.activePage == 'upload' ? 'active' : ''}">
                 <i class="pi pi-upload"></i>
                 <span>Subir archivos S3</span>
             </a>

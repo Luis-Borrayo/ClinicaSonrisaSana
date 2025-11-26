@@ -6,40 +6,254 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <ui:define name="content">
-        <h1>📁 Subir Archivos a AWS S3</h1>
-
         <h:outputStylesheet>
-            .card {
-            background: #ffffff;
+            * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            }
+
+            .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            }
+
+            /* Sidebar */
+            .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1976d2 0%, #1565c0 100%);
+            color: white;
+            padding: 0;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            }
+
+            .sidebar-header {
+            padding: 2rem 1.5rem;
+            background: rgba(0,0,0,0.1);
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            }
+
+            .sidebar-header h2 {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+            }
+
+            .sidebar-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            }
+
+            .sidebar-menu {
+            flex: 1;
+            padding: 1rem 0;
+            overflow-y: auto;
+            }
+
+            .menu-item {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            text-decoration: none;
+            }
+
+            .menu-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-left-color: #64b5f6;
+            }
+
+            .menu-item.active {
+            background: rgba(255,255,255,0.15);
+            border-left-color: white;
+            }
+
+            .menu-item i {
+            font-size: 1.2rem;
+            }
+
+            .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 2px solid rgba(255,255,255,0.1);
+            }
+
+            /* Main Content */
+            .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-left: 260px;
+            }
+
+            /* Top Bar */
+            .top-bar {
+            background: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            }
+
+            .user-info h3 {
+            color: #1976d2;
+            margin-bottom: 0.2rem;
+            font-size: 1.4rem;
+            }
+
+            .user-info p {
+            color: #666;
+            font-size: 0.95rem;
+            }
+
+            /* Content Area */
+            .content-area {
             padding: 2rem;
-            box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
-            border-radius: 6px;
+            flex: 1;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%);
+            min-height: calc(100vh - 120px);
+            }
+
+            .welcome-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            border-left: 5px solid #1976d2;
+            }
+
+            .welcome-card h2 {
+            color: #1976d2;
+            margin-bottom: 0.5rem;
+            }
+
+            .welcome-card p {
+            color: #666;
+            }
+
+            /* Action Cards */
+            .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            }
+
+            .action-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            text-align: center;
+            border: 2px solid transparent;
+            }
+
+            .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(25,118,210,0.2);
+            border-color: #1976d2;
+            }
+
+            .action-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #1976d2, #2196f3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: white;
+            }
+
+            .action-card h3 {
+            color: #333;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+            }
+
+            .action-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            }
+
+            /* Buttons */
+            .ui-button {
+            background: linear-gradient(135deg, #1976d2, #2196f3) !important;
+            border: none !important;
+            padding: 0.8rem 2rem !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s !important;
+            }
+
+            .ui-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(25,118,210,0.3) !important;
+            }
+
+            .ui-button-success {
+            background: linear-gradient(135deg, #27ae60, #2ecc71) !important;
+            }
+
+            .ui-button-info {
+            background: linear-gradient(135deg, #3498db, #2980b9) !important;
+            }
+
+            .ui-button-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+            }
+
+            .logout-btn {
+            background: linear-gradient(135deg, #f44336, #e53935) !important;
+            width: 100%;
+            }
+
+            /* Upload Section */
+            .upload-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
             margin-bottom: 2rem;
             }
 
             .section-title {
-            color: #2c3e50;
+            color: #1976d2;
             border-bottom: 2px solid #3498db;
             padding-bottom: 10px;
             margin-bottom: 20px;
+            font-size: 1.4rem;
             }
 
-            .upload-section {
-            padding: 20px;
-            border: 2px solid;
-            margin: 20px 0;
-            background: white;
+            .refresh-section {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 1rem;
+            background: #f8f9fa;
             border-radius: 8px;
             }
 
-            .basic-upload-section {
-            border-color: #27ae60;
-            background: #eafaf1 !important;
-            }
-
-            .files-section {
-            border-color: #9b59b6;
-            background: #f4ecf7 !important;
+            .file-count {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1rem;
             }
 
             .file-icon {
@@ -49,120 +263,293 @@
 
             .file-actions {
             text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
             }
 
             .upload-info {
             margin-top: 10px;
             color: #666;
             font-style: italic;
+            text-align: center;
             }
 
-            .refresh-section {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            /* Data Table Styling */
+            .p-datatable .p-datatable-thead > tr > th {
+            background: linear-gradient(135deg, #1976d2, #2196f3) !important;
+            color: white !important;
+            font-weight: 600;
+            border: none !important;
             }
 
-            .file-count {
-            font-weight: bold;
-            color: #2c3e50;
+            .p-datatable .p-datatable-tbody > tr {
+            transition: background-color 0.3s;
+            }
+
+            .p-datatable .p-datatable-tbody > tr:hover {
+            background-color: #f0f8ff !important;
+            }
+
+            .p-datatable .p-datatable-tbody > tr:nth-child(even) {
+            background-color: #f8f9fa;
+            }
+
+            .p-paginator {
+            background: #f8f9fa !important;
+            border: none !important;
+            border-radius: 0 0 8px 8px;
+            }
+
+            .ui-growl {
+            top: 20px !important;
+            right: 20px !important;
+            }
+
+            .empty-message {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            font-style: italic;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 1rem 0;
+            }
+
+            .empty-message i {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+            display: block;
             }
         </h:outputStylesheet>
 
-        <p:growl id="growl" showDetail="true" life="5000"/>
+        <p:growl id="growl" showDetail="true" life="5000" sticky="false"/>
 
-        <!-- SUBIDA BÁSICA -->
-        <h:form id="basicUploadForm" enctype="multipart/form-data">
-            <div class="upload-section basic-upload-section">
-                <h3 class="section-title">📁 Subir Archivo a AWS S3</h3>
-
-                <p:fileUpload value="#{fileUploadView.file}"
-                              mode="simple"
-                              skinSimple="true"
-                              sizeLimit="10485760"/> <!-- 10MB -->
-
-                <p:commandButton value="🚀 Subir a AWS S3"
-                                 action="#{fileUploadView.upload}"
-                                 ajax="false"
-                                 styleClass="p-button-success"
-                                 style="margin-top: 10px;"/>
-                <p class="upload-info">
-                    Subida simple de archivos (máximo 10MB)
-                </p>
-            </div>
-        </h:form>
-
-        <!-- SECCIÓN: LISTA DE ARCHIVOS EN S3 -->
-        <h:form id="filesForm">
-            <div class="upload-section files-section">
-                <h3 class="section-title">📂 Archivos en el Bucket S3</h3>
-
-                <div class="refresh-section">
-                    <p:commandButton value="🔄 Actualizar Lista"
-                                     action="#{fileUploadView.listarArchivosS3}"
-                                     update="archivosTable :growl"
-                                     styleClass="p-button-info"
-                                     icon="pi pi-refresh"/>
-                    <p:outputLabel value="Total de archivos: #{fileUploadView.totalArchivos}"
-                                   styleClass="file-count"/>
+        <div class="dashboard-container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h2>🦷 Sonrisa Sana</h2>
+                    <p>Sistema de Gestión</p>
                 </div>
 
-                <p:dataTable id="archivosTable" value="#{fileUploadView.archivosS3}" var="archivo"
-                             emptyMessage="No hay archivos en el bucket S3"
-                             paginator="true" rows="10"
-                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                             rowsPerPageTemplate="5,10,15"
-                             styleClass="p-datatable-striped">
+                <div class="sidebar-menu">
+                    <h:link outcome="principalrecep.xhtml" styleClass="menu-item">
+                        <i class="pi pi-home"></i>
+                        <span>Inicio</span>
+                    </h:link>
+                    <h:link outcome="citas.xhtml" styleClass="menu-item">
+                        <i class="pi pi-calendar"></i>
+                        <span>Gestión de Citas</span>
+                    </h:link>
+                    <h:link outcome="pacientes.xhtml" class="menu-item">
+                        <i class="pi pi-users"></i>
+                        <span>Pacientes</span>
+                    </h:link>
+                    <div class="menu-item">
+                        <i class="pi pi-user"></i>
+                        <span>Empleados</span>
+                    </div>
+                    <div class="menu-item">
+                        <i class="pi pi-heart"></i>
+                        <span>Tratamientos</span>
+                    </div>
+                    <div class="menu-item">
+                        <i class="pi pi-shield"></i>
+                        <span>Seguros Médicos</span>
+                    </div>
+                    <div class="menu-item">
+                        <i class="pi pi-file"></i>
+                        <span>Facturación</span>
+                    </div>
+                    <h:link outcome="upload.xhtml" styleClass="menu-item active">
+                        <i class="pi pi-upload"></i>
+                        <span>Subir archivos S3</span>
+                    </h:link>
+                </div>
 
-                    <p:column headerText="Archivo" width="40%" styleClass="file-name-column">
-                        <span class="file-icon">
-                            <h:outputText value="📄" rendered="#{not archivo.folder}"/>
-                            <h:outputText value="📁" rendered="#{archivo.folder}"/>
-                        </span>
-                        <h:outputText value="#{archivo.nombre}"/>
-                    </p:column>
-
-                    <p:column headerText="Tamaño" width="20%" styleClass="file-size-column">
-                        <h:outputText value="#{archivo.tamanioFormateado}" />
-                    </p:column>
-
-                    <p:column headerText="Última Modificación" width="25%" styleClass="file-date-column">
-                        <h:outputText value="#{archivo.fechaModificacion}">
-                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
-                        </h:outputText>
-                    </p:column>
-
-                    <p:column headerText="Acciones" width="15%" style="text-align: center;" styleClass="file-actions-column">
-                        <div class="file-actions">
-                            <!-- Botón para abrir archivo en nueva pestaña -->
-                            <p:commandButton icon="pi pi-external-link"
-                                             action="#{fileUploadView.abrirArchivo(archivo)}"
-                                             styleClass="p-button-info p-button-outlined p-button-sm"
-                                             title="Abrir en nueva pestaña"
-                                             rendered="#{not archivo.folder}">
-                            </p:commandButton>
-
-                            <!-- Botón para descargar archivo -->
-                            <p:commandButton icon="pi pi-download"
-                                             action="#{fileUploadView.descargarArchivo(archivo)}"
-                                             styleClass="p-button-success p-button-outlined p-button-sm"
-                                             title="Descargar archivo"
-                                             rendered="#{not archivo.folder}">
-                            </p:commandButton>
-
-                            <!-- Botón para eliminar archivo -->
-                            <p:commandButton icon="pi pi-trash"
-                                             action="#{fileUploadView.eliminarArchivo}"
-                                             styleClass="p-button-danger p-button-outlined p-button-sm"
-                                             title="Eliminar archivo"
-                                             update="archivosTable :growl">
-                                <f:setPropertyActionListener target="#{fileUploadView.archivoSeleccionado}" value="#{archivo}" />
-                            </p:commandButton>
-                        </div>
-                    </p:column>
-                </p:dataTable>
+                <div class="sidebar-footer">
+                    <p:commandButton value="Cerrar Sesión"
+                                     icon="pi pi-sign-out"
+                                     action="#{loginBean.logout}"
+                                     styleClass="logout-btn"/>
+                </div>
             </div>
-        </h:form>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Top Bar -->
+                <div class="top-bar">
+                    <div class="user-info">
+                        <h3>Gestión de Archivos S3</h3>
+                        <p>#{loginBean.currentUserFullName} - #{loginBean.currentUserRole}</p>
+                    </div>
+                    <div>
+                        <i class="pi pi-bell" style="font-size: 1.5rem; color: #1976d2; cursor: pointer;"></i>
+                    </div>
+                </div>
+
+                <!-- Content Area -->
+                <div class="content-area">
+                    <div class="welcome-card">
+                        <h2>📁 Gestión de Archivos en AWS S3</h2>
+                        <p>Sube, descarga y gestiona archivos en el bucket de Amazon S3 de forma segura</p>
+                    </div>
+
+                    <!-- Action Cards -->
+                    <div class="action-grid">
+                        <!-- Subir Archivos Card -->
+                        <div class="action-card">
+                            <div class="action-icon">
+                                <i class="pi pi-cloud-upload"></i>
+                            </div>
+                            <h3>Subir Archivos</h3>
+                            <p>Carga archivos directamente a tu bucket de AWS S3</p>
+                            <h:form id="basicUploadForm" enctype="multipart/form-data" style="text-align: center;">
+                                <p:fileUpload value="#{fileUploadView.file}"
+                                              mode="simple"
+                                              skinSimple="true"
+                                              sizeLimit="10485760"
+                                              style="margin-bottom: 15px; width: 100%;"/>
+                                <p:commandButton value="Subir a AWS S3"
+                                                 action="#{fileUploadView.upload}"
+                                                 ajax="false"
+                                                 styleClass="ui-button ui-button-success"
+                                                 icon="pi pi-upload"/>
+                            </h:form>
+                            <p class="upload-info">
+                                Máximo 10MB por archivo
+                            </p>
+                        </div>
+
+                        <!-- Gestionar Archivos Card -->
+                        <div class="action-card">
+                            <div class="action-icon">
+                                <i class="pi pi-folder-open"></i>
+                            </div>
+                            <h3>Gestionar Archivos</h3>
+                            <p>Visualiza y administra los archivos en tu bucket S3</p>
+                            <div style="text-align: center; margin-top: 1.5rem;">
+                                <p:commandButton value="Cargar Archivos"
+                                                 action="#{fileUploadView.listarArchivosS3}"
+                                                 update="filesForm"
+                                                 styleClass="ui-button ui-button-info"
+                                                 icon="pi pi-refresh"/>
+                            </div>
+                            <p class="upload-info" style="margin-top: 1rem;">
+                                Total de archivos: #{fileUploadView.totalArchivos}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Sección de archivos -->
+                    <h:form id="filesForm">
+                        <div class="upload-section">
+                            <h3 class="section-title">📂 Archivos en el Bucket S3</h3>
+
+                            <div class="refresh-section">
+                                <p:commandButton value="🔄 Actualizar Lista"
+                                                 action="#{fileUploadView.listarArchivosS3}"
+                                                 update="filesForm"
+                                                 styleClass="ui-button ui-button-info"
+                                                 icon="pi pi-refresh"/>
+                                <p:outputLabel value="Total de archivos: #{fileUploadView.totalArchivos}"
+                                               styleClass="file-count"/>
+                            </div>
+
+                            <!-- Debug info temporal -->
+                            <div style="background: #e3f2fd; padding: 10px; border-radius: 5px; margin: 10px 0; border-left: 4px solid #1976d2;">
+                                <strong>Estado:</strong>
+                                Lista cargada: #{not empty fileUploadView.archivosS3} |
+                                Total archivos: #{fileUploadView.totalArchivos}
+                            </div>
+
+                            <p:dataTable id="archivosTable"
+                                         value="#{fileUploadView.archivosS3}"
+                                         var="archivo"
+                                         emptyMessage="No hay archivos en el bucket S3. Haz clic en 'Actualizar Lista'"
+                                         paginator="true"
+                                         rows="10"
+                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         rowsPerPageTemplate="5,10,15"
+                                         styleClass="p-datatable-striped"
+                                         style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+
+                                <p:column headerText="Archivo" width="40%" styleClass="file-name-column">
+                                    <span class="file-icon">
+                                        <h:outputText value="📄" rendered="#{not archivo.folder}"/>
+                                        <h:outputText value="📁" rendered="#{archivo.folder}"/>
+                                    </span>
+                                    <h:outputText value="#{archivo.nombre}"/>
+                                </p:column>
+
+                                <p:column headerText="Tamaño" width="20%" styleClass="file-size-column">
+                                    <h:outputText value="#{archivo.tamanioFormateado}" />
+                                </p:column>
+
+                                <p:column headerText="Última Modificación" width="25%" styleClass="file-date-column">
+                                    <h:outputText value="#{archivo.fechaModificacion}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column headerText="Acciones" width="15%" styleClass="file-actions-column">
+                                    <div class="file-actions">
+                                        <!-- Botón para abrir archivo en nueva pestaña -->
+                                        <p:commandButton icon="pi pi-external-link"
+                                                         action="#{fileUploadView.abrirArchivo(archivo)}"
+                                                         styleClass="ui-button ui-button-info p-button-outlined p-button-sm"
+                                                         title="Abrir en nueva pestaña"
+                                                         rendered="#{not archivo.folder}">
+                                        </p:commandButton>
+
+                                        <!-- Botón para descargar archivo -->
+                                        <p:commandButton icon="pi pi-download"
+                                                         action="#{fileUploadView.descargarArchivo(archivo)}"
+                                                         styleClass="ui-button ui-button-success p-button-outlined p-button-sm"
+                                                         title="Descargar archivo"
+                                                         rendered="#{not archivo.folder}">
+                                        </p:commandButton>
+
+                                        <!-- Botón para eliminar archivo -->
+                                        <p:commandButton icon="pi pi-trash"
+                                                         action="#{fileUploadView.eliminarArchivo}"
+                                                         update="filesForm"
+                                                         styleClass="ui-button ui-button-danger p-button-outlined p-button-sm"
+                                                         title="Eliminar archivo"
+                                                         onclick="return confirm('¿Estás seguro de eliminar #{archivo.nombre}?')">
+                                            <f:setPropertyActionListener target="#{fileUploadView.archivoSeleccionado}" value="#{archivo}" />
+                                        </p:commandButton>
+                                    </div>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carga automática al iniciar -->
+        <h:outputScript>
+            $(document).ready(function() {
+            // Esperar a que PrimeFaces esté listo y cargar la lista
+            setTimeout(function() {
+            console.log('Cargando lista de archivos automáticamente...');
+            // Disparar el evento de actualización
+            PrimeFaces.ab({
+            source: 'filesForm:refreshBtn',
+            update: 'filesForm',
+            process: 'filesForm'
+            });
+            }, 1000);
+            });
+        </h:outputScript>
+
+        <!-- Botón oculto para carga inicial -->
+        <p:commandButton id="refreshBtn"
+                         action="#{fileUploadView.listarArchivosS3}"
+                         update="filesForm"
+                         style="display: none;"/>
     </ui:define>
 </ui:composition>

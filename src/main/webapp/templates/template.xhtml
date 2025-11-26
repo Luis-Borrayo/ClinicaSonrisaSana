@@ -4,7 +4,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 <h:head>
-    <title>AirOps</title>
+    <title>Clínica Sonrisa Sana</title>
     <style>
         .p-3{padding:1rem}.mb-3{margin-bottom:1rem}.dialog-nice{max-width:760px;width:95vw}
     </style>
@@ -14,11 +14,11 @@
     <!-- IMPORTANTE: el menubar también dentro de FORM -->
     <h:form id="menu">
         <p:menubar styleClass="shadow-2 surface-50 border-round mb-3">
-            <p:menuitem value="" icon="pi pi-home" outcome="/index.xhtml"/>
-            <p:menuitem value="Citas" icon="pi pi-users" outcome="/citas.xhtml"/>
-            <p:menuitem value="Archivos" icon="pi pi-send" outcome="/upload.xhtml"/>
-            <p:menuitem value="Clientes" icon="pi pi-users" outcome="/Clientes.xhtml"/>
-            <p:menuitem value="Odontologos" icon="pi pi-users" />
+            <p:menuitem value="" icon="pi pi-home" outcome="/principalrecep.xhtml"/>
+            <p:menuitem value="" icon="pi pi-home" outcome="/principalmedic.xhtml"/>
+            <p:menuitem value="Citas" icon="pi pi-calendar" outcome="/citas.xhtml"/>
+            <p:menuitem value="Pacientes" icon="pi pi-users" outcome="/pacientes.xhtml"/>
+            <p:menuitem value="Subir Archivos S3" icon="pi pi-upload" outcome="/upload.xhtml"/>
         </p:menubar>
     </h:form>
 

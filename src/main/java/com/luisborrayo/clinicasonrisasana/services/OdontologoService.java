@@ -5,19 +5,62 @@ import com.luisborrayo.clinicasonrisasana.repositories.OdontologoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @ApplicationScoped
 public class OdontologoService {
+
+    private static final Logger LOGGER = Logger.getLogger(OdontologoService.class.getName());
 
     @Inject
     private OdontologoRepository odontologoRepository;
 
     public List<Odontologo> obtenerTodosLosOdontologos() {
-        return odontologoRepository.findAll();
+        try {
+            List<Odontologo> resultado = odontologoRepository.findAll();
+            LOGGER.info("Odontólogos obtenidos: " + resultado.size());
+            return resultado;
+        } catch (Exception e) {
+            LOGGER.severe("Error al obtener odontólogos: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public List<Odontologo> obtenerOdontologosActivos() {
+        try {
+            List<Odontologo> resultado = odontologoRepository.findByActivoTrue();
+            LOGGER.info("Odontólogos activos obtenidos: " + resultado.size());
+            return resultado;
+        } catch (Exception e) {
+            LOGGER.severe("Error al obtener odontólogos activos: " + e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     public Odontologo obtenerOdontologoPorId(Long id) {
-        return odontologoRepository.findId(id);
+        try {
+            return odontologoRepository.findId(id);
+        } catch (Exception e) {
+            LOGGER.severe("Error al obtener odontólogo por ID: " + id + " - " + e.getMessage());
+            return null;
+        }
+    }
+
+    public Odontologo obtenerPorColegiado(String colegiado) {
+        return odontologoRepository.findByColegiado(colegiado);
+    }
+
+    public List<Odontologo> obtenerPorEspecialidad(Odontologo.Especialidad especialidad) {
+        return odontologoRepository.findByEspecialidad(especialidad);
+    }
+
+    public Odontologo guardarOdontologo(Odontologo odontologo) {
+        return odontologoRepository.save(odontologo);
+    }
+
+    public void eliminarOdontologo(Long id) {
+        odontologoRepository.delete(id);
     }
 }

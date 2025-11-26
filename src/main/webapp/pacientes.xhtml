@@ -14,15 +14,11 @@
 </h:head>
 
 <h:body>
-    <!-- TODO EL CONTENIDO EN UN SOLO FORM PRINCIPAL -->
     <h:form id="mainForm">
         <div class="dashboard-container">
-            <!-- Sidebar Component -->
             <comp:sidebar activePage="pacientes"/>
 
-            <!-- Main Content -->
             <div class="main-content">
-                <!-- Top Bar -->
                 <div class="top-bar">
                     <h1>
                         <i class="pi pi-users"></i>
@@ -30,7 +26,6 @@
                     </h1>
                 </div>
 
-                <!-- Content Area -->
                 <div class="content-area">
                     <p:messages id="messages" autoUpdate="true" />
 
@@ -139,17 +134,18 @@
                                 <p:message for="direccion" display="icon" />
                             </div>
 
-                            <!-- Odontólogo -->
+                            <!-- ODONTÓLOGO CORREGIDO -->
                             <div class="form-field">
                                 <p:outputLabel value="Odontólogo:" for="odontologo" />
-                                <p:selectOneMenu id="odontologo" value="#{pacientesBean.odontologoId}"
+                                <p:selectOneMenu id="odontologo" value="#{pacientesBean.nuevoPaciente.odontologo}"
+                                                 converter="odontologoConverter"
                                                  required="true"
                                                  requiredMessage="Seleccione un odontólogo"
                                                  style="width: 100%">
                                     <f:selectItem itemLabel="Seleccione odontólogo" itemValue="#{null}" noSelectionOption="true" />
                                     <f:selectItems value="#{pacientesBean.odontologos}" var="odontologo"
-                                                   itemLabel="#{odontologo.usuario.nombres} #{odontologo.usuario.apellidos}"
-                                                   itemValue="#{odontologo.id}" />
+                                                   itemLabel="#{odontologo.nombre} - #{odontologo.especialidad}"
+                                                   itemValue="#{odontologo}" />
                                 </p:selectOneMenu>
                                 <p:message for="odontologo" display="icon" />
                             </div>
@@ -250,8 +246,9 @@
                                 <h:outputText value="#{paciente.correo}" />
                             </p:column>
 
-                            <p:column headerText="Odontólogo" sortBy="#{paciente.odontologo.usuario.nombres}">
-                                <h:outputText value="#{paciente.odontologo.usuario.nombres} #{paciente.odontologo.usuario.apellidos}" />
+                            <!-- ODONTÓLOGO CORREGIDO EN TABLA -->
+                            <p:column headerText="Odontólogo" sortBy="#{paciente.odontologo.nombre}">
+                                <h:outputText value="#{paciente.odontologo.nombre}" />
                             </p:column>
 
                             <p:column headerText="Seguro" width="120" sortBy="#{paciente.seguro}">
