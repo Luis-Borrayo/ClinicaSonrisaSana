@@ -33,8 +33,8 @@ public class Pacientes {
     @Column(name = "fecha_nacimiento", nullable = false)
     private LocalDate fechaNacimiento;
 
-    // EDAD SE CALCULA AUTOMÁTICAMENTE - NO SE PERSISTE
-    @Transient
+    // AHORA se persistirá la edad en la BD
+    @Column(name = "edad", nullable = false)
     private Integer edad;
 
     @NotNull
@@ -74,32 +74,43 @@ public class Pacientes {
     @Column(name = "seguro", nullable = false)
     private Facturas.Seguro seguro;
 
-    @NotNull
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDate fechaCreacion;
 
-    @NotNull
     @Column(name = "fecha_edicion", nullable = false)
     private LocalDate fechaEdicion;
 
     public Pacientes() {}
 
     public Integer getEdad() {
-        if (fechaNacimiento != null) {
-            return Period.between(fechaNacimiento, LocalDate.now()).getYears();
+        return edad;
+    }
+
+    // setter público para JPA / pruebas
+    public void setEdad(Integer edad) {
+        this.edad = edad;
+    }
+
+    // Método helper para calcular edad a partir de fechaNacimiento
+    public void calcularEdadDesdeFechaNacimiento() {
+        if (this.fechaNacimiento != null) {
+            this.edad = Period.between(this.fechaNacimiento, LocalDate.now()).getYears();
+        } else {
+            this.edad = 0; // o null si prefieres; aquí usamos 0 para compatibilidad NOT NULL
         }
-        return null;
     }
 
     @PrePersist
     protected void onCreate() {
         fechaCreacion = LocalDate.now();
         fechaEdicion = LocalDate.now();
+        calcularEdadDesdeFechaNacimiento();
     }
 
     @PreUpdate
     protected void onUpdate() {
         fechaEdicion = LocalDate.now();
+        calcularEdadDesdeFechaNacimiento();
     }
 
     public Long getId() {

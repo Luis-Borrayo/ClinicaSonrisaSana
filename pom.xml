@@ -97,9 +97,19 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>2.17.2</version>
         </dependency>
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <version>2.0.1</version>
+            <scope>provided</scope>
+        </dependency>
 
-
-
+        <!-- Narayana JTA (Implementación de transacciones) -->
+        <dependency>
+            <groupId>org.jboss.narayana.jta</groupId>
+            <artifactId>narayana-jta</artifactId>
+            <version>5.13.1.Final</version>
+        </dependency>
 
         <!-- ✅ Driver PostgreSQL -->
         <dependency>

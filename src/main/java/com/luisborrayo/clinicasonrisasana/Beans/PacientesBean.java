@@ -38,9 +38,10 @@ public class PacientesBean implements Serializable {
     private List<Pacientes> pacientes;
     private Pacientes nuevoPaciente;
     private Pacientes pacienteSeleccionado;
-    private List<Odontologo> odontologos;
+    private List<Odontologo> odontologos;  // ✅ CORREGIDO: SIN ESPACIO
     private String criterioBusqueda;
     private Facturas.Seguro seguroSeleccionado;
+    private Long odontologoId;
 
     @PostConstruct
     public void init() {
@@ -49,6 +50,10 @@ public class PacientesBean implements Serializable {
         pacienteSeleccionado = new Pacientes();
         cargarPacientes();
         cargarOdontologos();
+
+        // DEBUG ADICIONAL
+        LOGGER.log(Level.INFO, "Odontólogos después de init: {0}",
+                odontologos != null ? odontologos.size() : "NULL");
     }
 
     // ========== MÉTODOS DE NEGOCIO ==========
@@ -59,19 +64,91 @@ public class PacientesBean implements Serializable {
                 new Object[]{nuevoPaciente.getNombre(), nuevoPaciente.getDpi()});
 
         try {
-            // Asignar seguro si se seleccionó
-            if (seguroSeleccionado != null) {
-                nuevoPaciente.setSeguro(seguroSeleccionado);
-                LOGGER.log(Level.INFO, "Seguro asignado: {0}", seguroSeleccionado);
+            LOGGER.log(Level.INFO, "DEBUG valores desde formulario - nombre: {0}, apellido: {1}, direccion: {2}, fechaNacimiento: {3}, contacto: {4}, dpi: {5}",
+                    new Object[]{
+                            nuevoPaciente != null ? nuevoPaciente.getNombre() : "NULL",
+                            nuevoPaciente != null ? nuevoPaciente.getApellido() : "NULL",
+                            nuevoPaciente != null ? nuevoPaciente.getDireccion() : "NULL",
+                            nuevoPaciente != null ? nuevoPaciente.getFechaNacimiento() : "NULL",
+                            nuevoPaciente != null ? nuevoPaciente.getContacto() : "NULL",
+                            nuevoPaciente != null ? nuevoPaciente.getDpi() : "NULL"
+                    });
+
+            FacesContext ctx = FacesContext.getCurrentInstance();
+
+            // Si algún campo crítico viene null, añade mensaje específico conectado al componente (clientId)
+            boolean huboError = false;
+            if (nuevoPaciente == null) {
+                ctx.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Los datos del paciente no llegaron al servidor."));
+                LOGGER.severe("nuevoPaciente == null");
+                return;
+            }
+            if (nuevoPaciente.getApellido() == null || nuevoPaciente.getApellido().trim().isEmpty()) {
+                ctx.addMessage("mainForm:apellido", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Validación apellido", "no debe ser nulo"));
+                LOGGER.warning("apellido nulo");
+                huboError = true;
+            }
+            if (nuevoPaciente.getDireccion() == null || nuevoPaciente.getDireccion().trim().isEmpty()) {
+                ctx.addMessage("mainForm:direccion", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Validación direccion", "no debe ser nulo"));
+                LOGGER.warning("direccion nula");
+                huboError = true;
+            }
+            if (nuevoPaciente.getFechaNacimiento() == null) {
+                ctx.addMessage("mainForm:fechaNacimiento", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Validación fechaNacimiento", "no debe ser nulo"));
+                LOGGER.warning("fechaNacimiento nula");
+                huboError = true;
             }
 
-            // Validaciones
+            if (huboError) {
+                // no continuar con save, ya se mostraron mensajes por componente
+                LOGGER.info("Se detiene guardado por validaciones iniciales (campos nulos)");
+                return;
+            }
+
+            // ✅ VALIDACIÓN 1: Verificar que el odontólogo esté seleccionado
+            if (odontologoId == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                                "Debe seleccionar un odontólogo"));
+                LOGGER.log(Level.WARNING, "Validación fallida: Odontólogo no seleccionado");
+                return;
+            }
+
+            // ✅ VALIDACIÓN 2: Verificar que el seguro esté seleccionado
+            if (seguroSeleccionado == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                                "Debe seleccionar un tipo de seguro"));
+                LOGGER.log(Level.WARNING, "Validación fallida: Seguro no seleccionado");
+                return;
+            }
+
+            // ✅ Asignar seguro (ya validado que no es null)
+            nuevoPaciente.setSeguro(seguroSeleccionado);
+            LOGGER.log(Level.INFO, "Seguro asignado: {0}", seguroSeleccionado);
+
+            // ✅ Buscar y asignar Odontólogo (ya validado que no es null)
+            Odontologo odontologo = odontologoService.obtenerOdontologoPorId(odontologoId);
+            if (odontologo == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                                "El odontólogo seleccionado no existe"));
+                return;
+            }
+
+            nuevoPaciente.setOdontologo(odontologo);
+            String nombreOdontologo = odontologo.getUsuario() != null ?
+                    odontologo.getUsuario().getNombres() + " " + odontologo.getUsuario().getApellidos() :
+                    "Odontólogo " + odontologo.getColegiado();
+            LOGGER.log(Level.INFO, "Odontólogo asignado: {0}", nombreOdontologo);
+
+            // ✅ Validaciones con Bean Validation
             if (!validarPaciente(nuevoPaciente)) {
                 LOGGER.log(Level.WARNING, "Validación fallida para el paciente");
                 return;
             }
 
-            // Verificar si el DPI ya existe (para nuevos pacientes)
+            // ✅ Verificar si el DPI ya existe (para nuevos pacientes)
             if (nuevoPaciente.getId() == null && pacienteService.existeDpi(nuevoPaciente.getDpi())) {
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
@@ -80,7 +157,7 @@ public class PacientesBean implements Serializable {
                 return;
             }
 
-            // Verificar DPI para edición (excluyendo el paciente actual)
+            // ✅ Verificar DPI para edición (excluyendo el paciente actual)
             if (nuevoPaciente.getId() != null &&
                     pacienteService.existeDpiExcluyendo(nuevoPaciente.getDpi(), nuevoPaciente.getId())) {
                 FacesContext.getCurrentInstance().addMessage(null,
@@ -90,23 +167,28 @@ public class PacientesBean implements Serializable {
                 return;
             }
 
-            // Guardar paciente
+            // ✅ Guardar paciente
+            LOGGER.log(Level.INFO, "💾 Intentando guardar paciente en la base de datos...");
             Pacientes pacienteGuardado = pacienteService.save(nuevoPaciente);
 
-            // Limpiar formulario
-            limpiarFormulario();
-
-            // Recargar lista
-            cargarPacientes();
-
-            // Mensaje de éxito
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "Éxito",
-                            "Paciente " + pacienteGuardado.getNombreCompleto() + " guardado correctamente"));
+            if (pacienteGuardado == null || pacienteGuardado.getId() == null) {
+                throw new RuntimeException("El paciente no se guardó correctamente");
+            }
 
             LOGGER.log(Level.INFO, "✅ Paciente guardado exitosamente - ID: {0}, Nombre: {1}",
                     new Object[]{pacienteGuardado.getId(), pacienteGuardado.getNombreCompleto()});
+
+            // ✅ Limpiar formulario
+            limpiarFormulario();
+
+            // ✅ Recargar lista
+            cargarPacientes();
+
+            // ✅ Mensaje de éxito
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO,
+                            "Éxito",
+                            "Paciente " + pacienteGuardado.getNombreCompleto() + " guardado correctamente con ID: " + pacienteGuardado.getId()));
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "❌ Error al guardar paciente", e);
@@ -124,15 +206,23 @@ public class PacientesBean implements Serializable {
 
                 // Asignar seguro
                 this.seguroSeleccionado = pacienteSeleccionado.getSeguro();
+                //Asigna odontologo
+                if (pacienteSeleccionado.getOdontologo() != null) {
+                    this.odontologoId = pacienteSeleccionado.getOdontologo().getId();
+                }
 
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_INFO, "Edición",
                                 "Editando paciente: " + pacienteSeleccionado.getNombreCompleto()));
 
                 LOGGER.log(Level.INFO, "✅ Preparado para editar paciente: {0}", pacienteSeleccionado.getNombreCompleto());
-                LOGGER.log(Level.INFO, "Odontólogo asignado: {0}",
-                        pacienteSeleccionado.getOdontologo() != null ?
-                                pacienteSeleccionado.getOdontologo().getNombre() : "Ninguno");
+                String odontologoInfo = pacienteSeleccionado.getOdontologo() != null ?
+                        (pacienteSeleccionado.getOdontologo().getUsuario() != null ?
+                                pacienteSeleccionado.getOdontologo().getUsuario().getNombres() + " " +
+                                        pacienteSeleccionado.getOdontologo().getUsuario().getApellidos() :
+                                "Colegiado: " + pacienteSeleccionado.getOdontologo().getColegiado()) :
+                        "Ninguno";
+                LOGGER.log(Level.INFO, "Odontólogo asignado: {0}", odontologoInfo);
             } else {
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia",
@@ -215,32 +305,30 @@ public class PacientesBean implements Serializable {
     private boolean validarPaciente(Pacientes paciente) {
         LOGGER.log(Level.INFO, "=== VALIDANDO PACIENTE ===");
 
-        // Validación con Bean Validation
         Set<ConstraintViolation<Pacientes>> violations = validator.validate(paciente);
         if (!violations.isEmpty()) {
-            for (ConstraintViolation<Pacientes> violation : violations) {
+            // Agrupar por propiedad para no spamear el usuario si hay muchas violaciones en la misma propiedad
+            Map<String, StringBuilder> mensajesPorCampo = new LinkedHashMap<>();
+            for (ConstraintViolation<Pacientes> v : violations) {
+                String property = v.getPropertyPath().toString();
+                String message = v.getMessage();
+
+                mensajesPorCampo
+                        .computeIfAbsent(property, k -> new StringBuilder())
+                        .append(message).append("; ");
+
+                LOGGER.log(Level.WARNING, "Violación: campo={0} mensaje={1}", new Object[]{property, message});
+            }
+
+            // Enviar un FacesMessage por cada campo (así aparecen en p:messages)
+            for (Map.Entry<String, StringBuilder> e : mensajesPorCampo.entrySet()) {
+                String campo = e.getKey();
+                String texto = e.getValue().toString();
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                "Validación", violation.getMessage()));
-                LOGGER.log(Level.WARNING, "Violación de validación: {0}", violation.getMessage());
+                                "Validación " + campo, texto));
             }
-            return false;
-        }
 
-        // Validaciones adicionales
-        if (paciente.getOdontologo() == null) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Validación",
-                            "Debe seleccionar un odontólogo"));
-            LOGGER.log(Level.WARNING, "Validación fallida: Odontólogo no seleccionado");
-            return false;
-        }
-
-        if (paciente.getSeguro() == null) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Validación",
-                            "Debe seleccionar un tipo de seguro"));
-            LOGGER.log(Level.WARNING, "Validación fallida: Seguro no seleccionado");
             return false;
         }
 
@@ -248,15 +336,18 @@ public class PacientesBean implements Serializable {
         return true;
     }
 
+
     private void limpiarFormulario() {
         LOGGER.log(Level.INFO, "Limpiando formulario");
         nuevoPaciente = new Pacientes();
         pacienteSeleccionado = new Pacientes();
         seguroSeleccionado = null;
+        odontologoId = null;
     }
 
     public void cargarPacientes() {
         try {
+            LOGGER.log(Level.INFO, "=== CARGANDO PACIENTES ===");
             pacientes = pacienteService.obtenerTodosLosPacientes();
             if (pacientes == null) {
                 pacientes = new ArrayList<>();
@@ -274,25 +365,51 @@ public class PacientesBean implements Serializable {
 
     public void cargarOdontologos() {
         try {
-            odontologos = odontologoService.obtenerTodosLosOdontologos();
-            if (odontologos == null) {
-                odontologos = new ArrayList<>();
-                LOGGER.warning("La lista de odontólogos es null, inicializando lista vacía");
-            }
-            LOGGER.log(Level.INFO, "✅ Odontólogos cargados: {0}", odontologos.size());
+            LOGGER.log(Level.INFO, "=== INICIANDO CARGA DE ODONTÓLOGOS ===");
 
-            // DEBUG: Mostrar odontólogos en consola
-            for (Odontologo odonto : odontologos) {
-                LOGGER.log(Level.INFO, "   - {0} ({1}) - Activo: {2}",
-                        new Object[]{
-                                odonto.getNombre(),
-                                odonto.getEspecialidad(),
-                                odonto.getActivo()
-                        });
+            // Verificar que el servicio no sea null
+            if (odontologoService == null) {
+                LOGGER.severe("❌ OdontologoService es NULL");
+                odontologos = new ArrayList<>();
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error Crítico",
+                                "El servicio de odontólogos no está inicializado"));
+                return;
+            }
+
+            LOGGER.log(Level.INFO, "✅ OdontologoService está inicializado");
+
+            // Intentar obtener los odontólogos
+            odontologos = odontologoService.obtenerTodosLosOdontologos();
+
+            if (odontologos == null) {
+                LOGGER.warning("⚠️ La lista de odontólogos es null, inicializando lista vacía");
+                odontologos = new ArrayList<>();
+            } else {
+                LOGGER.log(Level.INFO, "✅ Odontólogos cargados: {0}", odontologos.size());
+
+                // DEBUG: Mostrar cada odontólogo
+                if (odontologos.isEmpty()) {
+                    LOGGER.warning("⚠️ No hay odontólogos en la base de datos");
+                    FacesContext.getCurrentInstance().addMessage(null,
+                            new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia",
+                                    "No hay odontólogos registrados en el sistema"));
+                } else {
+                    for (Odontologo odonto : odontologos) {
+                        LOGGER.log(Level.INFO, "   📋 ID: {0} - {1} ({2}) - Activo: {3}",
+                                new Object[]{
+                                        odonto.getId(),
+                                        odonto.getNombreCompleto(),
+                                        odonto.getEspecialidad(),
+                                        odonto.getActivo()
+                                });
+                    }
+                }
             }
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "❌ Error al cargar odontólogos", e);
+            e.printStackTrace();
             odontologos = new ArrayList<>();
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
@@ -336,7 +453,11 @@ public class PacientesBean implements Serializable {
     }
 
     public List<Odontologo> getOdontologos() {
+        LOGGER.log(Level.INFO, "🔍 getOdontologos() llamado - Lista: {0}",
+                odontologos != null ? odontologos.size() + " elementos" : "NULL");
+
         if (odontologos == null) {
+            LOGGER.warning("⚠️ Lista de odontólogos es NULL, cargando...");
             cargarOdontologos();
         }
         return odontologos;
@@ -364,5 +485,13 @@ public class PacientesBean implements Serializable {
 
     public Facturas.Seguro[] getSeguros() {
         return Facturas.Seguro.values();
+    }
+
+    public Long getOdontologoId() {
+        return odontologoId;
+    }
+
+    public void setOdontologoId(Long odontologoId) {
+        this.odontologoId = odontologoId;
     }
 }

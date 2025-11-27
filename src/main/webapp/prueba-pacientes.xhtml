@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Prueba Guardar Paciente</title>
+</h:head>
+
+<h:body>
+
+    <h:form id="mainForm">
+
+        <h2>Prueba Guardar Paciente</h2>
+
+        <!-- Mensajes globales y por campo -->
+        <p:messages id="messages" autoUpdate="true" showSummary="true" showDetail="true"/>
+
+        <p:panelGrid columns="2" style="width:420px">
+
+            <h:outputLabel for="dpi" value="DPI:"/>
+            <p:inputText id="dpi"
+                         value="#{pacientesBean.nuevoPaciente.dpi}"
+                         required="true"
+                         requiredMessage="DPI obligatorio"/>
+
+            <h:outputLabel for="nombre" value="Nombre:"/>
+            <p:inputText id="nombre"
+                         value="#{pacientesBean.nuevoPaciente.nombre}"
+                         required="true"
+                         requiredMessage="Nombre obligatorio"/>
+
+            <!-- AÑADIDO: Apellido (el campo que faltaba) -->
+            <h:outputLabel for="apellido" value="Apellido:"/>
+            <p:inputText id="apellido"
+                         value="#{pacientesBean.nuevoPaciente.apellido}"
+                         required="true"
+                         requiredMessage="Apellido obligatorio"/>
+
+            <h:outputLabel for="fecha" value="Fecha nacimiento:"/>
+            <p:calendar id="fecha"
+                        value="#{pacientesBean.nuevoPaciente.fechaNacimiento}"
+                        pattern="dd/MM/yyyy"
+                        converter="localDateConverter"
+                        required="true"
+                        requiredMessage="Fecha requerida"/>
+
+            <h:outputLabel for="contacto" value="Teléfono:"/>
+            <p:inputText id="contacto"
+                         value="#{pacientesBean.nuevoPaciente.contacto}"
+                         required="true"
+                         requiredMessage="Teléfono obligatorio"/>
+
+            <h:outputLabel for="correo" value="Correo:"/>
+            <p:inputText id="correo"
+                         value="#{pacientesBean.nuevoPaciente.correo}"
+                         validatorMessage="Correo inválido">
+                <f:validateRegex pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" />
+            </p:inputText>
+
+        </p:panelGrid>
+
+        <br/>
+
+        <p:panelGrid columns="2" style="width:420px">
+
+            <h:outputLabel for="odontologo" value="Odontólogo:"/>
+            <p:selectOneMenu id="odontologo"
+                             value="#{pacientesBean.odontologoId}"
+                             required="true"
+                             requiredMessage="Seleccione un odontólogo">
+                <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}" noSelectionOption="true"/>
+                <f:selectItems value="#{pacientesBean.odontologos}"
+                               var="od"
+                               itemLabel="#{od.nombreCompleto}"
+                               itemValue="#{od.id}"/>
+            </p:selectOneMenu>
+
+            <h:outputLabel for="seguro" value="Seguro:"/>
+            <p:selectOneMenu id="seguro"
+                             value="#{pacientesBean.seguroSeleccionado}"
+                             required="true"
+                             requiredMessage="Seleccione un seguro">
+                <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}" noSelectionOption="true"/>
+                <f:selectItems value="#{pacientesBean.seguros}"/>
+            </p:selectOneMenu>
+
+            <!-- AÑADIDO: Dirección (el otro campo que faltaba) -->
+            <h:outputLabel for="direccion" value="Dirección:"/>
+            <p:inputTextarea id="direccion"
+                             value="#{pacientesBean.nuevoPaciente.direccion}"
+                             rows="3"
+                             maxlength="255"
+                             required="true"
+                             requiredMessage="Dirección obligatoria"
+                             style="width:100%"/>
+
+            <h:outputLabel for="alergias" value="Alergias:"/>
+            <p:inputText id="alergias"
+                         value="#{pacientesBean.nuevoPaciente.alergias}" />
+
+        </p:panelGrid>
+
+        <br/>
+
+        <!-- Botones: AJAX para pruebas, NO-AJAX para comprobar full submit -->
+        <p:commandButton id="btnGuardarAjax"
+                         value="Guardar (AJAX)"
+                         action="#{pacientesBean.guardarPaciente}"
+                         update="messages tabla"
+                         process="@form"
+                         icon="pi pi-save"/>
+
+        <p:commandButton id="btnGuardarNoAjax"
+                         value="Guardar (NO AJAX)"
+                         ajax="false"
+                         action="#{pacientesBean.guardarPaciente}"
+                         icon="pi pi-save"
+                         style="margin-left:10px"/>
+
+        <br/><br/>
+
+        <p:dataTable id="tabla"
+                     value="#{pacientesBean.pacientes}"
+                     var="p"
+                     rows="10"
+                     style="width:700px">
+
+            <p:column headerText="ID" width="60">
+                <h:outputText value="#{p.id}"/>
+            </p:column>
+
+            <p:column headerText="Nombre">
+                <h:outputText value="#{p.nombre} #{p.apellido}"/>
+            </p:column>
+
+            <p:column headerText="DPI">
+                <h:outputText value="#{p.dpi}"/>
+            </p:column>
+
+            <p:column headerText="Odontólogo">
+                <h:outputText value="#{p.odontologo != null ? p.odontologo.nombreCompleto : ''}"/>
+            </p:column>
+
+            <p:column headerText="Dirección">
+                <h:outputText value="#{p.direccion}"/>
+            </p:column>
+
+        </p:dataTable>
+
+    </h:form>
+
+</h:body>
+</html>

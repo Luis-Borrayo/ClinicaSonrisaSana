@@ -2,10 +2,8 @@ package com.luisborrayo.clinicasonrisasana.repositories;
 
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public abstract class BaseRepository<T, ID> {
 
@@ -14,68 +12,119 @@ public abstract class BaseRepository<T, ID> {
 
     protected abstract Class<T> entity();
 
-    public void tx(Consumer<EntityManager> work) {
-        EntityTransaction tx = em.getTransaction();
+    public T save(T entity) {
         try {
-            tx.begin();
-            work.accept(em);
-            tx.commit();
-        } catch (RuntimeException ex) {
-            if (tx.isActive()) {
-                tx.rollback();
+            // Verificar si es nuevo o actualización
+            Object id = em.getEntityManagerFactory()
+                    .getPersistenceUnitUtil()
+                    .getIdentifier(entity);
+
+            // Iniciar transacción manualmente
+            if (!em.getTransaction().isActive()) {
+                em.getTransaction().begin();
             }
-            throw ex;
+
+            T result;
+            if (id == null) {
+                // Nuevo registro
+                em.persist(entity);
+                em.flush();
+                result = entity;
+            } else {
+                // Actualizar registro existente
+                result = em.merge(entity);
+                em.flush();
+            }
+
+            // Commit de la transacción
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().commit();
+            }
+
+            System.out.println("✅ Entidad guardada exitosamente: " + entity.getClass().getSimpleName());
+            return result;
+
+        } catch (Exception e) {
+            // Rollback en caso de error
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            System.err.println("❌ Error en save(): " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error al guardar la entidad: " + e.getMessage(), e);
         }
     }
 
-    public T save(T e) {
-        tx(entityManager -> {
-            Object id = entityManager.getEntityManagerFactory()
-                    .getPersistenceUnitUtil()
-                    .getIdentifier(e);
-            if (id == null) {
-                entityManager.persist(e);   // nuevo
-            } else {
-                entityManager.merge(e);     // existente
-            }
-        });
-        return e;
-    }
-
     public T findId(ID id) {
-        return em.find(entity(), id);
+        try {
+            return em.find(entity(), id);
+        } catch (Exception e) {
+            System.err.println("❌ Error en findId(): " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void update(T entity) {
         try {
-            em.getTransaction().begin();
+            if (!em.getTransaction().isActive()) {
+                em.getTransaction().begin();
+            }
+
             em.merge(entity);
-            em.getTransaction().commit();
+            em.flush();
+
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().commit();
+            }
+
+            System.out.println("✅ Entidad actualizada exitosamente");
+
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new RuntimeException("Error al actualizar entidad: " + e.getMessage(), e);
+            System.err.println("❌ Error en update(): " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error al actualizar la entidad: " + e.getMessage(), e);
         }
     }
 
     public void delete(ID id) {
         try {
-            em.getTransaction().begin();
+            if (!em.getTransaction().isActive()) {
+                em.getTransaction().begin();
+            }
+
             T entity = em.find(entity(), id);
             if (entity != null) {
                 em.remove(entity);
+                em.flush();
             }
-            em.getTransaction().commit();
+
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().commit();
+            }
+
+            System.out.println("✅ Entidad eliminada exitosamente");
+
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new RuntimeException("Error al eliminar entidad: " + e.getMessage(), e);
+            System.err.println("❌ Error en delete(): " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error al eliminar la entidad: " + e.getMessage(), e);
         }
     }
 
     public List<T> findAll() {
-        return em.createQuery("FROM " + entity().getSimpleName(), entity()).getResultList();
+        try {
+            return em.createQuery("FROM " + entity().getSimpleName(), entity()).getResultList();
+        } catch (Exception e) {
+            System.err.println("❌ Error en findAll(): " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error al obtener todas las entidades: " + e.getMessage(), e);
+        }
     }
 }
