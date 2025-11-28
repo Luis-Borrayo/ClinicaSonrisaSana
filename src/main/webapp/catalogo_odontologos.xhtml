@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core">
+
+<h:head>
+    <title>Catálogo de Odontólogos</title>
+</h:head>
+
+<h:body>
+
+    <h2>Listado de Odontólogos</h2>
+
+    <p:dataTable value="#{catalogoOdontologosBean.odontologos}" var="o" style="width:90%">
+
+        <p:column headerText="ID">
+            <h:outputText value="#{o.id}" />
+        </p:column>
+
+        <p:column headerText="Nombre">
+            <h:outputText value="#{o.nombre}" />
+        </p:column>
+
+        <p:column headerText="Colegiado">
+            <h:outputText value="#{o.colegiado}" />
+        </p:column>
+
+        <p:column headerText="Especialidad">
+            <h:outputText value="#{o.especialidad}" />
+        </p:column>
+
+        <p:column headerText="Antigüedad">
+            <h:outputText value="#{o.antiguedad}" />
+        </p:column>
+
+    </p:dataTable>
+
+</h:body>
+</html>

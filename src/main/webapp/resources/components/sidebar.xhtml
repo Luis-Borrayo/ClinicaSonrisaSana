@@ -16,6 +16,7 @@
         </div>
 
         <div class="sidebar-menu">
+
             <a href="#{request.contextPath}/principalrecep.xhtml"
                class="menu-item #{cc.attrs.activePage == 'inicio' ? 'active' : ''}">
                 <i class="pi pi-home"></i>
@@ -34,7 +35,6 @@
                 <span>Pacientes</span>
             </a>
 
-
             <a href="#" class="menu-item" onclick="return false;">
                 <i class="pi pi-user"></i>
                 <span>Empleados</span>
@@ -45,9 +45,18 @@
                 <span>Tratamientos</span>
             </a>
 
-            <a href="#" class="menu-item" onclick="return false;">
+            <!-- ✅ NUEVO: LINK A CATÁLOGO DE SEGUROS -->
+            <a href="#{request.contextPath}/catalogo_seguros.xhtml"
+               class="menu-item #{cc.attrs.activePage == 'seguros' ? 'active' : ''}">
                 <i class="pi pi-shield"></i>
                 <span>Seguros Médicos</span>
+            </a>
+
+            <!-- ✅ NUEVO: LINK A CATÁLOGO DE ODONTÓLOGOS -->
+            <a href="#{request.contextPath}/catalogo_odontologos.xhtml"
+               class="menu-item #{cc.attrs.activePage == 'odontologos' ? 'active' : ''}">
+                <i class="pi pi-user-plus"></i>
+                <span>Odontólogos</span>
             </a>
 
             <a href="#" class="menu-item" onclick="return false;">
@@ -63,7 +72,6 @@
         </div>
 
         <div class="sidebar-footer">
-            <!-- BOTÓN SIN PRIMEFACES - solo HTML/CSS -->
             <a href="#{request.contextPath}/logout.xhtml" class="logout-btn-link">
                 <i class="pi pi-sign-out"></i>
                 <span>Cerrar Sesión</span>

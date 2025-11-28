@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core">
+
+<h:head>
+    <title>Catálogo de Seguros</title>
+</h:head>
+
+<h:body>
+    <h2>Catálogo de Seguros Médicos</h2>
+
+    <p:dataTable value="#{catalogoSegurosBean.seguros}" var="seguro" style="width:400px">
+        <p:column headerText="Seguro">
+            <h:outputText value="#{seguro}" />
+        </p:column>
+    </p:dataTable>
+
+</h:body>
+</html>
