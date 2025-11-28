@@ -19,7 +19,7 @@ public class User {
     private Integer id;
 
     @NotBlank
-    @Email(message = "Debe ingresar un correo valido")
+    @Email(message = "Debe ingresar un correo valid o")
     @Column(unique = true, nullable = false)
     private String correo;
 

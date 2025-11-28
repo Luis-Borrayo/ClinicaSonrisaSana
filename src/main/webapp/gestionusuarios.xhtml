@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gestión de Usuarios</title>
+</h:head>
+
+<h:body>
+
+    <h:form id="frmUsers">
+
+        <!-- MESSAGES -->
+        <p:messages id="msgUser" closable="true" />
+
+        <h2>Gestión de Usuarios</h2>
+
+        <!-- BOTÓN NUEVO -->
+        <p:commandButton value="Nuevo Usuario"
+                         icon="pi pi-plus"
+                         styleClass="p-button-success"
+                         actionListener="#{userBean.newUser}"
+                         update=":dlgUserForm"
+                         oncomplete="PF('dlgUser').show();" />
+
+        <br/><br/>
+
+        <!-- TABLA DE USUARIOS -->
+        <p:dataTable id="tblUsers"
+                     value="#{userBean.list}"
+                     var="u"
+                     paginator="true"
+                     rows="10"
+                     responsiveLayout="scroll">
+
+            <p:column headerText="ID" style="width:70px;">
+                #{u.id}
+            </p:column>
+
+            <p:column headerText="Usuario">
+                #{u.usuario}
+            </p:column>
+
+            <p:column headerText="Nombre completo">
+                #{u.nombres} #{u.apellidos}
+            </p:column>
+
+            <p:column headerText="Correo">
+                #{u.correo}
+            </p:column>
+
+            <p:column headerText="Rol">
+                #{u.role}
+            </p:column>
+
+            <p:column headerText="Estado">
+            <span style="font-weight:bold; color:#{u.active ? 'green' : 'red'};">
+                #{u.active ? 'ACTIVO' : 'INACTIVO'}
+            </span>
+            </p:column>
+
+            <!-- ACCIONES -->
+            <p:column headerText="Acciones" style="text-align:center; width:200px;">
+
+                <!-- EDITAR -->
+                <p:commandButton icon="pi pi-pencil"
+                                 styleClass="p-button-warning p-mr-2"
+                                 actionListener="#{userBean.edit(u)}"
+                                 update=":dlgUserForm"
+                                 oncomplete="PF('dlgUser').show();" />
+
+                <!-- ACTIVAR/DESACTIVAR -->
+                <p:commandButton
+                        icon="#{u.active ? 'pi pi-ban' : 'pi pi-check-circle'}"
+                        styleClass="#{u.active ? 'p-button-secondary' : 'p-button-success'} p-mr-2"
+                        actionListener="#{u.active ? userBean.desactivar(u) : userBean.activar(u)}"
+                        update="frmUsers:tblUsers frmUsers:msgUser" />
+
+                <!-- ELIMINAR -->
+                <p:commandButton icon="pi pi-trash"
+                                 styleClass="p-button-danger"
+                                 actionListener="#{userBean.delete(u)}"
+                                 update="frmUsers"
+                                 onclick="return confirm('¿Eliminar usuario permanentemente?');" />
+
+            </p:column>
+        </p:dataTable>
+
+    </h:form>
+
+    <!-- DIALOGO PARA CREAR/EDITAR USUARIO -->
+    <p:dialog id="dlgUser"
+              widgetVar="dlgUser"
+              header="Datos del Usuario"
+              modal="true"
+              responsive="true"
+              closable="true"
+              resizable="false">
+
+        <h:form id="dlgUserForm">
+
+            <p:messages autoUpdate="true" />
+
+            <p:panelGrid columns="2" columnClasses="label,value" styleClass="p-fluid">
+
+                <p:outputLabel value="Nombres:" for="nombres" />
+                <p:inputText id="nombres" value="#{userBean.selected.nombres}" required="true" />
+
+                <p:outputLabel value="Apellidos:" for="apellidos" />
+                <p:inputText id="apellidos" value="#{userBean.selected.apellidos}" required="true" />
+
+                <p:outputLabel value="Correo:" for="correo" />
+                <p:inputText id="correo" value="#{userBean.selected.correo}" required="true" />
+
+                <p:outputLabel value="Usuario:" for="usuario" />
+                <p:inputText id="usuario" value="#{userBean.selected.usuario}" required="true" />
+
+                <p:outputLabel value="Rol:" for="role" />
+                <p:selectOneMenu id="role"
+                                 value="#{userBean.selected.role}"
+                                 style="width:100%">
+                    <f:selectItems value="#{userBean.roles}" var="r"
+                                   itemLabel="#{r}" itemValue="#{r}" />
+                </p:selectOneMenu>
+
+                <p:outputLabel value="Contraseña:" for="password" />
+                <p:password id="password"
+                            value="#{userBean.selected.password}"
+                            feedback="true"
+                            toggleMask="true"
+                            required="#{userBean.selected.id == null}"
+                            placeholder="#{userBean.selected.id == null ? '' : 'Déjalo vacío si no deseas cambiarla'}" />
+
+                <p:outputLabel value="Confirmar contraseña:" for="confirmPassword" />
+                <p:password id="confirmPassword"
+                            value="#{userBean.confirmPassword}"
+                            feedback="true"
+                            toggleMask="true"
+                            required="#{userBean.selected.id == null}" />
+
+            </p:panelGrid>
+
+            <p:separator />
+
+            <!-- BOTONES DEL DIALOGO -->
+            <p:commandButton value="Guardar"
+                             icon="pi pi-save"
+                             actionListener="#{userBean.save}"
+                             update="dlgUserForm frmUsers:tblUsers"
+                             oncomplete="if (!args.validationFailed) PF('dlgUser').hide();" />
+
+            <p:commandButton value="Cancelar"
+                             styleClass="p-button-secondary"
+                             icon="pi pi-times"
+                             onclick="PF('dlgUser').hide(); return false;" />
+
+        </h:form>
+
+    </p:dialog>
+
+</h:body>
+</html>

@@ -237,6 +237,129 @@ public class UserBean implements Serializable {
         return labels.getOrDefault(fieldName, fieldName);
     }
 
+    // ==================== FUNCIONES ADMIN ADICIONALES ====================
+
+    /**
+     * Cambiar contraseña de un usuario
+     */
+    public void cambiarPassword(User u, String nuevaPass, String confirmPass) {
+
+        clearFacesMessages();
+
+        if (nuevaPass == null || nuevaPass.length() < 6) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "La nueva contraseña debe tener al menos 6 caracteres", null));
+            return;
+        }
+
+        if (!nuevaPass.equals(confirmPass)) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Las contraseñas no coinciden", null));
+            return;
+        }
+
+        try {
+            userService.cambiarContrasena(u, nuevaPass);
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO,
+                            "Contraseña actualizada", "La contraseña fue modificada exitosamente"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error al cambiar la contraseña", e.getMessage()));
+        }
+    }
+
+    /**
+     * Cambiar rol del usuario sin abrir el diálogo de edición
+     */
+    public void cambiarRol(User u, User.Role nuevoRol) {
+        clearFacesMessages();
+
+        try {
+            userService.asignarRol(u, nuevoRol);
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO,
+                            "Rol actualizado",
+                            "El usuario ahora es: " + nuevoRol));
+        } catch (Exception e) {
+            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error al cambiar de rol", e.getMessage()));
+        }
+    }
+
+    /**
+     * Restablecer contraseña automáticamente (ADMIN)
+     * Nueva contraseña por defecto: usuario123
+     */
+    public void resetPassword(User u) {
+        clearFacesMessages();
+
+        String nueva = u.getUsuario() + "123";
+
+        try {
+            userService.cambiarContrasena(u, nueva);
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN,
+                            "Contraseña restablecida",
+                            "Nueva contraseña temporal: " + nueva));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error al restablecer contraseña", e.getMessage()));
+        }
+    }
+
+    /**
+     * Actualizar correo o nombre de usuario SIN tocar la contraseña
+     */
+    public void actualizarDatosBasicos(User u) {
+
+        clearFacesMessages();
+
+        try {
+            // validaciones rápidas
+            User existenteCorreo = userService.buscarPorCorreo(u.getCorreo());
+            if (existenteCorreo != null && !existenteCorreo.getId().equals(u.getId())) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Correo ya registrado", null));
+                return;
+            }
+
+            User existenteUsuario = userService.buscarPorUsuario(u.getUsuario());
+            if (existenteUsuario != null && !existenteUsuario.getId().equals(u.getId())) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "El nombre de usuario ya existe", null));
+                return;
+            }
+
+            userService.guardar(u);
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO,
+                            "Datos actualizados",
+                            "Correo y nombre de usuario actualizados"));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error al actualizar datos", e.getMessage()));
+        }
+    }
+
     // ==================== GETTERS Y SETTERS ====================
 
     public User getSelected() {
