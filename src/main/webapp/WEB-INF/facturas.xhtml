@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:comp="http://xmlns.jcp.org/jsf/composite">
+
+<h:head>
+    <title>Facturación - Sonrisa Sana</title>
+</h:head>
+
+<h:body>
+
+    <comp:sidebar activePage="facturas"/>
+
+    <div style="margin-left:260px; padding:1.5rem;">
+        <h:form id="factForm">
+
+            <p:messages id="msgs" autoUpdate="true" closable="true" />
+
+            <p:panel header="Crear / Editar Factura" style="margin-bottom:1rem;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+                    <!-- Columna izquierda -->
+                    <div>
+                        <h:outputLabel for="paciente" value="Paciente:"/>
+                        <p:selectOneMenu id="paciente" value="#{facturasBean.pacienteId}"
+                                         required="true" requiredMessage="Seleccione paciente">
+                            <f:selectItem itemLabel="-- Seleccione paciente --" itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{facturasBean.pacientes}" var="p"
+                                           itemLabel="#{p.nombreCompleto} (#{p.dpi})"
+                                           itemValue="#{p.id}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel for="odontologo" value="Odontólogo:" style="margin-top:.6rem"/>
+                        <p:selectOneMenu id="odontologo" value="#{facturasBean.odontologoId}"
+                                         required="true" requiredMessage="Seleccione odontólogo">
+                            <f:selectItem itemLabel="-- Seleccione odontólogo --" itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{facturasBean.odontologos}" var="o"
+                                           itemLabel="#{o.nombreCompleto}" itemValue="#{o.id}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel for="cita" value="Cita (opcional):" style="margin-top:.6rem"/>
+                        <p:selectOneMenu id="cita" value="#{facturasBean.citaId}">
+                            <f:selectItem itemLabel="-- No asignar --" itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{facturasBean.citas}" var="c"
+                                           itemLabel="#{c.id} - #{c.fechaHora}" itemValue="#{c.id}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel for="tratamiento" value="Tratamiento:" style="margin-top:.6rem"/>
+                        <p:selectOneMenu id="tratamiento" value="#{facturasBean.tratamientoId}"
+                                         required="true" requiredMessage="Seleccione tratamiento">
+                            <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{facturasBean.tratamientos}" var="t"
+                                           itemLabel="#{t.nombre} - Q#{t.precio}" itemValue="#{t.id}"/>
+                        </p:selectOneMenu>
+
+                    </div>
+
+                    <!-- Columna derecha (montos) -->
+                    <div>
+                        <h:outputLabel for="subtotal" value="Subtotal (Q):"/>
+                        <p:inputNumber id="subtotal" value="#{facturasBean.subtotal}"
+                                       mode="decimal" minValue="0" maxFractionDigits="2"
+                                       required="true" requiredMessage="Subtotal obligatorio"
+                                       onkeyup="PF('calcWidget').jq().click();" />
+
+                        <h:outputLabel for="descuento" value="Descuento (Q):" style="margin-top:.6rem"/>
+                        <p:inputNumber id="descuento" value="#{facturasBean.descuento}"
+                                       mode="decimal" minValue="0" maxFractionDigits="2"
+                                       onkeyup="PF('calcWidget').jq().click();" />
+
+                        <h:outputLabel for="pagosParciales" value="Pagos parciales (Q):" style="margin-top:.6rem"/>
+                        <p:inputNumber id="pagosParciales" value="#{facturasBean.pagosParciales}"
+                                       mode="decimal" minValue="0" maxFractionDigits="2"
+                                       onkeyup="PF('calcWidget').jq().click();" />
+
+                        <h:outputLabel for="total" value="Total (Q):" style="margin-top:.6rem"/>
+                        <p:inputNumber id="total" value="#{facturasBean.total}" mode="decimal"
+                                       maxFractionDigits="2" readonly="true" />
+
+                        <h:outputLabel for="seguro" value="Seguro:" style="margin-top:.6rem"/>
+                        <p:selectOneMenu id="seguro" value="#{facturasBean.seguroSeleccionado}"
+                                         required="true" requiredMessage="Seleccione seguro">
+                            <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{facturasBean.seguros}" var="s" itemLabel="#{s}" itemValue="#{s}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel for="estadoPago" value="Estado de pago:" style="margin-top:.6rem"/>
+                        <p:selectOneMenu id="estadoPago" value="#{facturasBean.estadoPagoSeleccionado}" required="true">
+                            <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{facturasBean.estadosPago}" var="e" itemLabel="#{e}" itemValue="#{e}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel for="fechaEmision" value="Fecha de emisión:" style="margin-top:.6rem"/>
+                        <p:calendar id="fechaEmision" value="#{facturasBean.fechaEmision}"
+                                    pattern="dd/MM/yyyy HH:mm" showTime="true" showButtonBar="true"
+                                    required="true"/>
+                    </div>
+                </div>
+
+                <p:separator style="margin:1rem 0"/>
+
+                <div style="display:flex; gap:0.5rem;">
+                    <p:commandButton id="btnCalcular" value="Recalcular" process="@form"
+                                     widgetVar="calcWidget" actionListener="#{facturasBean.calcularTotal}"
+                                     update=":factForm:subtotal :factForm:descuento :factForm:pagosParciales :factForm:total"/>
+                    <p:commandButton id="btnGuardar" value="Guardar Factura" process="@form"
+                                     action="#{facturasBean.guardarFactura}" update=":factForm:msgs :factForm:tabla"
+                                     icon="pi pi-save"/>
+                    <p:commandButton id="btnLimpiar" value="Limpiar" type="button"
+                                     onclick="PF('factForm').clear();" styleClass="p-button-text"/>
+                </div>
+            </p:panel>
+
+            <p:panel header="Facturas registradas">
+                <p:dataTable id="tabla" value="#{facturasBean.facturas}" var="f" paginator="true" rows="10" style="width:100%;">
+                    <p:column headerText="ID"><h:outputText value="#{f.id}"/></p:column>
+                    <p:column headerText="Paciente"><h:outputText value="#{f.paciente.nombreCompleto}"/></p:column>
+                    <p:column headerText="Total"><h:outputText value="#{f.total}"/></p:column>
+                    <p:column headerText="Estado"><h:outputText value="#{f.estadoPago}"/></p:column>
+                    <p:column headerText="Fecha"><h:outputText value="#{f.fechaEmision}"/></p:column>
+                </p:dataTable>
+            </p:panel>
+
+        </h:form>
+    </div>
+</h:body>
+</html>

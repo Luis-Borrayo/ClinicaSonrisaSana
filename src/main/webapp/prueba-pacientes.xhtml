@@ -2,150 +2,216 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
 
-<ui:composition template="/templates/template.xhtml">
+<h:head>
+    <title>Prueba Guardar Paciente - DEBUGGING</title>
+    <style>
+        body { font-family: Arial; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .campo { margin-bottom: 15px; }
+        .campo label { display: block; font-weight: bold; margin-bottom: 5px; }
+        .campo input, .campo select, .campo textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .btn { padding: 10px 20px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        h2 { color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+    </style>
+</h:head>
 
-    <ui:define name="title">Gestión de Pacientes</ui:define>
+<h:body>
+    <div class="container">
+        <h1>🔬 Formulario de Prueba - Guardar Paciente</h1>
 
-    <ui:define name="content">
-
-        <h:form id="mainForm">
-
-            <!-- TARJETA SUPERIOR -->
-            <p:card style="margin-bottom:20px">
-                <h2 style="margin:0; font-size:24px; color:#004C97;">
-                    Gestión de Pacientes
-                </h2>
-                <p style="margin-top:6px; color:#666;">
-                    Registro, edición y consulta de pacientes.
-                </p>
-            </p:card>
+        <h:form id="testForm">
 
             <!-- MENSAJES -->
-            <p:messages id="messages"
-                        autoUpdate="true"
-                        closable="true"
-                        showSummary="true"
-                        showDetail="true"
-                        style="margin-bottom:15px"/>
+            <p:messages id="msgs" autoUpdate="true" closable="true"/>
 
-            <!-- FORMULARIO -->
-            <p:panel header="Información del Paciente" style="margin-bottom:20px">
+            <h2>📝 Datos del Paciente</h2>
 
-                <p:panelGrid columns="2" columnClasses="label,value">
+            <!-- DPI -->
+            <div class="campo">
+                <h:outputLabel for="dpi" value="DPI (13 dígitos):"/>
+                <p:inputText id="dpi"
+                             value="#{pacientesBean.nuevoPaciente.dpi}"
+                             required="true"
+                             requiredMessage="El DPI es obligatorio"
+                             placeholder="Ej: 1234567890123"/>
+            </div>
 
-                    <h:outputLabel for="dpi" value="DPI:"/>
-                    <p:inputText id="dpi"
-                                 value="#{pacientesBean.nuevoPaciente.dpi}"
-                                 required="true"/>
+            <!-- NOMBRE -->
+            <div class="campo">
+                <h:outputLabel for="nombre" value="Nombre:"/>
+                <p:inputText id="nombre"
+                             value="#{pacientesBean.nuevoPaciente.nombre}"
+                             required="true"
+                             requiredMessage="El nombre es obligatorio"
+                             placeholder="Ej: Juan"/>
+            </div>
 
-                    <h:outputLabel for="nombre" value="Nombre:"/>
-                    <p:inputText id="nombre"
-                                 value="#{pacientesBean.nuevoPaciente.nombre}"
-                                 required="true"/>
+            <!-- APELLIDO -->
+            <div class="campo">
+                <h:outputLabel for="apellido" value="Apellido:"/>
+                <p:inputText id="apellido"
+                             value="#{pacientesBean.nuevoPaciente.apellido}"
+                             required="true"
+                             requiredMessage="El apellido es obligatorio"
+                             placeholder="Ej: Pérez"/>
+            </div>
 
-                    <h:outputLabel for="apellido" value="Apellido:"/>
-                    <p:inputText id="apellido"
-                                 value="#{pacientesBean.nuevoPaciente.apellido}"
-                                 required="true"/>
+            <!-- FECHA DE NACIMIENTO -->
+            <div class="campo">
+                <h:outputLabel for="fechaNac" value="Fecha de Nacimiento:"/>
+                <p:calendar id="fechaNac"
+                            value="#{pacientesBean.nuevoPaciente.fechaNacimiento}"
+                            pattern="dd/MM/yyyy"
+                            converter="localDateConverter"
+                            required="true"
+                            requiredMessage="La fecha de nacimiento es obligatoria"
+                            showButtonBar="true"
+                            navigator="true"
+                            yearRange="1920:2024"/>
+            </div>
 
-                    <h:outputLabel for="fecha" value="Fecha nacimiento:"/>
-                    <p:datePicker id="fecha"
-                                  value="#{pacientesBean.nuevoPaciente.fechaNacimiento}"
-                                  pattern="dd/MM/yyyy"
-                                  required="true"/>
+            <!-- TELÉFONO -->
+            <div class="campo">
+                <h:outputLabel for="tel" value="Teléfono:"/>
+                <p:inputText id="tel"
+                             value="#{pacientesBean.nuevoPaciente.contacto}"
+                             required="true"
+                             requiredMessage="El teléfono es obligatorio"
+                             placeholder="Ej: 12345678"/>
+            </div>
 
-                    <h:outputLabel for="contacto" value="Teléfono:"/>
-                    <p:inputText id="contacto"
-                                 value="#{pacientesBean.nuevoPaciente.contacto}"
-                                 required="true"/>
+            <!-- CORREO -->
+            <div class="campo">
+                <h:outputLabel for="email" value="Correo Electrónico:"/>
+                <p:inputText id="email"
+                             value="#{pacientesBean.nuevoPaciente.correo}"
+                             placeholder="Ej: paciente@email.com"/>
+            </div>
 
-                    <h:outputLabel for="correo" value="Correo:"/>
-                    <p:inputText id="correo"
-                                 value="#{pacientesBean.nuevoPaciente.correo}">
-                        <f:validateRegex pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"/>
-                    </p:inputText>
+            <!-- DIRECCIÓN -->
+            <div class="campo">
+                <h:outputLabel for="dir" value="Dirección:"/>
+                <p:inputTextarea id="dir"
+                                 value="#{pacientesBean.nuevoPaciente.direccion}"
+                                 rows="2"
+                                 required="true"
+                                 requiredMessage="La dirección es obligatoria"
+                                 placeholder="Ingrese la dirección completa"/>
+            </div>
 
-                    <h:outputLabel for="odontologo" value="Odontólogo:"/>
-                    <p:selectOneMenu id="odontologo"
-                                     value="#{pacientesBean.odontologoId}"
-                                     required="true">
-                        <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}" noSelectionOption="true"/>
-                        <f:selectItems value="#{pacientesBean.odontologos}"
-                                       var="od" itemLabel="#{od.nombreCompleto}"
-                                       itemValue="#{od.id}"/>
-                    </p:selectOneMenu>
+            <!-- ALERGIAS -->
+            <div class="campo">
+                <h:outputLabel for="alerg" value="Alergias:"/>
+                <p:inputText id="alerg"
+                             value="#{pacientesBean.nuevoPaciente.alergias}"
+                             placeholder="Ej: Penicilina, Polen"/>
+            </div>
 
-                    <h:outputLabel for="seguro" value="Seguro:"/>
-                    <p:selectOneMenu id="seguro"
-                                     value="#{pacientesBean.seguroSeleccionado}"
-                                     required="true">
-                        <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}" noSelectionOption="true"/>
-                        <f:selectItems value="#{pacientesBean.seguros}"/>
-                    </p:selectOneMenu>
+            <!-- CONDICIONES -->
+            <div class="campo">
+                <h:outputLabel for="cond" value="Condiciones Médicas:"/>
+                <p:inputTextarea id="cond"
+                                 value="#{pacientesBean.nuevoPaciente.condiciones}"
+                                 rows="2"
+                                 placeholder="Ej: Diabetes, Hipertensión"/>
+            </div>
 
-                    <h:outputLabel for="direccion" value="Dirección:"/>
-                    <p:inputTextarea id="direccion"
-                                     value="#{pacientesBean.nuevoPaciente.direccion}"
-                                     rows="2"
-                                     style="width:100%"
-                                     required="true"/>
+            <!-- OBSERVACIONES -->
+            <div class="campo">
+                <h:outputLabel for="obs" value="Observaciones:"/>
+                <p:inputTextarea id="obs"
+                                 value="#{pacientesBean.nuevoPaciente.observaciones}"
+                                 rows="2"
+                                 placeholder="Notas adicionales"/>
+            </div>
 
-                    <h:outputLabel for="alergias" value="Alergias:"/>
-                    <p:inputText id="alergias"
-                                 value="#{pacientesBean.nuevoPaciente.alergias}"/>
+            <h2>🦷 Asignaciones</h2>
 
-                </p:panelGrid>
+            <!-- ODONTÓLOGO -->
+            <div class="campo">
+                <h:outputLabel for="odont" value="Odontólogo:"/>
+                <p:selectOneMenu id="odont"
+                                 value="#{pacientesBean.odontologoId}"
+                                 required="true"
+                                 requiredMessage="Debe seleccionar un odontólogo">
+                    <f:selectItem itemLabel="-- Seleccione un odontólogo --" itemValue="#{null}" noSelectionOption="true"/>
+                    <f:selectItems value="#{pacientesBean.odontologos}"
+                                   var="od"
+                                   itemLabel="#{od.nombreCompleto}"
+                                   itemValue="#{od.id}"/>
+                </p:selectOneMenu>
+            </div>
 
-                <p:separator/>
+            <!-- SEGURO -->
+            <div class="campo">
+                <h:outputLabel for="seg" value="Tipo de Seguro:"/>
+                <p:selectOneMenu id="seg"
+                                 value="#{pacientesBean.seguroSeleccionado}"
+                                 required="true"
+                                 requiredMessage="Debe seleccionar un tipo de seguro">
+                    <f:selectItem itemLabel="-- Seleccione tipo de seguro --" itemValue="#{null}" noSelectionOption="true"/>
+                    <f:selectItems value="#{pacientesBean.seguros}"/>
+                </p:selectOneMenu>
+            </div>
 
-                <p:commandButton value="Guardar"
-                                 action="#{pacientesBean.guardarPaciente}"
-                                 update="messages tabla"
-                                 icon="pi pi-save"
-                                 styleClass="p-button-rounded p-button-success"/>
+            <h2>🎯 Acciones</h2>
 
-            </p:panel>
+            <!-- BOTONES -->
+            <p:commandButton value="💾 Guardar con AJAX"
+                             action="#{pacientesBean.guardarPaciente}"
+                             update="msgs tablaPacientes"
+                             process="@form"
+                             styleClass="btn btn-primary"
+                             icon="pi pi-save"/>
+
+            <p:commandButton value="💾 Guardar SIN AJAX"
+                             ajax="false"
+                             action="#{pacientesBean.guardarPaciente}"
+                             styleClass="btn btn-success"
+                             icon="pi pi-save"
+                             style="margin-left: 10px;"/>
+
+            <h2>📋 Pacientes Registrados</h2>
 
             <!-- TABLA -->
-            <p:panel header="Pacientes Registrados">
-                <p:dataTable id="tabla"
-                             value="#{pacientesBean.pacientes}"
-                             var="p"
-                             paginator="true"
-                             rows="8"
-                             style="width:100%">
+            <p:dataTable id="tablaPacientes"
+                         value="#{pacientesBean.pacientes}"
+                         var="p"
+                         paginator="true"
+                         rows="5"
+                         emptyMessage="No hay pacientes registrados">
 
-                    <p:column headerText="ID" width="60">
-                        <h:outputText value="#{p.id}"/>
-                    </p:column>
+                <p:column headerText="ID" style="width: 50px;">
+                    <h:outputText value="#{p.id}"/>
+                </p:column>
 
-                    <p:column headerText="Nombre completo">
-                        <h:outputText value="#{p.nombre} #{p.apellido}"/>
-                    </p:column>
+                <p:column headerText="DPI">
+                    <h:outputText value="#{p.dpi}"/>
+                </p:column>
 
-                    <p:column headerText="DPI">
-                        <h:outputText value="#{p.dpi}"/>
-                    </p:column>
+                <p:column headerText="Nombre Completo">
+                    <h:outputText value="#{p.nombreCompleto}"/>
+                </p:column>
 
-                    <p:column headerText="Odontólogo">
-                        <h:outputText value="#{p.odontologo != null ? p.odontologo.nombreCompleto : ''}"/>
-                    </p:column>
+                <p:column headerText="Teléfono">
+                    <h:outputText value="#{p.contacto}"/>
+                </p:column>
 
-                    <p:column headerText="Dirección">
-                        <h:outputText value="#{p.direccion}"/>
-                    </p:column>
+                <p:column headerText="Odontólogo">
+                    <h:outputText value="#{p.odontologo != null ? p.odontologo.nombreCompleto : 'Sin asignar'}"/>
+                </p:column>
 
-                </p:dataTable>
-            </p:panel>
+                <p:column headerText="Seguro">
+                    <h:outputText value="#{p.seguro}"/>
+                </p:column>
+
+            </p:dataTable>
 
         </h:form>
-
-    </ui:define>
-
-</ui:composition>
-
+    </div>
+</h:body>
 </html>
-
