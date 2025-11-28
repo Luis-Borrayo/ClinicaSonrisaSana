@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gestión de Odontólogos</title>
+</h:head>
+
+<h:body>
+
+    <h:form id="formTabla">
+
+        <!-- TÍTULO + BOTÓN NUEVO -->
+        <div class="card" style="padding:20px; margin-bottom:20px;">
+            <h2>Odontólogos</h2>
+
+            <p:commandButton value="Nuevo Odontólogo"
+                             icon="pi pi-plus"
+                             styleClass="ui-button-success"
+                             oncomplete="PF('dlgOdontologo').show()"
+                             update=":formDialog"
+                             actionListener="#{odontologoBean.nuevo}"/>
+        </div>
+
+        <!-- TABLA -->
+        <div class="card">
+            <p:dataTable var="o"
+                         value="#{odontologoBean.lista}"
+                         stripedRows="true">
+
+                <p:column headerText="Nombre">
+                    #{o.usuario.nombres} #{o.usuario.apellidos}
+                </p:column>
+
+                <p:column headerText="Colegiado">
+                    #{o.colegiado}
+                </p:column>
+
+                <p:column headerText="Especialidad">
+                    #{o.especialidad}
+                </p:column>
+
+                <p:column headerText="Teléfono">
+                    #{o.usuario.telefono}
+                </p:column>
+
+                <p:column headerText="Correo">
+                    #{o.usuario.correo}
+                </p:column>
+
+                <p:column headerText="Estado">
+                    <p:tag severity="#{o.usuario.active ? 'success' : 'danger'}"
+                           value="#{o.usuario.active ? 'Activo' : 'Inactivo'}"/>
+                </p:column>
+
+                <p:column headerText="Acciones" style="width:150px; text-align:center;">
+
+                    <!-- BOTÓN EDITAR -->
+                    <p:commandButton icon="pi pi-pencil"
+                                     styleClass="ui-button-warning"
+                                     update=":formDialog"
+                                     oncomplete="PF('dlgOdontologo').show()"
+                                     actionListener="#{odontologoBean.editar(o)}"/>
+
+                    <!-- BOTÓN ELIMINAR -->
+                    <p:commandButton icon="pi pi-trash"
+                                     styleClass="ui-button-danger"
+                                     actionListener="#{odontologoBean.eliminar(o.id)}"
+                                     update="formTabla">
+                        <p:confirm header="Confirmar" message="¿Eliminar este odontólogo?" icon="pi pi-info-circle"/>
+                    </p:commandButton>
+
+                </p:column>
+
+            </p:dataTable>
+        </div>
+
+    </h:form>
+
+
+    <!-- DIÁLOGO PARA CREAR / EDITAR -->
+
+    <p:dialog id="dialogOdontologo"
+              widgetVar="dlgOdontologo"
+              header="Odontólogo"
+              modal="true"
+              resizable="false"
+              width="520">
+
+        <h:form id="formDialog">
+
+            <div class="p-fluid">
+
+                <p:inputText value="#{odontologoBean.odontologo.usuario.nombres}"
+                             label="Nombres" required="true"/>
+
+                <p:inputText value="#{odontologoBean.odontologo.usuario.apellidos}"
+                             label="Apellidos" required="true"/>
+
+                <p:inputText value="#{odontologoBean.odontologo.usuario.dpi}"
+                             label="DPI" required="true"/>
+
+                <p:inputText value="#{odontologoBean.odontologo.colegiado}"
+                             label="Colegiado" required="true"/>
+
+                <p:selectOneMenu value="#{odontologoBean.odontologo.especialidad}"
+                                 label="Especialidad">
+                    <f:selectItems value="#{odontologoBean.especialidades}"/>
+                </p:selectOneMenu>
+
+                <p:inputText value="#{odontologoBean.odontologo.usuario.telefono}"
+                             label="Teléfono" required="true"/>
+
+                <p:inputText value="#{odontologoBean.odontologo.usuario.correo}"
+                             label="Correo" required="true"/>
+
+                <p:selectOneMenu value="#{odontologoBean.odontologo.usuario.active}"
+                                 label="Estado">
+                    <f:selectItem itemLabel="Activo" itemValue="true"/>
+                    <f:selectItem itemLabel="Inactivo" itemValue="false"/>
+                </p:selectOneMenu>
+
+            </div>
+
+            <br/>
+
+            <p:commandButton value="Guardar"
+                             icon="pi pi-check"
+                             styleClass="ui-button-success"
+                             action="#{odontologoBean.guardar}"
+                             update=":formTabla"
+                             oncomplete="PF('dlgOdontologo').hide()"/>
+
+            <p:commandButton value="Cancelar"
+                             icon="pi pi-times"
+                             onclick="PF('dlgOdontologo').hide()"
+                             type="button"
+                             styleClass="ui-button-secondary"/>
+
+        </h:form>
+    </p:dialog>
+
+    <p:confirmDialog global="true">
+        <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times"/>
+    </p:confirmDialog>
+
+</h:body>
+</html>

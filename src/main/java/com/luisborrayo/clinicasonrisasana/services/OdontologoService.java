@@ -17,6 +17,21 @@ public class OdontologoService {
     @Inject
     private OdontologoRepository odontologoRepository;
 
+    // ==== CRUD BÁSICO PARA LAS NUEVAS PANTALLAS ====
+    public List<Odontologo> listar() {
+        return odontologoRepository.findAll();
+    }
+
+    public void guardar(Odontologo o) {
+        odontologoRepository.save(o);
+    }
+
+    public void eliminar(Long id) {
+        odontologoRepository.delete(id);
+    }
+
+
+    // ==== MÉTODOS EXISTENTES (NO TOCAR) ====
     public List<Odontologo> obtenerTodosLosOdontologos() {
         try {
             List<Odontologo> resultado = odontologoRepository.findAll();
@@ -41,7 +56,7 @@ public class OdontologoService {
 
     public Odontologo obtenerOdontologoPorId(Long id) {
         try {
-            return odontologoRepository.findId(id);
+            return odontologoRepository.findById(id);
         } catch (Exception e) {
             LOGGER.severe("Error al obtener odontólogo por ID: " + id + " - " + e.getMessage());
             return null;
