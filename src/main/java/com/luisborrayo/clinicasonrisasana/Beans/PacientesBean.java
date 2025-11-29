@@ -202,27 +202,28 @@ public class PacientesBean implements Serializable {
         LOGGER.log(Level.INFO, "=== INICIANDO EDICIÓN DE PACIENTE ===");
         try {
             if (pacienteSeleccionado != null && pacienteSeleccionado.getId() != null) {
+                // ✅ COPIAR TODOS LOS DATOS AL NUEVO PACIENTE
                 this.nuevoPaciente = pacienteSeleccionado;
 
                 // Asignar seguro
                 this.seguroSeleccionado = pacienteSeleccionado.getSeguro();
-                //Asigna odontologo
+
+                // Asignar odontólogo
                 if (pacienteSeleccionado.getOdontologo() != null) {
                     this.odontologoId = pacienteSeleccionado.getOdontologo().getId();
                 }
 
+                // ✅ HACER SCROLL HACIA EL FORMULARIO
+                FacesContext context = FacesContext.getCurrentInstance();
+                context.getPartialViewContext().getEvalScripts().add("window.scrollTo(0, 0);");
+
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_INFO, "Edición",
-                                "Editando paciente: " + pacienteSeleccionado.getNombreCompleto()));
+                                "Editando paciente: " + pacienteSeleccionado.getNombreCompleto() +
+                                        ". Complete los datos y presione 'Guardar Paciente'."));
 
                 LOGGER.log(Level.INFO, "✅ Preparado para editar paciente: {0}", pacienteSeleccionado.getNombreCompleto());
-                String odontologoInfo = pacienteSeleccionado.getOdontologo() != null ?
-                        (pacienteSeleccionado.getOdontologo().getUsuario() != null ?
-                                pacienteSeleccionado.getOdontologo().getUsuario().getNombres() + " " +
-                                        pacienteSeleccionado.getOdontologo().getUsuario().getApellidos() :
-                                "Colegiado: " + pacienteSeleccionado.getOdontologo().getColegiado()) :
-                        "Ninguno";
-                LOGGER.log(Level.INFO, "Odontólogo asignado: {0}", odontologoInfo);
+
             } else {
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia",
@@ -235,7 +236,6 @@ public class PacientesBean implements Serializable {
                             "No se pudo cargar el paciente para edición: " + e.getMessage()));
         }
     }
-
     public void eliminarPaciente() {
         LOGGER.log(Level.INFO, "=== INICIANDO ELIMINACIÓN DE PACIENTE ===");
         try {

@@ -9,6 +9,24 @@
     <title>Gestión de Pacientes - Sonrisa Sana</title>
     <h:outputStylesheet library="css" name="common-styles.css"/>
     <h:outputStylesheet library="css" name="sidebar-styles.css"/>
+
+    <style>
+        .edit-mode-indicator {
+            background: #fff3cd;
+            border-left: 4px solid #ff9800;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+
+        .edit-mode-indicator h4 {
+            color: #856404;
+            margin: 0 0 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
 </h:head>
 
 <h:body>
@@ -35,13 +53,27 @@
 
                     <!-- CARD PRINCIPAL -->
                     <div class="card">
+
+                        <!-- ✅ INDICADOR DE MODO EDICIÓN -->
+                        <h:panelGroup rendered="#{pacientesBean.nuevoPaciente.id != null}">
+                            <div class="edit-mode-indicator">
+                                <h4>
+                                    <i class="pi pi-pencil"></i>
+                                    MODO EDICIÓN
+                                </h4>
+                                <p style="margin: 0; color: #856404;">
+                                    Editando paciente: <strong>#{pacientesBean.nuevoPaciente.nombreCompleto}</strong>
+                                </p>
+                            </div>
+                        </h:panelGroup>
+
                         <h2 class="section-title">
                             <i class="pi pi-user-plus"></i>
-                            Registro de Nuevo Paciente
+                            #{pacientesBean.nuevoPaciente.id == null ? 'Registro de Nuevo Paciente' : 'Editar Paciente'}
                         </h2>
 
                         <!-- Mensajes globales -->
-                        <p:messages id="messages" showSummary="true" showDetail="true"/>
+                        <p:messages id="messages" showDetail="true" autoUpdate="true"/>
 
                         <!-- FORMULARIO EN GRID -->
                         <div class="form-grid">
@@ -174,11 +206,18 @@
 
                         <!-- BOTONES -->
                         <div class="form-actions">
-                            <p:commandButton value="Guardar Paciente"
+                            <p:commandButton value="#{pacientesBean.nuevoPaciente.id == null ? 'Guardar Paciente' : 'Actualizar Paciente'}"
                                              ajax="false"
                                              action="#{pacientesBean.guardarPaciente}"
                                              icon="pi pi-save"
                                              styleClass="p-button-success"/>
+
+                            <p:commandButton value="Cancelar"
+                                             action="#{pacientesBean.cancelarEdicion}"
+                                             update="mainForm"
+                                             icon="pi pi-times"
+                                             styleClass="p-button-secondary"
+                                             rendered="#{pacientesBean.nuevoPaciente.id != null}"/>
                         </div>
 
                     </div>
