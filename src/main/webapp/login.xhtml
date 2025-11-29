@@ -99,10 +99,28 @@
             outline: none !important;
         }
 
-        .remember-section {
-            display: flex;
-            align-items: center;
-            margin: 1rem 0;
+        /* Estilos para el campo de contraseña con toggle */
+        .ui-password {
+            width: 100% !important;
+        }
+
+        .ui-password .ui-password-input {
+            width: 100% !important;
+            padding-right: 3rem !important;
+        }
+
+        .ui-password .ui-password-toggle {
+            position: absolute !important;
+            right: 12px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            cursor: pointer !important;
+            color: #666 !important;
+            font-size: 1.2rem !important;
+        }
+
+        .ui-password .ui-password-toggle:hover {
+            color: #1976d2 !important;
         }
 
         .ui-button {
@@ -113,7 +131,7 @@
             border-radius: 10px !important;
             font-size: 1.1rem !important;
             font-weight: 600 !important;
-            margin-top: 1rem !important;
+            margin-top: 1.5rem !important;
             transition: all 0.3s !important;
         }
 
@@ -174,23 +192,17 @@
                 <p:password id="password"
                             value="#{loginBean.password}"
                             placeholder="Ingresa tu contraseña"
+                            toggleMask="true"
                             feedback="false"
                             required="true"
                             requiredMessage="La contraseña es obligatoria"
                             style="width: 100%;"/>
 
-                <div class="remember-section">
-                    <p:selectBooleanCheckbox id="rememberMe"
-                                             value="#{loginBean.rememberMe}"/>
-                    <p:outputLabel for="rememberMe" value="Recordarme"
-                                   style="margin-left: 0.5rem; font-weight: 400;"/>
-                </div>
-
                 <p:commandButton value="Iniciar Sesión"
                                  icon="pi pi-sign-in"
                                  action="#{loginBean.login}"
                                  update="messages"
-                                 style="width: 100%; margin-top: 1rem;"
+                                 style="width: 100%; margin-top: 1.5rem;"
                                  styleClass="ui-button-raised"/>
             </p:panelGrid>
 

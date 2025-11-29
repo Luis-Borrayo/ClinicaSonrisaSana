@@ -51,10 +51,13 @@
 
                 <h:form id="mainForm">
 
+                    <!-- Mensajes globales -->
+                    <p:messages id="messages" showDetail="true" autoUpdate="true"/>
+
                     <!-- CARD PRINCIPAL -->
                     <div class="card">
 
-                        <!-- ✅ INDICADOR DE MODO EDICIÓN -->
+                        <!-- Indicador de modo edición -->
                         <h:panelGroup rendered="#{pacientesBean.nuevoPaciente.id != null}">
                             <div class="edit-mode-indicator">
                                 <h4>
@@ -72,9 +75,6 @@
                             #{pacientesBean.nuevoPaciente.id == null ? 'Registro de Nuevo Paciente' : 'Editar Paciente'}
                         </h2>
 
-                        <!-- Mensajes globales -->
-                        <p:messages id="messages" showDetail="true" autoUpdate="true"/>
-
                         <!-- FORMULARIO EN GRID -->
                         <div class="form-grid">
 
@@ -85,7 +85,8 @@
                                              required="true"
                                              requiredMessage="El DPI es obligatorio"
                                              placeholder="Ej: 1234567890123"
-                                             styleClass="p-inputtext"/>
+                                             maxlength="13"
+                                             style="width: 100%"/>
                             </div>
 
                             <div class="form-field">
@@ -95,7 +96,7 @@
                                              required="true"
                                              requiredMessage="El nombre es obligatorio"
                                              placeholder="Ej: Juan"
-                                             styleClass="p-inputtext"/>
+                                             style="width: 100%"/>
                             </div>
 
                             <div class="form-field">
@@ -105,7 +106,7 @@
                                              required="true"
                                              requiredMessage="El apellido es obligatorio"
                                              placeholder="Ej: Pérez"
-                                             styleClass="p-inputtext"/>
+                                             style="width: 100%"/>
                             </div>
 
                             <div class="form-field">
@@ -119,7 +120,8 @@
                                             showIcon="true"
                                             showButtonBar="true"
                                             navigator="true"
-                                            yearRange="1920:2024"/>
+                                            yearRange="1920:2024"
+                                            style="width: 100%"/>
                             </div>
 
                             <div class="form-field">
@@ -129,7 +131,7 @@
                                              required="true"
                                              requiredMessage="El teléfono es obligatorio"
                                              placeholder="Ej: 12345678"
-                                             styleClass="p-inputtext"/>
+                                             style="width: 100%"/>
                             </div>
 
                             <div class="form-field">
@@ -137,7 +139,7 @@
                                 <p:inputText id="email"
                                              value="#{pacientesBean.nuevoPaciente.correo}"
                                              placeholder="Ej: paciente@email.com"
-                                             styleClass="p-inputtext"/>
+                                             style="width: 100%"/>
                             </div>
 
                             <div class="form-field">
@@ -145,7 +147,8 @@
                                 <p:selectOneMenu id="odont"
                                                  value="#{pacientesBean.odontologoId}"
                                                  required="true"
-                                                 requiredMessage="Debe seleccionar un odontólogo">
+                                                 requiredMessage="Debe seleccionar un odontólogo"
+                                                 style="width: 100%">
                                     <f:selectItem itemLabel="-- Seleccione un odontólogo --" itemValue="#{null}" noSelectionOption="true"/>
                                     <f:selectItems value="#{pacientesBean.odontologos}"
                                                    var="od"
@@ -159,7 +162,8 @@
                                 <p:selectOneMenu id="seg"
                                                  value="#{pacientesBean.seguroSeleccionado}"
                                                  required="true"
-                                                 requiredMessage="Debe seleccionar un tipo de seguro">
+                                                 requiredMessage="Debe seleccionar un tipo de seguro"
+                                                 style="width: 100%">
                                     <f:selectItem itemLabel="-- Seleccione tipo de seguro --" itemValue="#{null}" noSelectionOption="true"/>
                                     <f:selectItems value="#{pacientesBean.seguros}"/>
                                 </p:selectOneMenu>
@@ -169,7 +173,7 @@
                                 <h:outputLabel for="dir" value="Dirección:"/>
                                 <p:inputTextarea id="dir"
                                                  value="#{pacientesBean.nuevoPaciente.direccion}"
-                                                 rows="2"
+                                                 rows="3"
                                                  required="true"
                                                  requiredMessage="La dirección es obligatoria"
                                                  placeholder="Ingrese la dirección completa"
@@ -181,14 +185,14 @@
                                 <p:inputText id="alerg"
                                              value="#{pacientesBean.nuevoPaciente.alergias}"
                                              placeholder="Ej: Penicilina, Polen"
-                                             styleClass="p-inputtext"/>
+                                             style="width: 100%"/>
                             </div>
 
                             <div class="form-field">
                                 <h:outputLabel for="cond" value="Condiciones Médicas:"/>
                                 <p:inputTextarea id="cond"
                                                  value="#{pacientesBean.nuevoPaciente.condiciones}"
-                                                 rows="2"
+                                                 rows="3"
                                                  placeholder="Ej: Diabetes, Hipertensión"
                                                  style="width:100%"/>
                             </div>
@@ -197,7 +201,7 @@
                                 <h:outputLabel for="obs" value="Observaciones:"/>
                                 <p:inputTextarea id="obs"
                                                  value="#{pacientesBean.nuevoPaciente.observaciones}"
-                                                 rows="2"
+                                                 rows="3"
                                                  placeholder="Notas adicionales"
                                                  style="width:100%"/>
                             </div>
@@ -207,8 +211,8 @@
                         <!-- BOTONES -->
                         <div class="form-actions">
                             <p:commandButton value="#{pacientesBean.nuevoPaciente.id == null ? 'Guardar Paciente' : 'Actualizar Paciente'}"
-                                             ajax="false"
                                              action="#{pacientesBean.guardarPaciente}"
+                                             ajax="false"
                                              icon="pi pi-save"
                                              styleClass="p-button-success"/>
 
@@ -236,11 +240,10 @@
                                 <p:inputText id="busqueda"
                                              value="#{pacientesBean.criterioBusqueda}"
                                              placeholder="Buscar por nombre, apellido o DPI..."
-                                             styleClass="p-inputtext"
                                              style="width: 100%">
                                     <p:ajax event="keyup"
                                             listener="#{pacientesBean.buscarPacientes}"
-                                            update="tablaPacientes messages"
+                                            update="tablaPacientes"
                                             delay="500"/>
                                 </p:inputText>
                             </div>
@@ -249,34 +252,33 @@
                                 <p:commandButton value="Buscar"
                                                  icon="pi pi-search"
                                                  action="#{pacientesBean.buscarPacientes}"
-                                                 update="tablaPacientes messages"
+                                                 update="tablaPacientes"
                                                  styleClass="p-button-success"/>
 
                                 <p:commandButton value="Limpiar"
                                                  icon="pi pi-times"
-                                                 action="#{pacientesBean.cargarPacientes}"
-                                                 update="tablaPacientes messages busqueda"
-                                                 styleClass="p-button-secondary"
-                                                 onclick="document.getElementById('mainForm:busqueda').value='';">
-                                    <f:setPropertyActionListener value="" target="#{pacientesBean.criterioBusqueda}"/>
-                                </p:commandButton>
+                                                 action="#{pacientesBean.limpiarBusqueda}"
+                                                 update="tablaPacientes busqueda"
+                                                 styleClass="p-button-secondary"/>
                             </div>
                         </div>
 
                         <p:dataTable id="tablaPacientes"
                                      value="#{pacientesBean.pacientes}"
                                      var="p"
-                                     rows="10"
                                      paginator="true"
-                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
-                                     currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords}"
-                                     emptyMessage="No hay pacientes registrados">
+                                     rows="10"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,15"
+                                     currentPageReportTemplate="Mostrando {startRecord} a {endRecord} de {totalRecords} pacientes"
+                                     emptyMessage="No se encontraron pacientes"
+                                     styleClass="p-datatable-sm">
 
-                            <p:column headerText="ID" width="60" style="text-align:center">
+                            <p:column headerText="ID" width="80" style="text-align:center">
                                 <h:outputText value="#{p.id}"/>
                             </p:column>
 
-                            <p:column headerText="DPI">
+                            <p:column headerText="DPI" width="150">
                                 <h:outputText value="#{p.dpi}"/>
                             </p:column>
 
@@ -284,7 +286,7 @@
                                 <h:outputText value="#{p.nombreCompleto}"/>
                             </p:column>
 
-                            <p:column headerText="Teléfono">
+                            <p:column headerText="Teléfono" width="120">
                                 <h:outputText value="#{p.contacto}"/>
                             </p:column>
 
@@ -296,14 +298,14 @@
                                 <h:outputText value="#{p.odontologo != null ? p.odontologo.nombreCompleto : 'Sin asignar'}"/>
                             </p:column>
 
-                            <p:column headerText="Seguro">
+                            <p:column headerText="Seguro" width="120">
                                 <h:outputText value="#{p.seguro}"/>
                             </p:column>
 
-                            <p:column headerText="Acciones" width="120" style="text-align:center">
+                            <p:column headerText="Acciones" width="140" style="text-align:center">
                                 <p:commandButton icon="pi pi-pencil"
                                                  title="Editar"
-                                                 styleClass="p-button-warning"
+                                                 styleClass="p-button-warning p-button-sm"
                                                  action="#{pacientesBean.editarPaciente}"
                                                  update="mainForm"
                                                  process="@this">
@@ -312,11 +314,12 @@
 
                                 <p:commandButton icon="pi pi-trash"
                                                  title="Eliminar"
-                                                 styleClass="p-button-danger"
+                                                 styleClass="p-button-danger p-button-sm"
                                                  style="margin-left:5px"
-                                                 onclick="if (!confirm('¿Está seguro de eliminar este paciente?')) return false;"
                                                  action="#{pacientesBean.eliminarPaciente}"
-                                                 ajax="false">
+                                                 process="@this"
+                                                 update=":mainForm:tablaPacientes :mainForm:messages"
+                                                 onclick="if(!confirm('¿Está seguro de eliminar al paciente #{p.nombreCompleto}?')) return false;">
                                     <f:setPropertyActionListener value="#{p}" target="#{pacientesBean.pacienteSeleccionado}"/>
                                 </p:commandButton>
                             </p:column>

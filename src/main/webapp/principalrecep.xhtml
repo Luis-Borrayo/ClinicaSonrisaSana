@@ -259,8 +259,7 @@
 
 <h:body>
     <h:form id="frmRecepcion">
-        <p:growl id="msgs" showDetail="true" life="3000"/>
-
+        <p:messages id="messages" showDetail="true" autoUpdate="true"/>
         <div class="dashboard-container">
             <!-- Sidebar -->
             <div class="sidebar">
@@ -278,7 +277,7 @@
                         <i class="pi pi-calendar"></i>
                         <span>Gestión de Citas</span>
                     </h:link>
-                    <h:link outcome="prueba-pacientes.xhtml" class="menu-item">
+                    <h:link outcome="pacientes.xhtml" class="menu-item">
                         <i class="pi pi-users"></i>
                         <span>Pacientes</span>
                     </h:link>

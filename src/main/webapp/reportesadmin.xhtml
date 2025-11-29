@@ -442,6 +442,7 @@
                     </div>
 
                     <!-- TABLA OCULTA PARA EXPORTACIÓN -->
+                    <!-- TABLA OCULTA PARA EXPORTACIÓN -->
                     <p:dataTable id="exportTable"
                                  value="#{reportesBean.citasPorPeriodo}"
                                  var="cita"
@@ -456,15 +457,12 @@
                             <h:outputText value="#{cita.odontologo.nombreCompleto}"/>
                         </p:column>
                         <p:column headerText="Fecha">
-                            <h:outputText value="#{cita.fechaCita}">
-                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
-                            </h:outputText>
+                            <h:outputText value="#{cita.fechaCita}" converter="localDateTimeConverter"/>
                         </p:column>
                         <p:column headerText="Estado">
                             <h:outputText value="#{cita.estado}"/>
                         </p:column>
                     </p:dataTable>
-
                 </h:form>
             </div>
         </div>

@@ -272,18 +272,22 @@
                                 <p:commandButton icon="pi pi-pencil"
                                                  title="Editar"
                                                  styleClass="p-button-warning p-button-sm"
-                                                 action="#{pacientesBean.editarPaciente(p)}"
-                                                 update="messages">
-                                    <f:param name="pacienteId" value="#{p.id}"/>
+                                                 action="#{pacientesBean.editarPaciente}"
+                                                 update=":mainForm:messages :mainForm"
+                                                 process="@this">
+                                    <f:setPropertyActionListener value="#{p}" target="#{pacientesBean.pacienteSeleccionado}"/>
                                 </p:commandButton>
 
                                 <p:commandButton icon="pi pi-trash"
                                                  title="Eliminar"
                                                  styleClass="p-button-danger p-button-sm"
                                                  style="margin-left:5px"
-                                                 action="#{pacientesBean.eliminarPaciente(p)}"
-                                                 update="tablaPacientes, messages"
-                                                 onclick="return confirm('¿Está seguro de eliminar al paciente #{p.nombreCompleto}?')"/>
+                                                 action="#{pacientesBean.eliminarPaciente}"
+                                                 process="@this"
+                                                 update=":mainForm:tablaPacientes :mainForm:messages"
+                                                 onclick="if(!confirm('¿Está seguro de eliminar al paciente #{p.nombreCompleto}?')) return false;">
+                                    <f:setPropertyActionListener value="#{p}" target="#{pacientesBean.pacienteSeleccionado}"/>
+                                </p:commandButton>
                             </p:column>
 
                         </p:dataTable>

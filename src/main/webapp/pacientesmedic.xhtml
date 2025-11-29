@@ -314,9 +314,10 @@
                                                  title="Eliminar"
                                                  styleClass="p-button-danger"
                                                  style="margin-left:5px"
-                                                 onclick="if (!confirm('¿Está seguro de eliminar este paciente?')) return false;"
                                                  action="#{pacientesBean.eliminarPaciente}"
-                                                 ajax="false">
+                                                 process="@this"
+                                                 update=":mainForm:tablaPacientes :mainForm:messages"
+                                                 onclick="if(!confirm('¿Está seguro de eliminar este paciente?')) return false;">
                                     <f:setPropertyActionListener value="#{p}" target="#{pacientesBean.pacienteSeleccionado}"/>
                                 </p:commandButton>
                             </p:column>
