@@ -3,39 +3,78 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="jakarta.faces.core">
+      xmlns:f="jakarta.faces.core"
+      xmlns:comp="http://xmlns.jcp.org/jsf/composite/components">
 
 <h:head>
     <title>Catálogo de Odontólogos</title>
+    <h:outputStylesheet library="css" name="common-styles.css"/>
+    <h:outputStylesheet library="css" name="sidebar-styles.css"/>
 </h:head>
 
 <h:body>
+    <div class="dashboard-container">
 
-    <h2>Listado de Odontólogos</h2>
+        <!-- SIDEBAR -->
+        <comp:sidebar activePage="odontologos"/>
 
-    <p:dataTable value="#{catalogoOdontologosBean.odontologos}" var="o" style="width:90%">
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
 
-        <p:column headerText="ID">
-            <h:outputText value="#{o.id}" />
-        </p:column>
+            <!-- TOP BAR -->
+            <div class="top-bar">
+                <h1>
+                    <i class="pi pi-user-plus"></i>
+                    Catálogo de Odontólogos
+                </h1>
+            </div>
 
-        <p:column headerText="Nombre">
-            <h:outputText value="#{o.nombre}" />
-        </p:column>
+            <!-- CONTENT AREA -->
+            <div class="content-area">
+                <div class="card">
+                    <h2 class="section-title">
+                        <i class="pi pi-list"></i>
+                        Listado de Odontólogos
+                    </h2>
 
-        <p:column headerText="Colegiado">
-            <h:outputText value="#{o.colegiado}" />
-        </p:column>
+                    <p:dataTable value="#{catalogoOdontologosBean.odontologos}"
+                                 var="o"
+                                 rows="10"
+                                 paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords}"
+                                 emptyMessage="No hay odontólogos registrados"
+                                 styleClass="p-datatable-striped">
 
-        <p:column headerText="Especialidad">
-            <h:outputText value="#{o.especialidad}" />
-        </p:column>
+                        <p:column headerText="ID" width="60" style="text-align:center">
+                            <h:outputText value="#{o.id}" />
+                        </p:column>
 
-        <p:column headerText="Antigüedad">
-            <h:outputText value="#{o.antiguedad}" />
-        </p:column>
+                        <p:column headerText="Nombre Completo" sortBy="#{o.nombreCompleto}">
+                            <h:outputText value="#{o.nombreCompleto}" />
+                        </p:column>
 
-    </p:dataTable>
+                        <p:column headerText="Colegiado" sortBy="#{o.colegiado}">
+                            <h:outputText value="#{o.colegiado}" />
+                        </p:column>
 
+                        <p:column headerText="Especialidad" sortBy="#{o.especialidad}">
+                            <p:tag value="#{o.especialidad}" severity="info"/>
+                        </p:column>
+
+                        <p:column headerText="Antigüedad">
+                            <h:outputText value="#{o.antiguedad}" />
+                        </p:column>
+
+                        <p:column headerText="Estado" style="text-align:center">
+                            <p:tag value="#{o.activo ? 'ACTIVO' : 'INACTIVO'}"
+                                   severity="#{o.activo ? 'success' : 'danger'}"/>
+                        </p:column>
+
+                    </p:dataTable>
+                </div>
+            </div>
+        </div>
+    </div>
 </h:body>
 </html>

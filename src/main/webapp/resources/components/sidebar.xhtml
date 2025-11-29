@@ -17,53 +17,62 @@
 
         <div class="sidebar-menu">
 
+            <!-- INICIO -->
             <a href="#{request.contextPath}/principalrecep.xhtml"
                class="menu-item #{cc.attrs.activePage == 'inicio' ? 'active' : ''}">
                 <i class="pi pi-home"></i>
                 <span>Inicio</span>
             </a>
 
+            <!-- CITAS -->
             <a href="#{request.contextPath}/citas.xhtml"
                class="menu-item #{cc.attrs.activePage == 'citas' ? 'active' : ''}">
                 <i class="pi pi-calendar"></i>
                 <span>Gestión de Citas</span>
             </a>
 
-            <a href="#{request.contextPath}/prueba-pacientes.xhtml"
+            <!-- PACIENTES -->
+            <a href="#{request.contextPath}/pacientes.xhtml"
                class="menu-item #{cc.attrs.activePage == 'pacientes' ? 'active' : ''}">
                 <i class="pi pi-users"></i>
                 <span>Pacientes</span>
             </a>
 
-            <a href="#" class="menu-item" onclick="return false;">
+            <!-- USUARIOS -->
+            <a href="#{request.contextPath}/gestionusuarios.xhtml"
+               class="menu-item #{cc.attrs.activePage == 'usuarios' ? 'active' : ''}">
                 <i class="pi pi-user"></i>
-                <span>Empleados</span>
+                <span>Usuarios</span>
             </a>
 
-            <a href="#" class="menu-item" onclick="return false;">
-                <i class="pi pi-heart"></i>
-                <span>Tratamientos</span>
-            </a>
-
-            <a href="#{request.contextPath}/catalogo_seguros.xhtml"
-               class="menu-item #{cc.attrs.activePage == 'seguros' ? 'active' : ''}">
-                <i class="pi pi-shield"></i>
-                <span>Seguros Médicos</span>
-            </a>
-
+            <!-- ODONTÓLOGOS -->
             <a href="#{request.contextPath}/catalogo_odontologos.xhtml"
                class="menu-item #{cc.attrs.activePage == 'odontologos' ? 'active' : ''}">
                 <i class="pi pi-user-plus"></i>
                 <span>Odontólogos</span>
             </a>
 
-            <!-- ✅ Facturación ya funcionando -->
-            <a href="#{request.contextPath}/facturacion.xhtml"
+            <!-- TRATAMIENTOS -->
+            <a href="#" class="menu-item" onclick="return false;">
+                <i class="pi pi-heart"></i>
+                <span>Tratamientos</span>
+            </a>
+
+            <!-- SEGUROS MÉDICOS -->
+            <a href="#{request.contextPath}/catalogo_seguros.xhtml"
+               class="menu-item #{cc.attrs.activePage == 'seguros' ? 'active' : ''}">
+                <i class="pi pi-shield"></i>
+                <span>Seguros Médicos</span>
+            </a>
+
+            <!-- FACTURACIÓN -->
+            <a href="#{request.contextPath}/facturas.xhtml"
                class="menu-item #{cc.attrs.activePage == 'facturas' ? 'active' : ''}">
                 <i class="pi pi-file"></i>
                 <span>Facturación</span>
             </a>
 
+            <!-- UPLOAD S3 -->
             <a href="#{request.contextPath}/upload.xhtml"
                class="menu-item #{cc.attrs.activePage == 'upload' ? 'active' : ''}">
                 <i class="pi pi-upload"></i>

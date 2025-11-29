@@ -3,20 +3,68 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="jakarta.faces.core">
+      xmlns:f="jakarta.faces.core"
+      xmlns:comp="http://xmlns.jcp.org/jsf/composite/components">
 
 <h:head>
     <title>Catálogo de Seguros</title>
+    <h:outputStylesheet library="css" name="common-styles.css"/>
+    <h:outputStylesheet library="css" name="sidebar-styles.css"/>
 </h:head>
 
 <h:body>
-    <h2>Catálogo de Seguros Médicos</h2>
+    <div class="dashboard-container">
 
-    <p:dataTable value="#{catalogoSegurosBean.seguros}" var="seguro" style="width:400px">
-        <p:column headerText="Seguro">
-            <h:outputText value="#{seguro}" />
-        </p:column>
-    </p:dataTable>
+        <!-- SIDEBAR -->
+        <comp:sidebar activePage="seguros"/>
 
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+
+            <!-- TOP BAR -->
+            <div class="top-bar">
+                <h1>
+                    <i class="pi pi-shield"></i>
+                    Catálogo de Seguros Médicos
+                </h1>
+            </div>
+
+            <!-- CONTENT AREA -->
+            <div class="content-area">
+                <div class="card">
+                    <h2 class="section-title">
+                        <i class="pi pi-list"></i>
+                        Tipos de Seguros Disponibles
+                    </h2>
+
+                    <p:dataTable value="#{catalogoSegurosBean.seguros}"
+                                 var="seguro"
+                                 rowIndexVar="rowIndex"
+                                 styleClass="p-datatable-striped"
+                                 emptyMessage="No hay seguros disponibles">
+
+                        <p:column headerText="#" width="80" style="text-align:center">
+                            <h:outputText value="#{rowIndex + 1}" />
+                        </p:column>
+
+                        <p:column headerText="Nombre del Seguro">
+                            <h:outputText value="#{seguro}" style="font-weight: 600;"/>
+                        </p:column>
+
+                        <p:column headerText="Estado" style="text-align:center" width="150">
+                            <p:tag value="DISPONIBLE" severity="success"/>
+                        </p:column>
+
+                    </p:dataTable>
+
+                    <p style="margin-top: 1rem; color: #666; font-style: italic;">
+                        <i class="pi pi-info-circle"></i>
+                        Total de seguros disponibles: <strong>#{catalogoSegurosBean.seguros.size()}</strong>
+                    </p>
+
+                </div> <!-- Cierre de card -->
+            </div> <!-- Cierre de content-area -->
+        </div> <!-- Cierre de main-content -->
+    </div> <!-- Cierre de dashboard-container -->
 </h:body>
 </html>

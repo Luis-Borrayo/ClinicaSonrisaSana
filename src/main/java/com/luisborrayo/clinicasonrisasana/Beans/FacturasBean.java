@@ -13,10 +13,15 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Named
 @ViewScoped
 public class FacturasBean implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(FacturasBean.class.getName());
 
     @Inject
     private FacturasRepository facturasRepository;
@@ -43,29 +48,113 @@ public class FacturasBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        facturas = facturasRepository.findAll();
-        pacientes = pacientesRepository.findAll();
-        odontologos = odontologoRepository.findAll();
-        citas = citasRepository.findAll();
-        tratamientos = tratamientoRepository.findAll();
+        LOGGER.log(Level.INFO, "=== INICIALIZANDO FACTURASBEAN ===");
 
-        facturaActual = new Facturas();
-        facturaActual.setFechaEmision(LocalDateTime.now());
+        try {
+            facturas = facturasRepository.findAll();
+            pacientes = pacientesRepository.findAll();
+            odontologos = odontologoRepository.findAll();
+            citas = citasRepository.findAll();
+            tratamientos = tratamientoRepository.findAll();
+
+            facturaActual = new Facturas();
+            facturaActual.setFechaEmision(LocalDateTime.now());
+
+            LOGGER.log(Level.INFO, "✅ Datos cargados - Facturas: {0}, Pacientes: {1}, Odontólogos: {2}",
+                    new Object[]{facturas.size(), pacientes.size(), odontologos.size()});
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "❌ Error al inicializar FacturasBean", e);
+            addMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudieron cargar los datos: " + e.getMessage());
+        }
     }
 
-    public List<Facturas> getFacturas() { return facturas; }
-    public Facturas getFacturaActual() { return facturaActual; }
-    public List<Pacientes> getPacientes() { return pacientes; }
-    public List<Odontologo> getOdontologos() { return odontologos; }
-    public List<Citas> getCitas() { return citas; }
-    public List<Tratamiento> getTratamientos() { return tratamientos; }
+    /**
+     * Calcula el total de la factura
+     */
+    public void calcularTotal() {
+        try {
+            BigDecimal subtotal = facturaActual.getSubtotal() != null ? facturaActual.getSubtotal() : BigDecimal.ZERO;
+            BigDecimal descuento = facturaActual.getDescuento() != null ? facturaActual.getDescuento() : BigDecimal.ZERO;
+            BigDecimal pagosParciales = facturaActual.getPagosParciales() != null ? facturaActual.getPagosParciales() : BigDecimal.ZERO;
 
-    public Facturas.Seguro[] getSeguros() {
-        return Facturas.Seguro.values();
+            // Total = Subtotal - Descuento - PagosParciales
+            BigDecimal total = subtotal.subtract(descuento).subtract(pagosParciales);
+
+            // Asegurarse de que no sea negativo
+            if (total.compareTo(BigDecimal.ZERO) < 0) {
+                total = BigDecimal.ZERO;
+            }
+
+            facturaActual.setTotal(total);
+
+            LOGGER.log(Level.INFO, "💰 Total calculado: Q{0}", total);
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "❌ Error calculando total", e);
+            addMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo calcular el total");
+        }
     }
 
-    public Facturas.EstadoPago[] getEstadosPago() {
-        return Facturas.EstadoPago.values();
+    public void guardarFactura() {
+        LOGGER.log(Level.INFO, "=== GUARDANDO FACTURA ===");
+
+        try {
+            // Validaciones
+            if (facturaActual.getPaciente() == null) {
+                addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Debe seleccionar un paciente");
+                return;
+            }
+
+            if (facturaActual.getOdontologo() == null) {
+                addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Debe seleccionar un odontólogo");
+                return;
+            }
+
+            if (facturaActual.getCita() == null) {
+                addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Debe seleccionar una cita");
+                return;
+            }
+
+            if (facturaActual.getTratamiento() == null) {
+                addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Debe seleccionar un tratamiento");
+                return;
+            }
+
+            // Calcular total antes de guardar
+            calcularTotal();
+
+            // Guardar
+            facturasRepository.save(facturaActual);
+
+            addMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Factura guardada correctamente");
+
+            // Recargar lista y limpiar formulario
+            facturas = facturasRepository.findAll();
+            nuevaFactura();
+
+            LOGGER.log(Level.INFO, "✅ Factura guardada - ID: {0}", facturaActual.getId());
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "❌ Error al guardar factura", e);
+            addMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo guardar la factura: " + e.getMessage());
+        }
+    }
+
+    public void eliminarFactura() {
+        try {
+            if (facturaActual != null && facturaActual.getId() != null) {
+                facturasRepository.delete(facturaActual.getId());
+                facturas = facturasRepository.findAll();
+                addMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Factura eliminada correctamente");
+                nuevaFactura();
+
+                LOGGER.log(Level.INFO, "✅ Factura eliminada - ID: {0}", facturaActual.getId());
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "❌ Error al eliminar factura", e);
+            addMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo eliminar la factura");
+        }
     }
 
     public void nuevaFactura() {
@@ -77,31 +166,49 @@ public class FacturasBean implements Serializable {
         this.facturaActual = factura;
     }
 
-    public void guardarFactura() {
-        try {
-            facturasRepository.save(facturaActual);
-
-            agregarMensaje("Factura guardada correctamente");
-
-            facturas = facturasRepository.findAll();
-            nuevaFactura();
-
-        } catch (Exception e) {
-            agregarMensaje("Error al guardar factura: " + e.getMessage());
-        }
+    private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, detail));
     }
 
-    public void eliminarFactura(Facturas factura) {
-        try {
-            facturasRepository.delete(factura.getId());
-            facturas = facturasRepository.findAll();
-            agregarMensaje("Factura eliminada correctamente");
-        } catch (Exception e) {
-            agregarMensaje("No se pudo eliminar la factura");
-        }
+    // ==================== GETTERS Y SETTERS ====================
+
+    public List<Facturas> getFacturas() {
+        return facturas;
     }
 
-    private void agregarMensaje(String texto) {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(texto));
+    public void setFacturas(List<Facturas> facturas) {
+        this.facturas = facturas;
+    }
+
+    public Facturas getFacturaActual() {
+        return facturaActual;
+    }
+
+    public void setFacturaActual(Facturas facturaActual) {
+        this.facturaActual = facturaActual;
+    }
+
+    public List<Pacientes> getPacientes() {
+        return pacientes;
+    }
+
+    public List<Odontologo> getOdontologos() {
+        return odontologos;
+    }
+
+    public List<Citas> getCitas() {
+        return citas;
+    }
+
+    public List<Tratamiento> getTratamientos() {
+        return tratamientos;
+    }
+
+    public Facturas.Seguro[] getSeguros() {
+        return Facturas.Seguro.values();
+    }
+
+    public Facturas.EstadoPago[] getEstadosPago() {
+        return Facturas.EstadoPago.values();
     }
 }
