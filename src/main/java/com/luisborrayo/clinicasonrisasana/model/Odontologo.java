@@ -16,7 +16,12 @@ public class Odontologo {
         CIRUGIA_ORAL_Y_MAXILOFACIAL,
         PROSTODONCIA,
         IMPLANTOLOGIA_ORAL,
-        ODONTOLOGIA_ESTETICA
+        ODONTOLOGIA_ESTETICA;
+
+        // Método helper para mostrar nombres legibles
+        public String getDisplayName() {
+            return name().replace("_", " ");
+        }
     }
 
     @Id
@@ -42,6 +47,7 @@ public class Odontologo {
     @Column(nullable = false)
     private Especialidad especialidad;
 
+    // Constructores
     public Odontologo() {}
 
     public Odontologo(User usuario, String colegiado, String antiguedad, Especialidad especialidad) {
@@ -51,15 +57,25 @@ public class Odontologo {
         this.especialidad = especialidad;
     }
 
-    // ✅ MÉTODOS HELPER PARA MOSTRAR EN LA INTERFAZ
+    // ========================================
+    // MÉTODOS HELPER PARA LA INTERFAZ
+    // ========================================
+
+    /**
+     * Obtiene el nombre completo del odontólogo con su especialidad
+     * Usado en selectOneMenu para mostrar la lista completa
+     */
     public String getNombreCompleto() {
         if (usuario != null) {
-            return usuario.getNombres() + " " + usuario.getApellidos() + " - " + especialidad;
+            return usuario.getNombres() + " " + usuario.getApellidos() + " - " + especialidad.getDisplayName();
         }
-        return "Odontólogo " + colegiado + " - " + especialidad;
+        return "Odontólogo " + colegiado + " - " + especialidad.getDisplayName();
     }
 
-    // ✅ ESTE MÉTODO ES NECESARIO PARA LA TABLA
+    /**
+     * Obtiene solo el nombre del odontólogo sin especialidad
+     * Usado en tablas para mostrar solo el nombre
+     */
     public String getNombre() {
         if (usuario != null) {
             return usuario.getNombres() + " " + usuario.getApellidos();
@@ -67,10 +83,14 @@ public class Odontologo {
         return "Odontólogo " + colegiado;
     }
 
-    // Getters y Setters
+    // ========================================
+    // GETTERS Y SETTERS
+    // ========================================
+
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -78,6 +98,7 @@ public class Odontologo {
     public User getUsuario() {
         return usuario;
     }
+
     public void setUsuario(User usuario) {
         this.usuario = usuario;
     }
@@ -85,6 +106,7 @@ public class Odontologo {
     public String getColegiado() {
         return colegiado;
     }
+
     public void setColegiado(String colegiado) {
         this.colegiado = colegiado;
     }
@@ -92,6 +114,7 @@ public class Odontologo {
     public String getAntiguedad() {
         return antiguedad;
     }
+
     public void setAntiguedad(String antiguedad) {
         this.antiguedad = antiguedad;
     }
@@ -104,12 +127,43 @@ public class Odontologo {
     public Especialidad getEspecialidad() {
         return especialidad;
     }
+
     public void setEspecialidad(Especialidad especialidad) {
         this.especialidad = especialidad;
     }
 
+    // ========================================
+    // MÉTODOS CRÍTICOS PARA OMNIFACES CONVERTER
+    // ========================================
+
+    /**
+     * CRÍTICO: Este método es usado por omnifaces.SelectItemsConverter
+     * para convertir el objeto a String
+     */
     @Override
     public String toString() {
-        return getNombre() + " - " + especialidad;
+        // Usar el ID como identificador único
+        return String.format("Odontologo[id=%d]", id != null ? id : 0);
+    }
+
+    /**
+     * CRÍTICO: Necesario para que JSF pueda comparar objetos correctamente
+     * OmniFaces SelectItemsConverter requiere equals() implementado
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Odontologo)) return false;
+        Odontologo that = (Odontologo) o;
+        return id != null && id.equals(that.id);
+    }
+
+    /**
+     * CRÍTICO: Debe ser consistente con equals()
+     * Necesario para uso en colecciones (HashSet, HashMap, etc.)
+     */
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

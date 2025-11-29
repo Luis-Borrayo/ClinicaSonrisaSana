@@ -54,6 +54,16 @@
         .btn-actions {
             margin-right: 0.5rem;
         }
+
+        .ui-datatable .ui-datatable-header {
+            background: #f8f9fa;
+            border: none;
+        }
+
+        .ui-widget-header {
+            background: #1976d2;
+            color: white;
+        }
     </style>
 </h:head>
 
@@ -76,7 +86,7 @@
                                      icon="pi pi-arrow-left"
                                      styleClass="p-button-secondary"
                                      ajax="false"
-                                     outcome="principaladmin.xhtml" />
+                                     action="principaladmin?faces-redirect=true" />
                 </div>
             </div>
 
@@ -92,7 +102,7 @@
                                      icon="pi pi-plus"
                                      styleClass="p-button-success"
                                      actionListener="#{tratamientoBean.limpiar}"
-                                     update=":dlgTratamientoForm"
+                                     update=":dlgTratamiento:dlgTratamientoForm"
                                      oncomplete="PF('dlgTratamiento').show();" />
 
                     <p:commandButton value="Actualizar Tabla"
@@ -110,35 +120,41 @@
                              paginator="true"
                              rows="10"
                              rowsPerPageTemplate="5,10,15,20"
+                             paginatorPosition="bottom"
                              paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                              currentPageReportTemplate="Mostrando {startRecord} a {endRecord} de {totalRecords} tratamientos"
                              responsiveLayout="scroll"
                              styleClass="p-datatable-striped"
-                             emptyMessage="No hay tratamientos registrados">
+                             emptyMessage="No hay tratamientos registrados"
+                             widgetVar="tblTratamientos">
 
                     <p:column headerText="ID" sortBy="#{t.id}" style="width:70px; text-align:center;">
                         <h:outputText value="#{t.id}" />
                     </p:column>
 
-                    <p:column headerText="Nombre" sortBy="#{t.nombre}" filterBy="#{t.nombre}" filterMatchMode="contains">
+                    <p:column headerText="Nombre" sortBy="#{t.nombre}" filterBy="#{t.nombre}"
+                              filterMatchMode="contains" style="min-width:150px;">
                         <h:outputText value="#{t.nombre}" style="font-weight: 600;" />
                     </p:column>
 
-                    <p:column headerText="Descripción">
-                        <h:outputText value="#{t.descripcion.length() > 50 ? t.descripcion.substring(0, 50) + '...' : t.descripcion}" />
+                    <p:column headerText="Descripción" style="min-width:200px;">
+                        <h:outputText value="#{t.descripcion.length() > 60 ? t.descripcion.substring(0, 60).concat('...') : t.descripcion}"
+                                      title="#{t.descripcion}" />
                     </p:column>
 
                     <p:column headerText="Duración" sortBy="#{t.duracion}" style="width:120px; text-align:center;">
                         <h:outputText value="#{t.duracionFormateada}" />
                     </p:column>
 
-                    <p:column headerText="Costo" sortBy="#{t.costo}" style="width:120px; text-align:right;">
+                    <p:column headerText="Costo" sortBy="#{t.costo}" style="width:140px; text-align:right;">
                         <h:outputText value="#{t.costoFormateado}" style="font-weight: 600; color: #2ecc71;" />
                     </p:column>
 
-                    <p:column headerText="Especialidad" sortBy="#{t.especialidad}" filterBy="#{t.especialidad}" filterMatchMode="equals">
+                    <p:column headerText="Especialidad" sortBy="#{t.especialidad}"
+                              filterBy="#{t.especialidad}" filterMatchMode="equals" style="width:180px;">
                         <f:facet name="filter">
-                            <p:selectOneMenu onchange="PF('tblTratamientos').filter()" styleClass="p-column-filter">
+                            <p:selectOneMenu onchange="PF('tblTratamientos').filter()"
+                                             styleClass="p-column-filter" style="width: 100%;">
                                 <f:selectItem itemLabel="Todas" itemValue="#{null}" noSelectionOption="true" />
                                 <f:selectItems value="#{tratamientoBean.especialidades}" var="esp"
                                                itemLabel="#{esp}" itemValue="#{esp}" />
@@ -147,32 +163,30 @@
                         <p:tag value="#{t.especialidad}" severity="info" />
                     </p:column>
 
-                    <p:column headerText="Odontólogo" filterBy="#{t.nombreOdontologo}" filterMatchMode="contains">
+                    <p:column headerText="Odontólogo" filterBy="#{t.nombreOdontologo}"
+                              filterMatchMode="contains" style="min-width:180px;">
                         <h:outputText value="#{t.nombreOdontologo}" />
                     </p:column>
 
-                    <!-- Columna de acciones -->
-                    <p:column headerText="Acciones" style="width:160px; text-align:center;">
-
-                        <!-- Botón Editar -->
+                    <p:column headerText="Acciones" style="width:160px; text-align:center;" exportable="false">
                         <p:commandButton icon="pi pi-pencil"
                                          title="Editar tratamiento"
                                          styleClass="p-button-warning p-button-sm btn-actions"
                                          actionListener="#{tratamientoBean.editar(t)}"
-                                         update=":dlgTratamientoForm"
-                                         oncomplete="PF('dlgTratamiento').show();" />
+                                         update=":dlgTratamiento:dlgTratamientoForm"
+                                         oncomplete="PF('dlgTratamiento').show();">
+                            <p:resetInput target=":dlgTratamiento:dlgTratamientoForm" />
+                        </p:commandButton>
 
-                        <!-- Botón Eliminar -->
                         <p:commandButton icon="pi pi-trash"
                                          title="Eliminar permanentemente"
                                          styleClass="p-button-danger p-button-sm"
                                          actionListener="#{tratamientoBean.eliminar(t.id)}"
                                          update="tblTratamientos msgTratamiento">
                             <p:confirm header="Confirmación"
-                                       message="¿Eliminar el tratamiento #{t.nombre}? Esta acción no se puede deshacer."
+                                       message="¿Está seguro de eliminar el tratamiento '#{t.nombre}'? Esta acción no se puede deshacer."
                                        icon="pi pi-exclamation-triangle" />
                         </p:commandButton>
-
                     </p:column>
 
                 </p:dataTable>
@@ -191,37 +205,41 @@
               width="700"
               responsive="true"
               closable="true"
-              resizable="false">
+              resizable="false"
+              closeOnEscape="true">
 
         <h:form id="dlgTratamientoForm">
 
-            <p:messages id="msgDialog" autoUpdate="false" closable="true" />
+            <p:messages id="msgDialog" closable="true" />
 
             <div style="padding: 1rem;">
 
                 <p:panelGrid columns="2" layout="grid" styleClass="p-fluid"
                              columnClasses="p-col-12 p-md-4,p-col-12 p-md-8">
 
-                    <!-- Nombre -->
+                    <!-- Nombre del Tratamiento -->
                     <p:outputLabel value="Nombre:" for="nombre" indicateRequired="true" />
                     <p:inputText id="nombre"
                                  value="#{tratamientoBean.tratamiento.nombre}"
                                  required="true"
-                                 requiredMessage="El nombre es obligatorio"
-                                 maxlength="100" />
+                                 requiredMessage="El nombre del tratamiento es obligatorio"
+                                 maxlength="100"
+                                 placeholder="Ej: Limpieza Dental, Ortodoncia, etc." />
 
                     <!-- Descripción -->
                     <p:outputLabel value="Descripción:" for="descripcion" indicateRequired="true" />
-                    <p:inputTextarea id="descripcion"
-                                     value="#{tratamientoBean.tratamiento.descripcion}"
-                                     rows="4"
-                                     required="true"
-                                     requiredMessage="La descripción es obligatoria"
-                                     maxlength="500"
-                                     counter="contador"
-                                     counterTemplate="{0} caracteres restantes" />
-                    <h:outputText value="" />
-                    <h:outputText id="contador" style="font-size: 0.875rem; color: #666;" />
+                    <div>
+                        <p:inputTextarea id="descripcion"
+                                         value="#{tratamientoBean.tratamiento.descripcion}"
+                                         rows="4"
+                                         required="true"
+                                         requiredMessage="La descripción es obligatoria"
+                                         maxlength="500"
+                                         counter="contador"
+                                         counterTemplate="{0} caracteres restantes"
+                                         placeholder="Describa el tratamiento detalladamente..." />
+                        <h:outputText id="contador" style="font-size: 0.875rem; color: #666; display: block; margin-top: 0.5rem;" />
+                    </div>
 
                     <!-- Duración (en minutos) -->
                     <p:outputLabel value="Duración (min):" for="duracion" indicateRequired="true" />
@@ -231,7 +249,9 @@
                                    requiredMessage="La duración es obligatoria"
                                    minValue="1"
                                    maxValue="600"
-                                   decimalPlaces="0" />
+                                   decimalPlaces="0"
+                                   placeholder="Ej: 45"
+                                   suffix=" minutos" />
 
                     <!-- Costo -->
                     <p:outputLabel value="Costo (Q):" for="costo" indicateRequired="true" />
@@ -242,29 +262,43 @@
                                    minValue="0"
                                    mode="decimal"
                                    minFractionDigits="2"
-                                   maxFractionDigits="2" />
+                                   maxFractionDigits="2"
+                                   placeholder="0.00"
+                                   prefix="Q " />
 
                     <!-- Especialidad -->
                     <p:outputLabel value="Especialidad:" for="especialidad" indicateRequired="true" />
                     <p:selectOneMenu id="especialidad"
                                      value="#{tratamientoBean.tratamiento.especialidad}"
                                      required="true"
-                                     requiredMessage="La especialidad es obligatoria">
-                        <f:selectItem itemLabel="Seleccione una especialidad" itemValue="#{null}" noSelectionOption="true" />
-                        <f:selectItems value="#{tratamientoBean.especialidades}" var="esp"
-                                       itemLabel="#{esp}" itemValue="#{esp}" />
+                                     requiredMessage="La especialidad es obligatoria"
+                                     filter="true"
+                                     filterMatchMode="contains">
+                        <f:selectItem itemLabel="Seleccione una especialidad"
+                                      itemValue="#{null}"
+                                      noSelectionOption="true" />
+                        <f:selectItems value="#{tratamientoBean.especialidades}"
+                                       var="esp"
+                                       itemLabel="#{esp.toString().replace('_', ' ')}"
+                                       itemValue="#{esp}" />
                     </p:selectOneMenu>
 
-                    <!-- Odontólogo -->
+                    <!-- Odontólogo - USANDO TU CONVERTER PERSONALIZADO -->
                     <p:outputLabel value="Odontólogo:" for="odontologo" indicateRequired="true" />
                     <p:selectOneMenu id="odontologo"
                                      value="#{tratamientoBean.tratamiento.odontologo}"
                                      required="true"
                                      requiredMessage="Debe seleccionar un odontólogo"
-                                     converter="omnifaces.SelectItemsConverter">
-                        <f:selectItem itemLabel="Seleccione un odontólogo" itemValue="#{null}" noSelectionOption="true" />
-                        <f:selectItems value="#{tratamientoBean.odontologos}" var="odon"
-                                       itemLabel="#{odon.nombreCompleto}" itemValue="#{odon}" />
+                                     filter="true"
+                                     filterMatchMode="contains"
+                                     converter="odontologoConverter">
+                        <f:selectItem itemLabel="Seleccione un odontólogo"
+                                      itemValue="#{null}"
+                                      noSelectionOption="true" />
+                        <f:selectItems value="#{tratamientoBean.odontologos}"
+                                       var="odon"
+                                       itemLabel="#{odon.nombreCompleto}"
+                                       itemValue="#{odon}" />
                     </p:selectOneMenu>
 
                 </p:panelGrid>
@@ -296,9 +330,20 @@
     </p:dialog>
 
     <!-- Diálogo de confirmación global -->
-    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-        <p:commandButton value="Sí" type="button" styleClass="p-button-success ui-confirmdialog-yes" />
-        <p:commandButton value="No" type="button" styleClass="p-button-danger ui-confirmdialog-no" />
+    <p:confirmDialog global="true"
+                     showEffect="fade"
+                     hideEffect="fade"
+                     responsive="true"
+                     width="400"
+                     severity="warn">
+        <p:commandButton value="Sí, eliminar"
+                         type="button"
+                         styleClass="p-button-danger ui-confirmdialog-yes"
+                         icon="pi pi-check" />
+        <p:commandButton value="Cancelar"
+                         type="button"
+                         styleClass="p-button-secondary ui-confirmdialog-no"
+                         icon="pi pi-times" />
     </p:confirmDialog>
 
 </h:body>
