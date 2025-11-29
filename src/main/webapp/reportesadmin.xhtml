@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:comp="http://xmlns.jcp.org/jsf/composite/components">
+
+<h:head>
+    <title>Reportes y Estadísticas - Sonrisa Sana</title>
+    <h:outputStylesheet library="css" name="commonadmin-styles.css"/>
+    <h:outputStylesheet library="css" name="sidebaradmin-styles.css"/>
+
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border-left: 4px solid #1976d2;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #1976d2, #2196f3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1976d2;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .chart-title {
+            color: #1976d2;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .top-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .top-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+            align-items: center;
+        }
+
+        .top-item:hover {
+            background: #f5f5f5;
+        }
+
+        .top-item:last-child {
+            border-bottom: none;
+        }
+
+        .top-rank {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #1976d2, #2196f3);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .top-info {
+            flex: 1;
+            margin: 0 1rem;
+        }
+
+        .top-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .top-subtitle {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .top-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1976d2;
+            flex-shrink: 0;
+        }
+
+        .export-section {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-item {
+                flex-wrap: wrap;
+            }
+
+            .top-info {
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="dashboard-container">
+        <!-- SIDEBAR -->
+        <comp:sidebaradmin activePage="reportes"/>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- TOP BAR -->
+            <div class="top-bar">
+                <h1>
+                    <i class="pi pi-chart-bar"></i>
+                    Reportes y Estadísticas
+                </h1>
+            </div>
+
+            <!-- CONTENT AREA -->
+            <div class="content-area">
+                <h:form id="reportesForm">
+                    <p:messages id="messages" autoUpdate="true"/>
+
+                    <!-- FILTROS -->
+                    <div class="filter-section">
+                        <h3 style="color: #1976d2; margin-bottom: 1rem;">
+                            <i class="pi pi-filter"></i> Filtros de Período
+                        </h3>
+                        <div class="filter-grid">
+                            <div>
+                                <h:outputLabel value="Período:" style="font-weight: 600; display: block; margin-bottom: 0.5rem;"/>
+                                <p:selectOneMenu value="#{reportesBean.periodoSeleccionado}" style="width: 100%;">
+                                    <f:selectItem itemLabel="Mes Actual" itemValue="mes"/>
+                                    <f:selectItem itemLabel="Trimestre Actual" itemValue="trimestre"/>
+                                    <f:selectItem itemLabel="Año Actual" itemValue="año"/>
+                                    <p:ajax listener="#{reportesBean.cambiarPeriodo}" update="reportesForm"/>
+                                </p:selectOneMenu>
+                            </div>
+
+                            <div>
+                                <h:outputLabel value="Fecha Inicio:" style="font-weight: 600; display: block; margin-bottom: 0.5rem;"/>
+                                <p:calendar value="#{reportesBean.fechaInicio}"
+                                            pattern="dd/MM/yyyy"
+                                            showIcon="true"
+                                            style="width: 100%;"/>
+                            </div>
+
+                            <div>
+                                <h:outputLabel value="Fecha Fin:" style="font-weight: 600; display: block; margin-bottom: 0.5rem;"/>
+                                <p:calendar value="#{reportesBean.fechaFin}"
+                                            pattern="dd/MM/yyyy"
+                                            showIcon="true"
+                                            style="width: 100%;"/>
+                            </div>
+
+                            <div>
+                                <p:commandButton value="Actualizar"
+                                                 icon="pi pi-refresh"
+                                                 action="#{reportesBean.cargarReportes}"
+                                                 update="reportesForm"
+                                                 styleClass="p-button-success"
+                                                 style="width: 100%;"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TARJETAS DE ESTADÍSTICAS GENERALES -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="pi pi-calendar"></i>
+                            </div>
+                            <div class="stat-value">#{reportesBean.totalCitas}</div>
+                            <div class="stat-label">Total de Citas</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="pi pi-users"></i>
+                            </div>
+                            <div class="stat-value">#{reportesBean.totalPacientes}</div>
+                            <div class="stat-label">Total de Pacientes</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="pi pi-dollar"></i>
+                            </div>
+                            <div class="stat-value">
+                                <h:outputText value="Q #{reportesBean.ingresoTotal}">
+                                    <f:convertNumber type="number" maxFractionDigits="2" minFractionDigits="2"/>
+                                </h:outputText>
+                            </div>
+                            <div class="stat-label">Ingresos Cobrados</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="pi pi-clock"></i>
+                            </div>
+                            <div class="stat-value">
+                                <h:outputText value="Q #{reportesBean.ingresoPendiente}">
+                                    <f:convertNumber type="number" maxFractionDigits="2" minFractionDigits="2"/>
+                                </h:outputText>
+                            </div>
+                            <div class="stat-label">Ingresos Pendientes</div>
+                        </div>
+                    </div>
+
+                    <!-- TABLAS DE ESTADÍSTICAS -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                        <!-- TABLA: CITAS POR ESTADO -->
+                        <div class="chart-card">
+                            <h3 class="chart-title">
+                                <i class="pi pi-chart-pie"></i>
+                                Citas por Estado
+                            </h3>
+                            <p:dataTable value="#{reportesBean.citasPorEstado}"
+                                         var="item"
+                                         emptyMessage="No hay datos para mostrar"
+                                         styleClass="p-datatable-sm">
+                                <p:column headerText="Estado">
+                                    <h:outputText value="#{item.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Cantidad" style="text-align: center; width: 100px;">
+                                    <h:outputText value="#{item.cantidad}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+
+                        <!-- TABLA: INGRESOS POR MES -->
+                        <div class="chart-card">
+                            <h3 class="chart-title">
+                                <i class="pi pi-chart-line"></i>
+                                Ingresos por Mes
+                            </h3>
+                            <p:dataTable value="#{reportesBean.ingresosPorMes}"
+                                         var="item"
+                                         emptyMessage="No hay datos para mostrar"
+                                         styleClass="p-datatable-sm">
+                                <p:column headerText="Mes">
+                                    <h:outputText value="#{item.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Ingresos" style="text-align: right; width: 120px;">
+                                    <h:outputText value="Q #{item.monto}">
+                                        <f:convertNumber type="number" maxFractionDigits="2" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </div>
+
+                    <!-- TOP ODONTÓLOGOS Y TRATAMIENTOS -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem;">
+                        <!-- TOP ODONTÓLOGOS -->
+                        <div class="chart-card">
+                            <h3 class="chart-title">
+                                <i class="pi pi-trophy"></i>
+                                Top 5 Odontólogos por Ingresos
+                            </h3>
+
+                            <h:panelGroup rendered="#{empty reportesBean.topOdontologos}">
+                                <div class="empty-state">
+                                    <i class="pi pi-inbox"></i>
+                                    <p>No hay datos disponibles</p>
+                                </div>
+                            </h:panelGroup>
+
+                            <ul class="top-list">
+                                <ui:repeat value="#{reportesBean.topOdontologos}" var="od" varStatus="status">
+                                    <h:panelGroup rendered="#{status.index lt 5}">
+                                        <li class="top-item">
+                                            <div class="top-rank">#{status.index + 1}</div>
+                                            <div class="top-info">
+                                                <div class="top-name">#{od.nombre}</div>
+                                                <div class="top-subtitle">#{od.especialidad} • #{od.totalCitas} citas</div>
+                                            </div>
+                                            <div class="top-value">
+                                                <h:outputText value="Q #{od.ingresoGenerado}">
+                                                    <f:convertNumber type="number" maxFractionDigits="2" minFractionDigits="2"/>
+                                                </h:outputText>
+                                            </div>
+                                        </li>
+                                    </h:panelGroup>
+                                </ui:repeat>
+                            </ul>
+                        </div>
+
+                        <!-- TOP TRATAMIENTOS -->
+                        <div class="chart-card">
+                            <h3 class="chart-title">
+                                <i class="pi pi-star"></i>
+                                Top 5 Tratamientos más Rentables
+                            </h3>
+
+                            <h:panelGroup rendered="#{empty reportesBean.topTratamientos}">
+                                <div class="empty-state">
+                                    <i class="pi pi-inbox"></i>
+                                    <p>No hay datos disponibles</p>
+                                </div>
+                            </h:panelGroup>
+
+                            <ul class="top-list">
+                                <ui:repeat value="#{reportesBean.topTratamientos}" var="trat" varStatus="status">
+                                    <h:panelGroup rendered="#{status.index lt 5}">
+                                        <li class="top-item">
+                                            <div class="top-rank">#{status.index + 1}</div>
+                                            <div class="top-info">
+                                                <div class="top-name">#{trat.nombre}</div>
+                                                <div class="top-subtitle">Realizado #{trat.vecesRealizado} veces</div>
+                                            </div>
+                                            <div class="top-value">
+                                                <h:outputText value="Q #{trat.ingresoGenerado}">
+                                                    <f:convertNumber type="number" maxFractionDigits="2" minFractionDigits="2"/>
+                                                </h:outputText>
+                                            </div>
+                                        </li>
+                                    </h:panelGroup>
+                                </ui:repeat>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN DE EXPORTACIÓN -->
+                    <div class="export-section" style="margin-top: 2rem;">
+                        <h3 style="color: #1976d2; margin-bottom: 1rem;">
+                            <i class="pi pi-download"></i> Exportar Reportes
+                        </h3>
+                        <p style="color: #666; margin-bottom: 1.5rem;">
+                            Descarga los reportes en diferentes formatos
+                        </p>
+                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                            <p:commandButton value="Exportar PDF"
+                                             icon="pi pi-file-pdf"
+                                             styleClass="p-button-danger"
+                                             ajax="false">
+                                <p:dataExporter type="pdf" target="exportTable" fileName="reporte_citas"/>
+                            </p:commandButton>
+
+                            <p:commandButton value="Exportar Excel"
+                                             icon="pi pi-file-excel"
+                                             styleClass="p-button-success"
+                                             ajax="false">
+                                <p:dataExporter type="xls" target="exportTable" fileName="reporte_citas"/>
+                            </p:commandButton>
+
+                            <p:commandButton value="Imprimir"
+                                             icon="pi pi-print"
+                                             styleClass="p-button-secondary"
+                                             onclick="window.print(); return false;"/>
+                        </div>
+                    </div>
+
+                    <!-- TABLA OCULTA PARA EXPORTACIÓN -->
+                    <p:dataTable id="exportTable"
+                                 value="#{reportesBean.citasPorPeriodo}"
+                                 var="cita"
+                                 style="display: none;">
+                        <p:column headerText="ID">
+                            <h:outputText value="#{cita.id}"/>
+                        </p:column>
+                        <p:column headerText="Paciente">
+                            <h:outputText value="#{cita.paciente.nombreCompleto}"/>
+                        </p:column>
+                        <p:column headerText="Odontólogo">
+                            <h:outputText value="#{cita.odontologo.nombreCompleto}"/>
+                        </p:column>
+                        <p:column headerText="Fecha">
+                            <h:outputText value="#{cita.fechaCita}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Estado">
+                            <h:outputText value="#{cita.estado}"/>
+                        </p:column>
+                    </p:dataTable>
+
+                </h:form>
+            </div>
+        </div>
+    </div>
+</h:body>
+</html>

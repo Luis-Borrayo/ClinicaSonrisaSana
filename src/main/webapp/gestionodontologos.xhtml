@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:comp="http://xmlns.jcp.org/jsf/composite/components">
+
+<h:head>
+    <title>Gestión de Odontólogos - Sonrisa Sana</title>
+    <h:outputStylesheet library="css" name="commonadmin-styles.css"/>
+    <h:outputStylesheet library="css" name="sidebaradmin-styles.css"/>
+</h:head>
+
+<h:body>
+    <div class="dashboard-container">
+
+        <!-- SIDEBAR ADMIN -->
+        <comp:sidebaradmin activePage="odontologos"/>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+
+            <!-- TOP BAR -->
+            <div class="top-bar">
+                <h1>
+                    <i class="pi pi-user-plus"></i>
+                    Gestión de Odontólogos
+                </h1>
+            </div>
+
+            <!-- CONTENT AREA -->
+            <div class="content-area">
+
+                <h:form id="mainForm">
+
+                    <!-- CARD PRINCIPAL -->
+                    <div class="card">
+                        <h2 class="section-title">
+                            <i class="pi pi-plus-circle"></i>
+                            Registro de Nuevo Odontólogo
+                        </h2>
+
+                        <!-- MENSAJES -->
+                        <p:messages id="messages" showDetail="true" autoUpdate="true"/>
+
+                        <!-- FORMULARIO -->
+                        <div class="form-grid">
+
+                            <!-- DATOS PERSONALES -->
+                            <div class="form-field">
+                                <h:outputLabel for="nombres" value="Nombres:"/>
+                                <p:inputText id="nombres"
+                                             value="#{gestionOdontologosBean.nombres}"
+                                             required="true"
+                                             requiredMessage="Los nombres son obligatorios"
+                                             placeholder="Ej: Juan Carlos"
+                                             style="width: 100%"/>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="apellidos" value="Apellidos:"/>
+                                <p:inputText id="apellidos"
+                                             value="#{gestionOdontologosBean.apellidos}"
+                                             required="true"
+                                             requiredMessage="Los apellidos son obligatorios"
+                                             placeholder="Ej: Pérez García"
+                                             style="width: 100%"/>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="correo" value="Correo Electrónico:"/>
+                                <p:inputText id="correo"
+                                             value="#{gestionOdontologosBean.correo}"
+                                             required="true"
+                                             requiredMessage="El correo es obligatorio"
+                                             placeholder="odontologo@clinica.com"
+                                             style="width: 100%"/>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="telefono" value="Teléfono:"/>
+                                <p:inputText id="telefono"
+                                             value="#{gestionOdontologosBean.telefono}"
+                                             placeholder="+502 1234-5678"
+                                             style="width: 100%"/>
+                            </div>
+
+                            <!-- DATOS DE ACCESO -->
+                            <div class="form-field">
+                                <h:outputLabel for="usuario" value="Usuario (Login):"/>
+                                <p:inputText id="usuario"
+                                             value="#{gestionOdontologosBean.usuario}"
+                                             required="true"
+                                             requiredMessage="El usuario es obligatorio"
+                                             placeholder="usuario_login"
+                                             disabled="#{gestionOdontologosBean.nuevoOdontologo.id != null}"
+                                             style="width: 100%"/>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="password" value="Contraseña:"/>
+                                <p:password id="password"
+                                            value="#{gestionOdontologosBean.password}"
+                                            feedback="true"
+                                            toggleMask="true"
+                                            required="#{gestionOdontologosBean.nuevoOdontologo.id == null}"
+                                            requiredMessage="La contraseña es obligatoria"
+                                            placeholder="#{gestionOdontologosBean.nuevoOdontologo.id == null ? 'Ingrese contraseña' : 'Dejar vacío para no cambiar'}"
+                                            style="width: 100%"/>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="confirmPassword" value="Confirmar Contraseña:"/>
+                                <p:password id="confirmPassword"
+                                            value="#{gestionOdontologosBean.confirmPassword}"
+                                            feedback="false"
+                                            toggleMask="true"
+                                            required="#{gestionOdontologosBean.nuevoOdontologo.id == null}"
+                                            requiredMessage="Debe confirmar la contraseña"
+                                            style="width: 100%"/>
+                            </div>
+
+                            <!-- DATOS PROFESIONALES -->
+                            <div class="form-field">
+                                <h:outputLabel for="colegiado" value="Número de Colegiado:"/>
+                                <p:inputText id="colegiado"
+                                             value="#{gestionOdontologosBean.colegiado}"
+                                             required="true"
+                                             requiredMessage="El número de colegiado es obligatorio"
+                                             placeholder="COLEG-001"
+                                             style="width: 100%"/>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="especialidad" value="Especialidad:"/>
+                                <p:selectOneMenu id="especialidad"
+                                                 value="#{gestionOdontologosBean.especialidad}"
+                                                 required="true"
+                                                 requiredMessage="La especialidad es obligatoria"
+                                                 style="width: 100%">
+                                    <f:selectItem itemLabel="-- Seleccione especialidad --" itemValue="#{null}"/>
+                                    <f:selectItems value="#{gestionOdontologosBean.especialidades}"/>
+                                </p:selectOneMenu>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="anosExp" value="Años de Experiencia:"/>
+                                <p:inputNumber id="anosExp"
+                                               value="#{gestionOdontologosBean.anosExperiencia}"
+                                               minValue="0"
+                                               maxValue="50"
+                                               decimalPlaces="0"
+                                               style="width: 100%"/>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="fechaIngreso" value="Fecha de Ingreso:"/>
+                                <p:calendar id="fechaIngreso"
+                                            value="#{gestionOdontologosBean.fechaIngreso}"
+                                            pattern="dd/MM/yyyy"
+                                            showIcon="true"
+                                            navigator="true"
+                                            yearRange="c-50:c"
+                                            style="width: 100%"/>
+                            </div>
+
+                            <div class="form-field full-width">
+                                <h:outputLabel for="horario" value="Horario de Atención:"/>
+                                <p:inputTextarea id="horario"
+                                                 value="#{gestionOdontologosBean.horario}"
+                                                 rows="2"
+                                                 placeholder="Ej: Lunes a Viernes 8:00-17:00"
+                                                 style="width:100%"/>
+                            </div>
+
+                            <!-- ESTADO -->
+                            <div class="form-field">
+                                <h:outputLabel for="activo" value="Estado:"/>
+                                <p:selectBooleanCheckbox id="activo"
+                                                         value="#{gestionOdontologosBean.activo}">
+                                    <p:outputLabel value="Activo" style="margin-left: 10px;"/>
+                                </p:selectBooleanCheckbox>
+                            </div>
+
+                        </div>
+
+                        <!-- BOTONES -->
+                        <div class="form-actions">
+                            <p:commandButton value="Guardar Odontólogo"
+                                             action="#{gestionOdontologosBean.guardarOdontologo}"
+                                             icon="pi pi-save"
+                                             styleClass="p-button-success"
+                                             update="mainForm:messages, mainForm:tablaOdontologos, mainForm"
+                                             process="@form"/>
+
+                            <p:commandButton value="Cancelar"
+                                             action="#{gestionOdontologosBean.cancelarEdicion}"
+                                             icon="pi pi-times"
+                                             styleClass="p-button-secondary"
+                                             update="mainForm"
+                                             process="@this"
+                                             immediate="true"/>
+                        </div>
+
+                    </div>
+
+                    <!-- TABLA DE ODONTOLOGOS -->
+                    <div class="card">
+                        <h2 class="section-title">
+                            <i class="pi pi-list"></i>
+                            Listado de Odontólogos
+                        </h2>
+
+                        <!-- BARRA DE BÚSQUEDA -->
+                        <div class="search-bar">
+                            <div class="form-field" style="flex: 2;">
+                                <h:outputLabel for="busqueda" value="Buscar Odontólogo:"/>
+                                <p:inputText id="busqueda"
+                                             value="#{gestionOdontologosBean.criterioBusqueda}"
+                                             placeholder="Buscar por nombre, colegiado o especialidad..."
+                                             style="width: 100%">
+                                    <p:ajax event="keyup"
+                                            listener="#{gestionOdontologosBean.buscarOdontologos}"
+                                            update="tablaOdontologos"
+                                            delay="500"/>
+                                </p:inputText>
+                            </div>
+
+                            <div style="display: flex; gap: 10px; align-items: flex-end;">
+                                <p:commandButton value="Buscar"
+                                                 icon="pi pi-search"
+                                                 action="#{gestionOdontologosBean.buscarOdontologos}"
+                                                 update="tablaOdontologos"
+                                                 styleClass="p-button-success"/>
+
+                                <p:commandButton value="Limpiar"
+                                                 icon="pi pi-times"
+                                                 action="#{gestionOdontologosBean.buscarOdontologos}"
+                                                 update="tablaOdontologos, busqueda"
+                                                 styleClass="p-button-secondary"
+                                                 onclick="document.getElementById('mainForm:busqueda').value='';">
+                                    <f:setPropertyActionListener value=""
+                                                                 target="#{gestionOdontologosBean.criterioBusqueda}"/>
+                                </p:commandButton>
+                            </div>
+                        </div>
+
+                        <p:dataTable id="tablaOdontologos"
+                                     value="#{gestionOdontologosBean.odontologos}"
+                                     var="o"
+                                     paginator="true"
+                                     rows="10"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,15"
+                                     currentPageReportTemplate="Mostrando {startRecord} a {endRecord} de {totalRecords} odontólogos"
+                                     emptyMessage="No se encontraron odontólogos">
+
+                            <p:column headerText="ID" width="80" style="text-align:center">
+                                <h:outputText value="#{o.id}"/>
+                            </p:column>
+
+                            <p:column headerText="Nombre Completo">
+                                <h:outputText value="#{o.nombreCompleto}"/>
+                            </p:column>
+
+                            <p:column headerText="Colegiado" width="120">
+                                <h:outputText value="#{o.colegiado}"/>
+                            </p:column>
+
+                            <p:column headerText="Especialidad">
+                                <p:tag value="#{o.especialidad}" severity="info"/>
+                            </p:column>
+
+                            <p:column headerText="Correo">
+                                <h:outputText value="#{o.usuario.correo}"/>
+                            </p:column>
+
+                            <p:column headerText="Experiencia" width="120" style="text-align:center">
+                                <h:outputText value="#{o.antiguedad} años"/>
+                            </p:column>
+
+                            <p:column headerText="Estado" width="100" style="text-align:center">
+                                <p:tag value="#{o.activo ? 'ACTIVO' : 'INACTIVO'}"
+                                       severity="#{o.activo ? 'success' : 'danger'}"/>
+                            </p:column>
+
+                            <p:column headerText="Acciones" width="140" style="text-align:center">
+                                <p:commandButton icon="pi pi-pencil"
+                                                 title="Editar"
+                                                 styleClass="p-button-warning p-button-sm"
+                                                 action="#{gestionOdontologosBean.editarOdontologo}"
+                                                 update="messages mainForm">
+                                    <f:setPropertyActionListener
+                                            value="#{o}"
+                                            target="#{gestionOdontologosBean.odontologoSeleccionado}"/>
+                                </p:commandButton>
+
+                                <p:commandButton icon="pi pi-trash"
+                                                 title="Eliminar"
+                                                 styleClass="p-button-danger p-button-sm"
+                                                 style="margin-left:5px"
+                                                 action="#{gestionOdontologosBean.eliminarOdontologo}"
+                                                 update="tablaOdontologos, messages"
+                                                 onclick="return confirm('¿Está seguro de eliminar al odontólogo #{o.nombreCompleto}?')">
+                                    <f:setPropertyActionListener
+                                            value="#{o}"
+                                            target="#{gestionOdontologosBean.odontologoSeleccionado}"/>
+                                </p:commandButton>
+                            </p:column>
+
+                        </p:dataTable>
+                    </div>
+
+                </h:form>
+
+            </div>
+        </div>
+    </div>
+
+</h:body>
+</html>
