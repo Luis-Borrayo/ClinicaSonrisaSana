@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+      xmlns:p="http://primefaces.org/ui">
+
+<composite:interface>
+    <composite:attribute name="activePage" type="java.lang.String" required="true"/>
+</composite:interface>
+
+<composite:implementation>
+    <!-- Incluir CSS del sidebar -->
+    <h:outputStylesheet name="css/sidebarmedic-styles.css"/>
+
+    <div class="sidebar medic-sidebar">
+        <div class="sidebar-header">
+            <h2><i class="pi pi-user-md"></i> Área Médica</h2>
+            <p>Dr. #{loginBean.currentUserFullName}</p>
+        </div>
+
+        <div class="sidebar-menu">
+            <!-- Dashboard Médico -->
+            <h:link outcome="/principalmedic.xhtml"
+                    styleClass="menu-item #{cc.attrs.activePage == 'inicio' ? 'active' : ''}">
+                <i class="pi pi-home"></i> Dashboard
+            </h:link>
+
+            <!-- Citas Médicas -->
+            <h:link outcome="/citasmedic.xhtml"
+                    styleClass="menu-item #{cc.attrs.activePage == 'citas' ? 'active' : ''}">
+                <i class="pi pi-calendar-plus"></i> Mis Citas
+            </h:link>
+
+            <!-- Pacientes -->
+            <h:link outcome="/pacientesmedic.xhtml"
+                    styleClass="menu-item #{cc.attrs.activePage == 'pacientes' ? 'active' : ''}">
+                <i class="pi pi-user-plus"></i> Mis Pacientes
+            </h:link>
+
+
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <p><strong>#{loginBean.currentUserFullName}</strong></p>
+                <p style="font-size: 0.8rem; opacity: 0.8;">Médico</p>
+            </div>
+            <h:form>
+                <p:commandButton value="Cerrar Sesión"
+                                 icon="pi pi-sign-out"
+                                 action="#{loginBean.logout}"
+                                 styleClass="logout-btn-link"
+                                 ajax="false"/>
+            </h:form>
+        </div>
+    </div>
+</composite:implementation>
+</html>
