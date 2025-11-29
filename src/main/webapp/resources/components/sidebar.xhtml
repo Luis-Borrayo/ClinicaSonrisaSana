@@ -45,21 +45,21 @@
                 <span>Tratamientos</span>
             </a>
 
-            <!-- ✅ NUEVO: LINK A CATÁLOGO DE SEGUROS -->
             <a href="#{request.contextPath}/catalogo_seguros.xhtml"
                class="menu-item #{cc.attrs.activePage == 'seguros' ? 'active' : ''}">
                 <i class="pi pi-shield"></i>
                 <span>Seguros Médicos</span>
             </a>
 
-            <!-- ✅ NUEVO: LINK A CATÁLOGO DE ODONTÓLOGOS -->
             <a href="#{request.contextPath}/catalogo_odontologos.xhtml"
                class="menu-item #{cc.attrs.activePage == 'odontologos' ? 'active' : ''}">
                 <i class="pi pi-user-plus"></i>
                 <span>Odontólogos</span>
             </a>
 
-            <a href="#" class="menu-item" onclick="return false;">
+            <!-- ✅ Facturación ya funcionando -->
+            <a href="#{request.contextPath}/facturacion.xhtml"
+               class="menu-item #{cc.attrs.activePage == 'facturas' ? 'active' : ''}">
                 <i class="pi pi-file"></i>
                 <span>Facturación</span>
             </a>
@@ -69,6 +69,7 @@
                 <i class="pi pi-upload"></i>
                 <span>Subir archivos S3</span>
             </a>
+
         </div>
 
         <div class="sidebar-footer">
