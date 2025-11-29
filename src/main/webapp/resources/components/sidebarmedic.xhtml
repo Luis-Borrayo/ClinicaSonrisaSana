@@ -37,7 +37,12 @@
                     styleClass="menu-item #{cc.attrs.activePage == 'pacientes' ? 'active' : ''}">
                 <i class="pi pi-user-plus"></i> Mis Pacientes
             </h:link>
-
+            <!-- TRATAMIENTOS -->
+            <a href="#{request.contextPath}/tratamientosmedic.xhtml"
+               class="menu-item #{cc.attrs.activePage == 'tratamientos' ? 'active' : ''}">
+                <i class="pi pi-heart"></i>
+                <span>Tratamientos</span>
+            </a>
 
         </div>
 

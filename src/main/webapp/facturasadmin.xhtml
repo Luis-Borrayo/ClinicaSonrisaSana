@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:comp="http://xmlns.jcp.org/jsf/composite/components">
+
+<h:head>
+    <title>Gestión de Facturación - Sonrisa Sana</title>
+    <h:outputStylesheet library="css" name="commonadmin-styles.css"/>
+    <h:outputStylesheet library="css" name="sidebaradmin-styles.css"/>
+</h:head>
+
+<h:body>
+    <div class="dashboard-container">
+
+        <!-- SIDEBAR -->
+        <comp:sidebaradmin activePage="facturas"/>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+
+            <!-- TOP BAR -->
+            <div class="top-bar">
+                <h1>
+                    <i class="pi pi-file"></i>
+                    Gestión de Facturación
+                </h1>
+            </div>
+
+            <!-- CONTENT AREA -->
+            <div class="content-area">
+                <h:form id="mainForm">
+
+                    <!-- TARJETA PRINCIPAL -->
+                    <div class="card">
+                        <h2 class="section-title">
+                            <i class="pi pi-plus-circle"></i>
+                            Registrar / Editar Factura
+                        </h2>
+
+                        <!-- MENSAJES -->
+                        <p:messages id="messages" showSummary="true" showDetail="true"/>
+
+                        <!-- FORM -->
+                        <div class="form-grid">
+
+                            <!-- PACIENTE -->
+                            <div class="form-field">
+                                <h:outputLabel value="Paciente:" for="pac"/>
+                                <p:selectOneMenu id="pac"
+                                                 value="#{facturasBean.facturaActual.paciente}"
+                                                 required="true"
+                                                 requiredMessage="Debe seleccionar un paciente">
+                                    <f:selectItem itemLabel="-- Seleccione paciente --" itemValue="#{null}" noSelectionOption="true"/>
+                                    <f:selectItems value="#{facturasBean.pacientes}"
+                                                   var="p"
+                                                   itemLabel="#{p.nombreCompleto}"
+                                                   itemValue="#{p}"/>
+                                </p:selectOneMenu>
+                            </div>
+
+                            <!-- ODONTOLOGO -->
+                            <div class="form-field">
+                                <h:outputLabel value="Odontólogo:" for="od"/>
+                                <p:selectOneMenu id="od"
+                                                 value="#{facturasBean.facturaActual.odontologo}"
+                                                 required="true"
+                                                 requiredMessage="Debe seleccionar un odontólogo">
+                                    <f:selectItem itemLabel="-- Seleccione odontólogo --" itemValue="#{null}" noSelectionOption="true"/>
+                                    <f:selectItems value="#{facturasBean.odontologos}"
+                                                   var="od"
+                                                   itemLabel="#{od.nombreCompleto}"
+                                                   itemValue="#{od}"/>
+                                </p:selectOneMenu>
+                            </div>
+
+                            <!-- CITA -->
+                            <div class="form-field">
+                                <h:outputLabel value="Cita:" for="cit"/>
+                                <p:selectOneMenu id="cit"
+                                                 value="#{facturasBean.facturaActual.cita}"
+                                                 required="true"
+                                                 requiredMessage="Debe seleccionar una cita">
+                                    <f:selectItem itemLabel="-- Seleccione Cita --" itemValue="#{null}" noSelectionOption="true"/>
+                                    <f:selectItems value="#{facturasBean.citas}"
+                                                   var="c"
+                                                   itemLabel="Cita ID: #{c.id} - #{c.fechaCita}"
+                                                   itemValue="#{c}"/>
+                                </p:selectOneMenu>
+                            </div>
+
+                            <!-- TRATAMIENTO -->
+                            <div class="form-field">
+                                <h:outputLabel value="Tratamiento:" for="trat"/>
+                                <p:selectOneMenu id="trat"
+                                                 value="#{facturasBean.facturaActual.tratamiento}"
+                                                 required="true"
+                                                 requiredMessage="Debe seleccionar un tratamiento">
+                                    <f:selectItem itemLabel="-- Seleccione Tratamiento --" itemValue="#{null}" noSelectionOption="true"/>
+                                    <f:selectItems value="#{facturasBean.tratamientos}"
+                                                   var="t"
+                                                   itemLabel="#{t.descripcion} - Q#{t.costo}"
+                                                   itemValue="#{t}"/>
+                                </p:selectOneMenu>
+                            </div>
+
+                            <!-- SUBTOTAL -->
+                            <div class="form-field">
+                                <h:outputLabel value="Subtotal (Q):" for="subtotal"/>
+                                <p:inputNumber id="subtotal"
+                                               value="#{facturasBean.facturaActual.subtotal}"
+                                               symbol=" Q"
+                                               minValue="0"
+                                               decimalPlaces="2"
+                                               required="true"
+                                               requiredMessage="El subtotal es obligatorio"/>
+                            </div>
+
+                            <!-- DESCUENTO -->
+                            <div class="form-field">
+                                <h:outputLabel value="Descuento (Q):" for="descuento"/>
+                                <p:inputNumber id="descuento"
+                                               value="#{facturasBean.facturaActual.descuento}"
+                                               symbol=" Q"
+                                               minValue="0"
+                                               decimalPlaces="2"/>
+                            </div>
+
+                            <!-- PAGOS PARCIALES -->
+                            <div class="form-field">
+                                <h:outputLabel value="Pagos Parciales (Q):" for="pagosParciales"/>
+                                <p:inputNumber id="pagosParciales"
+                                               value="#{facturasBean.facturaActual.pagosParciales}"
+                                               symbol=" Q"
+                                               minValue="0"
+                                               decimalPlaces="2"/>
+                            </div>
+
+                            <!-- TOTAL -->
+                            <div class="form-field">
+                                <h:outputLabel value="Total (Q):" for="total"/>
+                                <p:inputNumber id="total"
+                                               value="#{facturasBean.facturaActual.total}"
+                                               symbol=" Q"
+                                               minValue="0"
+                                               decimalPlaces="2"
+                                               readonly="true"
+                                               required="true"
+                                               requiredMessage="El total es obligatorio"/>
+                            </div>
+
+                            <!-- SEGURO -->
+                            <div class="form-field">
+                                <h:outputLabel value="Seguro:" for="seg"/>
+                                <p:selectOneMenu id="seg"
+                                                 value="#{facturasBean.facturaActual.seguro}"
+                                                 required="true"
+                                                 requiredMessage="Debe seleccionar un seguro">
+                                    <f:selectItem itemLabel="-- Seleccione seguro --" itemValue="#{null}" noSelectionOption="true"/>
+                                    <f:selectItems value="#{facturasBean.seguros}"/>
+                                </p:selectOneMenu>
+                            </div>
+
+                            <!-- ESTADO DE PAGO -->
+                            <div class="form-field">
+                                <h:outputLabel value="Estado de Pago:" for="est"/>
+                                <p:selectOneMenu id="est"
+                                                 value="#{facturasBean.facturaActual.estadoPago}"
+                                                 required="true"
+                                                 requiredMessage="Debe seleccionar el estado de pago">
+                                    <f:selectItem itemLabel="-- Seleccione estado --" itemValue="#{null}" noSelectionOption="true"/>
+                                    <f:selectItems value="#{facturasBean.estadosPago}"/>
+                                </p:selectOneMenu>
+                            </div>
+
+                        </div>
+
+                        <!-- BOTONES -->
+                        <div class="form-actions">
+                            <p:commandButton value="Calcular Total"
+                                             icon="pi pi-calculator"
+                                             styleClass="p-button-info"
+                                             style="margin-right: 10px;">
+                                <p:ajax listener="#{facturasBean.calcularTotal}"
+                                        update="total"/>
+                            </p:commandButton>
+
+                            <p:commandButton value="Guardar Factura"
+                                             action="#{facturasBean.guardarFactura}"
+                                             update="mainForm:messages mainForm:tablaFacturas"
+                                             icon="pi pi-save"
+                                             styleClass="p-button-success"/>
+                        </div>
+
+                    </div>
+
+                    <!-- LISTA DE FACTURAS -->
+                    <div class="card">
+                        <h2 class="section-title">
+                            <i class="pi pi-list"></i>
+                            Listado de Facturas
+                        </h2>
+
+                        <p:dataTable id="tablaFacturas"
+                                     value="#{facturasBean.facturas}"
+                                     var="f"
+                                     rows="10"
+                                     paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                     currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords}"
+                                     emptyMessage="No hay facturas registradas"
+                                     styleClass="p-datatable-striped">
+
+                            <p:column headerText="ID" width="60" style="text-align:center">
+                                <h:outputText value="#{f.id}"/>
+                            </p:column>
+
+                            <p:column headerText="Paciente">
+                                <h:outputText value="#{f.paciente.nombreCompleto}"/>
+                            </p:column>
+
+                            <p:column headerText="Odontólogo">
+                                <h:outputText value="#{f.odontologo.nombreCompleto}"/>
+                            </p:column>
+
+                            <p:column headerText="Subtotal">
+                                <h:outputText value="Q #{f.subtotal}">
+                                    <f:convertNumber type="currency" currencySymbol="Q " />
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Descuento">
+                                <h:outputText value="Q #{f.descuento}">
+                                    <f:convertNumber type="currency" currencySymbol="Q " />
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Total">
+                                <h:outputText value="Q #{f.total}" style="font-weight: bold;">
+                                    <f:convertNumber type="currency" currencySymbol="Q " />
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Estado">
+                                <p:tag value="#{f.estadoPago}"
+                                       severity="#{f.estadoPago == 'CANCELADO' ? 'success' : f.estadoPago == 'PENDIENTE' ? 'warning' : 'info'}"/>
+                            </p:column>
+
+                            <p:column headerText="Fecha">
+                                <h:outputText value="#{f.fechaEmision}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Acciones" width="120" style="text-align:center">
+
+                                <!-- EDITAR -->
+                                <p:commandButton icon="pi pi-pencil"
+                                                 title="Editar"
+                                                 styleClass="p-button-warning"
+                                                 update="mainForm:messages mainForm"
+                                                 process="@this">
+                                    <f:setPropertyActionListener value="#{f}" target="#{facturasBean.facturaActual}"/>
+                                </p:commandButton>
+
+                                <!-- ELIMINAR -->
+                                <p:commandButton icon="pi pi-trash"
+                                                 title="Eliminar"
+                                                 styleClass="p-button-danger"
+                                                 style="margin-left:5px"
+                                                 onclick="return confirm('¿Eliminar esta factura?');"
+                                                 action="#{facturasBean.eliminarFactura}"
+                                                 update="mainForm:messages mainForm:tablaFacturas">
+                                    <f:setPropertyActionListener value="#{f}" target="#{facturasBean.facturaActual}"/>
+                                </p:commandButton>
+
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </div>
+
+                </h:form>
+            </div>
+        </div>
+    </div>
+</h:body>
+</html>
