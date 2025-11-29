@@ -13,6 +13,12 @@
             box-sizing: border-box;
             }
 
+            body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%);
+            min-height: 100vh;
+            }
+
             .dashboard-container {
             display: flex;
             min-height: 100vh;
@@ -31,6 +37,7 @@
             height: 100vh;
             left: 0;
             top: 0;
+            z-index: 1000;
             }
 
             .sidebar-header {
@@ -301,11 +308,6 @@
             border-radius: 0 0 8px 8px;
             }
 
-            .ui-growl {
-            top: 20px !important;
-            right: 20px !important;
-            }
-
             .empty-message {
             text-align: center;
             padding: 3rem;
@@ -322,234 +324,227 @@
             margin-bottom: 1rem;
             display: block;
             }
+
+            /* Debug Section */
+            .debug-section {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #1976d2;
+            }
         </h:outputStylesheet>
 
+        <!-- GROWL para mensajes -->
         <p:growl id="growl" showDetail="true" life="5000" sticky="false"/>
 
-        <div class="dashboard-container">
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <div class="sidebar-header">
-                    <h2>🦷 Sonrisa Sana</h2>
-                    <p>Sistema de Gestión</p>
-                </div>
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>🦷 Sonrisa Sana</h2>
+                <p>Sistema de Gestión</p>
+            </div>
 
-                <div class="sidebar-menu">
-                    <h:link outcome="principalrecep.xhtml" styleClass="menu-item">
-                        <i class="pi pi-home"></i>
-                        <span>Inicio</span>
-                    </h:link>
-                    <h:link outcome="citas.xhtml" styleClass="menu-item">
-                        <i class="pi pi-calendar"></i>
-                        <span>Gestión de Citas</span>
-                    </h:link>
-                    <h:link outcome="pacientes.xhtml" class="menu-item">
-                        <i class="pi pi-users"></i>
-                        <span>Pacientes</span>
-                    </h:link>
-                    <div class="menu-item">
-                        <i class="pi pi-user"></i>
-                        <span>Empleados</span>
-                    </div>
-                    <div class="menu-item">
-                        <i class="pi pi-heart"></i>
-                        <span>Tratamientos</span>
-                    </div>
-                    <div class="menu-item">
-                        <i class="pi pi-shield"></i>
-                        <span>Seguros Médicos</span>
-                    </div>
-                    <div class="menu-item">
-                        <i class="pi pi-file"></i>
-                        <span>Facturación</span>
-                    </div>
-                    <h:link outcome="upload.xhtml" styleClass="menu-item active">
-                        <i class="pi pi-upload"></i>
-                        <span>Subir archivos S3</span>
-                    </h:link>
+            <div class="sidebar-menu">
+                <h:link outcome="principalrecep.xhtml" styleClass="menu-item">
+                    <i class="pi pi-home"></i>
+                    <span>Inicio</span>
+                </h:link>
+                <h:link outcome="citas.xhtml" styleClass="menu-item">
+                    <i class="pi pi-calendar"></i>
+                    <span>Gestión de Citas</span>
+                </h:link>
+                <h:link outcome="pacientes.xhtml" styleClass="menu-item">
+                    <i class="pi pi-users"></i>
+                    <span>Pacientes</span>
+                </h:link>
+                <div class="menu-item">
+                    <i class="pi pi-user"></i>
+                    <span>Empleados</span>
                 </div>
+                <div class="menu-item">
+                    <i class="pi pi-heart"></i>
+                    <span>Tratamientos</span>
+                </div>
+                <div class="menu-item">
+                    <i class="pi pi-shield"></i>
+                    <span>Seguros Médicos</span>
+                </div>
+                <div class="menu-item">
+                    <i class="pi pi-file"></i>
+                    <span>Facturación</span>
+                </div>
+                <h:link outcome="upload.xhtml" styleClass="menu-item active">
+                    <i class="pi pi-upload"></i>
+                    <span>Subir archivos S3</span>
+                </h:link>
+            </div>
 
-                <div class="sidebar-footer">
+            <div class="sidebar-footer">
+                <h:form>
                     <p:commandButton value="Cerrar Sesión"
                                      icon="pi pi-sign-out"
                                      action="#{loginBean.logout}"
                                      styleClass="logout-btn"/>
-                </div>
-            </div>
-
-            <!-- Main Content -->
-            <div class="main-content">
-                <!-- Top Bar -->
-                <div class="top-bar">
-                    <div class="user-info">
-                        <h3>Gestión de Archivos S3</h3>
-                        <p>#{loginBean.currentUserFullName} - #{loginBean.currentUserRole}</p>
-                    </div>
-                    <div>
-                        <i class="pi pi-bell" style="font-size: 1.5rem; color: #1976d2; cursor: pointer;"></i>
-                    </div>
-                </div>
-
-                <!-- Content Area -->
-                <div class="content-area">
-                    <div class="welcome-card">
-                        <h2>📁 Gestión de Archivos en AWS S3</h2>
-                        <p>Sube, descarga y gestiona archivos en el bucket de Amazon S3 de forma segura</p>
-                    </div>
-
-                    <!-- Action Cards -->
-                    <div class="action-grid">
-                        <!-- Subir Archivos Card -->
-                        <div class="action-card">
-                            <div class="action-icon">
-                                <i class="pi pi-cloud-upload"></i>
-                            </div>
-                            <h3>Subir Archivos</h3>
-                            <p>Carga archivos directamente a tu bucket de AWS S3</p>
-                            <h:form id="basicUploadForm" enctype="multipart/form-data" style="text-align: center;">
-                                <p:fileUpload value="#{fileUploadView.file}"
-                                              mode="simple"
-                                              skinSimple="true"
-                                              sizeLimit="10485760"
-                                              style="margin-bottom: 15px; width: 100%;"/>
-                                <p:commandButton value="Subir a AWS S3"
-                                                 action="#{fileUploadView.upload}"
-                                                 ajax="false"
-                                                 styleClass="ui-button ui-button-success"
-                                                 icon="pi pi-upload"/>
-                            </h:form>
-                            <p class="upload-info">
-                                Máximo 10MB por archivo
-                            </p>
-                        </div>
-
-                        <!-- Gestionar Archivos Card -->
-                        <div class="action-card">
-                            <div class="action-icon">
-                                <i class="pi pi-folder-open"></i>
-                            </div>
-                            <h3>Gestionar Archivos</h3>
-                            <p>Visualiza y administra los archivos en tu bucket S3</p>
-                            <div style="text-align: center; margin-top: 1.5rem;">
-                                <p:commandButton value="Cargar Archivos"
-                                                 action="#{fileUploadView.listarArchivosS3}"
-                                                 update="filesForm"
-                                                 styleClass="ui-button ui-button-info"
-                                                 icon="pi pi-refresh"/>
-                            </div>
-                            <p class="upload-info" style="margin-top: 1rem;">
-                                Total de archivos: #{fileUploadView.totalArchivos}
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Sección de archivos -->
-                    <h:form id="filesForm">
-                        <div class="upload-section">
-                            <h3 class="section-title">📂 Archivos en el Bucket S3</h3>
-
-                            <div class="refresh-section">
-                                <p:commandButton value="🔄 Actualizar Lista"
-                                                 action="#{fileUploadView.listarArchivosS3}"
-                                                 update="filesForm"
-                                                 styleClass="ui-button ui-button-info"
-                                                 icon="pi pi-refresh"/>
-                                <p:outputLabel value="Total de archivos: #{fileUploadView.totalArchivos}"
-                                               styleClass="file-count"/>
-                            </div>
-
-                            <!-- Debug info temporal -->
-                            <div style="background: #e3f2fd; padding: 10px; border-radius: 5px; margin: 10px 0; border-left: 4px solid #1976d2;">
-                                <strong>Estado:</strong>
-                                Lista cargada: #{not empty fileUploadView.archivosS3} |
-                                Total archivos: #{fileUploadView.totalArchivos}
-                            </div>
-
-                            <p:dataTable id="archivosTable"
-                                         value="#{fileUploadView.archivosS3}"
-                                         var="archivo"
-                                         emptyMessage="No hay archivos en el bucket S3. Haz clic en 'Actualizar Lista'"
-                                         paginator="true"
-                                         rows="10"
-                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                         rowsPerPageTemplate="5,10,15"
-                                         styleClass="p-datatable-striped"
-                                         style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-
-                                <p:column headerText="Archivo" width="40%" styleClass="file-name-column">
-                                    <span class="file-icon">
-                                        <h:outputText value="📄" rendered="#{not archivo.folder}"/>
-                                        <h:outputText value="📁" rendered="#{archivo.folder}"/>
-                                    </span>
-                                    <h:outputText value="#{archivo.nombre}"/>
-                                </p:column>
-
-                                <p:column headerText="Tamaño" width="20%" styleClass="file-size-column">
-                                    <h:outputText value="#{archivo.tamanioFormateado}" />
-                                </p:column>
-
-                                <p:column headerText="Última Modificación" width="25%" styleClass="file-date-column">
-                                    <h:outputText value="#{archivo.fechaModificacion}">
-                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
-                                    </h:outputText>
-                                </p:column>
-
-                                <p:column headerText="Acciones" width="15%" styleClass="file-actions-column">
-                                    <div class="file-actions">
-                                        <!-- Botón para abrir archivo en nueva pestaña -->
-                                        <p:commandButton icon="pi pi-external-link"
-                                                         action="#{fileUploadView.abrirArchivo(archivo)}"
-                                                         styleClass="ui-button ui-button-info p-button-outlined p-button-sm"
-                                                         title="Abrir en nueva pestaña"
-                                                         rendered="#{not archivo.folder}">
-                                        </p:commandButton>
-
-                                        <!-- Botón para descargar archivo -->
-                                        <p:commandButton icon="pi pi-download"
-                                                         action="#{fileUploadView.descargarArchivo(archivo)}"
-                                                         styleClass="ui-button ui-button-success p-button-outlined p-button-sm"
-                                                         title="Descargar archivo"
-                                                         rendered="#{not archivo.folder}">
-                                        </p:commandButton>
-
-                                        <!-- Botón para eliminar archivo -->
-                                        <p:commandButton icon="pi pi-trash"
-                                                         action="#{fileUploadView.eliminarArchivo}"
-                                                         update="filesForm"
-                                                         styleClass="ui-button ui-button-danger p-button-outlined p-button-sm"
-                                                         title="Eliminar archivo"
-                                                         onclick="return confirm('¿Estás seguro de eliminar #{archivo.nombre}?')">
-                                            <f:setPropertyActionListener target="#{fileUploadView.archivoSeleccionado}" value="#{archivo}" />
-                                        </p:commandButton>
-                                    </div>
-                                </p:column>
-                            </p:dataTable>
-                        </div>
-                    </h:form>
-                </div>
+                </h:form>
             </div>
         </div>
 
-        <!-- Carga automática al iniciar -->
-        <h:outputScript>
-            $(document).ready(function() {
-            // Esperar a que PrimeFaces esté listo y cargar la lista
-            setTimeout(function() {
-            console.log('Cargando lista de archivos automáticamente...');
-            // Disparar el evento de actualización
-            PrimeFaces.ab({
-            source: 'filesForm:refreshBtn',
-            update: 'filesForm',
-            process: 'filesForm'
-            });
-            }, 1000);
-            });
-        </h:outputScript>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="user-info">
+                    <h3>Gestión de Archivos S3</h3>
+                    <p>#{loginBean.currentUserFullName} - #{loginBean.currentUserRole}</p>
+                </div>
+                <div>
+                    <i class="pi pi-bell" style="font-size: 1.5rem; color: #1976d2; cursor: pointer;"></i>
+                </div>
+            </div>
 
-        <!-- Botón oculto para carga inicial -->
-        <p:commandButton id="refreshBtn"
-                         action="#{fileUploadView.listarArchivosS3}"
-                         update="filesForm"
-                         style="display: none;"/>
+            <!-- Content Area -->
+            <div class="content-area">
+                <div class="welcome-card">
+                    <h2>📁 Gestión de Archivos en AWS S3</h2>
+                    <p>Sube, descarga y gestiona archivos en el bucket de Amazon S3 de forma segura</p>
+                </div>
+
+                <!-- SECCIÓN DEBUG TEMPORAL -->
+                <div class="debug-section">
+                    <h4>🔍 Información de Debug:</h4>
+                    <p><strong>Bean cargado:</strong> #{fileUploadView != null ? '✅ SI' : '❌ NO'}</p>
+                    <p><strong>Total de archivos:</strong> #{fileUploadView.totalArchivos}</p>
+                    <p><strong>Lista de archivos es null:</strong> #{fileUploadView.archivosS3 == null ? '✅ SI' : '❌ NO'}</p>
+                    <p><strong>Servicio S3 disponible:</strong> #{fileUploadView.s3Service != null ? '✅ SI' : '❌ NO'}</p>
+
+                    <h:form>
+                        <p:commandButton value="Probar Conexión S3"
+                                         action="#{fileUploadView.testS3Connection}"
+                                         update="growl"
+                                         styleClass="ui-button-warning"/>
+                    </h:form>
+                </div>
+
+                <!-- Action Cards -->
+                <div class="action-grid">
+                    <!-- Subir Archivos Card -->
+                    <div class="action-card">
+                        <div class="action-icon">
+                            <i class="pi pi-cloud-upload"></i>
+                        </div>
+                        <h3>Subir Archivos</h3>
+                        <p>Carga archivos directamente a tu bucket de AWS S3</p>
+                        <h:form id="uploadForm" enctype="multipart/form-data">
+                            <p:fileUpload value="#{fileUploadView.file}"
+                                          mode="simple"
+                                          skinSimple="true"
+                                          sizeLimit="10485760"
+                                          style="margin-bottom: 15px; width: 100%;"/>
+                            <p:commandButton value="Subir a AWS S3"
+                                             action="#{fileUploadView.upload}"
+                                             ajax="false"
+                                             styleClass="ui-button ui-button-success"
+                                             icon="pi pi-upload"/>
+                        </h:form>
+                        <p class="upload-info">Máximo 10MB por archivo</p>
+                    </div>
+
+                    <!-- Gestionar Archivos Card -->
+                    <div class="action-card">
+                        <div class="action-icon">
+                            <i class="pi pi-folder-open"></i>
+                        </div>
+                        <h3>Gestionar Archivos</h3>
+                        <p>Visualiza y administra los archivos en tu bucket S3</p>
+                        <h:form>
+                            <p:commandButton value="Cargar Archivos"
+                                             action="#{fileUploadView.listarArchivosS3}"
+                                             update="filesForm growl"
+                                             styleClass="ui-button ui-button-info"
+                                             icon="pi pi-refresh"/>
+                        </h:form>
+                        <p class="upload-info" style="margin-top: 1rem;">
+                            Total de archivos: <strong>#{fileUploadView.totalArchivos}</strong>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Sección de archivos -->
+                <h:form id="filesForm">
+                    <div class="upload-section">
+                        <h3 class="section-title">📂 Archivos en el Bucket S3</h3>
+
+                        <div class="refresh-section">
+                            <p:commandButton value="🔄 Actualizar Lista"
+                                             action="#{fileUploadView.listarArchivosS3}"
+                                             update="filesForm growl"
+                                             styleClass="ui-button ui-button-info"
+                                             icon="pi pi-refresh"/>
+                            <p:outputLabel value="Total de archivos: #{fileUploadView.totalArchivos}"
+                                           styleClass="file-count"/>
+                        </div>
+
+                        <p:dataTable id="archivosTable"
+                                     value="#{fileUploadView.archivosS3}"
+                                     var="archivo"
+                                     emptyMessage="No hay archivos en el bucket S3. Haz clic en 'Actualizar Lista' o sube un archivo."
+                                     paginator="true"
+                                     rows="10"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,15"
+                                     styleClass="p-datatable-striped"
+                                     style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+
+                            <p:column headerText="Archivo" width="40%">
+                                <span class="file-icon">
+                                    <h:outputText value="📄" rendered="#{not archivo.folder}"/>
+                                    <h:outputText value="📁" rendered="#{archivo.folder}"/>
+                                </span>
+                                <h:outputText value="#{archivo.nombre}"/>
+                            </p:column>
+
+                            <p:column headerText="Tamaño" width="20%">
+                                <h:outputText value="#{archivo.tamanioFormateado}" />
+                            </p:column>
+
+                            <p:column headerText="Última Modificación" width="25%">
+                                <h:outputText value="#{archivo.fechaFormateada}" />
+                            </p:column>
+
+                            <p:column headerText="Acciones" width="15%">
+                                <div class="file-actions">
+                                    <!-- Botón para abrir archivo en nueva pestaña -->
+                                    <p:commandButton icon="pi pi-external-link"
+                                                     action="#{fileUploadView.abrirArchivo(archivo)}"
+                                                     styleClass="ui-button-info p-button-outlined p-button-sm"
+                                                     title="Abrir en nueva pestaña"
+                                                     rendered="#{not archivo.folder}"
+                                                     update="@none"/>
+
+                                    <!-- Botón para descargar archivo -->
+                                    <p:commandButton icon="pi pi-download"
+                                                     action="#{fileUploadView.descargarArchivo(archivo)}"
+                                                     styleClass="ui-button-success p-button-outlined p-button-sm"
+                                                     title="Descargar archivo"
+                                                     rendered="#{not archivo.folder}"
+                                                     ajax="false"/>
+
+                                    <!-- Botón para eliminar archivo -->
+                                    <p:commandButton icon="pi pi-trash"
+                                                     action="#{fileUploadView.eliminarArchivo}"
+                                                     update="filesForm growl"
+                                                     styleClass="ui-button-danger p-button-outlined p-button-sm"
+                                                     title="Eliminar archivo"
+                                                     onclick="return confirm('¿Estás seguro de eliminar #{archivo.nombre}?')">
+                                        <f:setPropertyActionListener target="#{fileUploadView.archivoSeleccionado}" value="#{archivo}" />
+                                    </p:commandButton>
+                                </div>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </h:form>
+            </div>
+        </div>
     </ui:define>
 </ui:composition>

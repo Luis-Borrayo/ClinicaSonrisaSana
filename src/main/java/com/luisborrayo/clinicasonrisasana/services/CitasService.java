@@ -23,8 +23,7 @@ public class CitasService {
     }
 
     public Citas actualizarCita(Citas cita) {
-        citasRepository.delete(cita.getId());
-        citasRepository.crear(cita);
+        citasRepository.actualizar(cita);
         return cita;
     }
 
@@ -34,5 +33,9 @@ public class CitasService {
 
     public void eliminarCita(Long id) {
         citasRepository.delete(id);
+    }
+
+    public Citas findById(Long id) {
+        return citasRepository.findId(id);
     }
 }

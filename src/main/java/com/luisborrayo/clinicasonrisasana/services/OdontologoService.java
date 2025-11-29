@@ -56,13 +56,12 @@ public class OdontologoService {
 
     public Odontologo obtenerOdontologoPorId(Long id) {
         try {
-            return odontologoRepository.findId(id); // 👈 ESTE MÉTODO SÍ EXISTE
+            return odontologoRepository.findById(id);
         } catch (Exception e) {
             LOGGER.severe("Error al obtener odontólogo por ID: " + id + " - " + e.getMessage());
             return null;
         }
     }
-
 
     public Odontologo obtenerPorColegiado(String colegiado) {
         return odontologoRepository.findByColegiado(colegiado);
