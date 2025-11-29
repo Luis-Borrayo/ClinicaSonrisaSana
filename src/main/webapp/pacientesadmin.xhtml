@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:comp="http://xmlns.jcp.org/jsf/composite/components">
+
+<h:head>
+    <title>Gestión de Pacientes - Sonrisa Sana</title>
+    <h:outputStylesheet library="css" name="commonadmin-styles.css"/>
+    <h:outputStylesheet library="css" name="sidebaradmin-styles.css"/>
+</h:head>
+
+<h:body>
+    <div class="dashboard-container">
+
+        <!-- SIDEBAR COMPONENT -->
+        <comp:sidebaradmin activePage="pacientes"/>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+
+            <!-- TOP BAR -->
+            <div class="top-bar">
+                <h1>
+                    <i class="pi pi-users"></i>
+                    Gestión de Pacientes
+                </h1>
+            </div>
+
+            <!-- CONTENT AREA -->
+            <div class="content-area">
+
+                <h:form id="mainForm">
+
+                    <!-- CARD PRINCIPAL -->
+                    <div class="card">
+                        <h2 class="section-title">
+                            <i class="pi pi-user-plus"></i>
+                            Registro de Nuevo Paciente
+                        </h2>
+
+                        <!-- Mensajes globales -->
+                        <p:messages id="messages" showDetail="true" autoUpdate="true"/>
+
+                        <!-- FORMULARIO EN GRID -->
+                        <div class="form-grid">
+
+                            <div class="form-field">
+                                <h:outputLabel for="dpi" value="DPI (13 dígitos):"/>
+                                <p:inputText id="dpi"
+                                             value="#{pacientesBean.nuevoPaciente.dpi}"
+                                             required="true"
+                                             requiredMessage="El DPI es obligatorio"
+                                             placeholder="Ej: 1234567890123"
+                                             maxlength="13"
+                                             style="width: 100%"/>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="nombre" value="Nombre:"/>
+                                <p:inputText id="nombre"
+                                             value="#{pacientesBean.nuevoPaciente.nombre}"
+                                             required="true"
+                                             requiredMessage="El nombre es obligatorio"
+                                             placeholder="Ej: Juan"
+                                             style="width: 100%"/>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="apellido" value="Apellido:"/>
+                                <p:inputText id="apellido"
+                                             value="#{pacientesBean.nuevoPaciente.apellido}"
+                                             required="true"
+                                             requiredMessage="El apellido es obligatorio"
+                                             placeholder="Ej: Pérez"
+                                             style="width: 100%"/>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="fechaNac" value="Fecha de Nacimiento:"/>
+                                <p:calendar id="fechaNac"
+                                            value="#{pacientesBean.nuevoPaciente.fechaNacimiento}"
+                                            pattern="dd/MM/yyyy"
+                                            required="true"
+                                            requiredMessage="La fecha de nacimiento es obligatoria"
+                                            showIcon="true"
+                                            navigator="true"
+                                            yearRange="c-100:c"
+                                            style="width: 100%"/>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="tel" value="Teléfono:"/>
+                                <p:inputText id="tel"
+                                             value="#{pacientesBean.nuevoPaciente.contacto}"
+                                             required="true"
+                                             requiredMessage="El teléfono es obligatorio"
+                                             placeholder="Ej: 12345678"
+                                             style="width: 100%"/>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="email" value="Correo Electrónico:"/>
+                                <p:inputText id="email"
+                                             value="#{pacientesBean.nuevoPaciente.correo}"
+                                             placeholder="Ej: paciente@email.com"
+                                             style="width: 100%"/>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="odont" value="Odontólogo:"/>
+                                <p:selectOneMenu id="odont"
+                                                 value="#{pacientesBean.odontologoId}"
+                                                 required="true"
+                                                 requiredMessage="Debe seleccionar un odontólogo"
+                                                 style="width: 100%">
+                                    <f:selectItem itemLabel="-- Seleccione un odontólogo --" itemValue="#{null}"/>
+                                    <f:selectItems value="#{pacientesBean.odontologos}"
+                                                   var="od"
+                                                   itemLabel="#{od.nombreCompleto}"
+                                                   itemValue="#{od.id}"/>
+                                </p:selectOneMenu>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="seg" value="Tipo de Seguro:"/>
+                                <p:selectOneMenu id="seg"
+                                                 value="#{pacientesBean.seguroSeleccionado}"
+                                                 required="true"
+                                                 requiredMessage="Debe seleccionar un tipo de seguro"
+                                                 style="width: 100%">
+                                    <f:selectItem itemLabel="-- Seleccione tipo de seguro --" itemValue="#{null}"/>
+                                    <f:selectItems value="#{pacientesBean.seguros}"/>
+                                </p:selectOneMenu>
+                            </div>
+
+                            <div class="form-field full-width">
+                                <h:outputLabel for="dir" value="Dirección:"/>
+                                <p:inputTextarea id="dir"
+                                                 value="#{pacientesBean.nuevoPaciente.direccion}"
+                                                 rows="3"
+                                                 required="true"
+                                                 requiredMessage="La dirección es obligatoria"
+                                                 placeholder="Ingrese la dirección completa"
+                                                 style="width:100%"/>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="alerg" value="Alergias:"/>
+                                <p:inputText id="alerg"
+                                             value="#{pacientesBean.nuevoPaciente.alergias}"
+                                             placeholder="Ej: Penicilina, Polen"
+                                             style="width: 100%"/>
+                            </div>
+
+                            <div class="form-field">
+                                <h:outputLabel for="cond" value="Condiciones Médicas:"/>
+                                <p:inputTextarea id="cond"
+                                                 value="#{pacientesBean.nuevoPaciente.condiciones}"
+                                                 rows="3"
+                                                 placeholder="Ej: Diabetes, Hipertensión"
+                                                 style="width:100%"/>
+                            </div>
+
+                            <div class="form-field full-width">
+                                <h:outputLabel for="obs" value="Observaciones:"/>
+                                <p:inputTextarea id="obs"
+                                                 value="#{pacientesBean.nuevoPaciente.observaciones}"
+                                                 rows="3"
+                                                 placeholder="Notas adicionales"
+                                                 style="width:100%"/>
+                            </div>
+
+                        </div>
+
+                        <!-- BOTONES -->
+                        <div class="form-actions">
+                            <p:commandButton value="Guardar Paciente"
+                                             action="#{pacientesBean.guardarPaciente}"
+                                             icon="pi pi-save"
+                                             styleClass="p-button-success"
+                                             update="messages, tablaPacientes"
+                                             oncomplete="if(args &amp;&amp; !args.validationFailed) PF('mainForm').reset()"/>
+
+                            <p:commandButton value="Limpiar"
+                                             type="reset"
+                                             icon="pi pi-times"
+                                             styleClass="p-button-secondary"/>
+                        </div>
+
+                    </div>
+
+                    <!-- TABLA DE PACIENTES -->
+                    <div class="card">
+                        <h2 class="section-title">
+                            <i class="pi pi-list"></i>
+                            Lista de Pacientes
+                        </h2>
+
+                        <!-- BARRA DE BÚSQUEDA -->
+                        <div class="search-bar">
+                            <div class="form-field" style="flex: 2;">
+                                <h:outputLabel for="busqueda" value="Buscar Paciente:"/>
+                                <p:inputText id="busqueda"
+                                             value="#{pacientesBean.criterioBusqueda}"
+                                             placeholder="Buscar por nombre, apellido o DPI..."
+                                             style="width: 100%">
+                                    <p:ajax event="keyup"
+                                            listener="#{pacientesBean.buscarPacientes}"
+                                            update="tablaPacientes"
+                                            delay="500"/>
+                                </p:inputText>
+                            </div>
+
+                            <div style="display: flex; gap: 10px; align-items: flex-end;">
+                                <p:commandButton value="Buscar"
+                                                 icon="pi pi-search"
+                                                 action="#{pacientesBean.buscarPacientes}"
+                                                 update="tablaPacientes"
+                                                 styleClass="p-button-success"/>
+
+                                <p:commandButton value="Limpiar"
+                                                 icon="pi pi-times"
+                                                 action="#{pacientesBean.cargarPacientes}"
+                                                 update="tablaPacientes, busqueda"
+                                                 styleClass="p-button-secondary">
+                                    <f:setPropertyActionListener value="" target="#{pacientesBean.criterioBusqueda}"/>
+                                </p:commandButton>
+                            </div>
+                        </div>
+
+                        <p:dataTable id="tablaPacientes"
+                                     value="#{pacientesBean.pacientes}"
+                                     var="p"
+                                     paginator="true"
+                                     rows="10"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,15"
+                                     currentPageReportTemplate="Mostrando {startRecord} a {endRecord} de {totalRecords} pacientes"
+                                     emptyMessage="No se encontraron pacientes">
+
+                            <p:column headerText="ID" width="80" style="text-align:center">
+                                <h:outputText value="#{p.id}"/>
+                            </p:column>
+
+                            <p:column headerText="DPI" width="150">
+                                <h:outputText value="#{p.dpi}"/>
+                            </p:column>
+
+                            <p:column headerText="Nombre Completo">
+                                <h:outputText value="#{p.nombreCompleto}"/>
+                            </p:column>
+
+                            <p:column headerText="Teléfono" width="120">
+                                <h:outputText value="#{p.contacto}"/>
+                            </p:column>
+
+                            <p:column headerText="Correo">
+                                <h:outputText value="#{p.correo}"/>
+                            </p:column>
+
+                            <p:column headerText="Odontólogo">
+                                <h:outputText value="#{p.odontologo != null ? p.odontologo.nombreCompleto : 'Sin asignar'}"/>
+                            </p:column>
+
+                            <p:column headerText="Seguro" width="120">
+                                <h:outputText value="#{p.seguro}"/>
+                            </p:column>
+
+                            <p:column headerText="Acciones" width="140" style="text-align:center">
+                                <p:commandButton icon="pi pi-pencil"
+                                                 title="Editar"
+                                                 styleClass="p-button-warning p-button-sm"
+                                                 action="#{pacientesBean.editarPaciente(p)}"
+                                                 update="messages">
+                                    <f:param name="pacienteId" value="#{p.id}"/>
+                                </p:commandButton>
+
+                                <p:commandButton icon="pi pi-trash"
+                                                 title="Eliminar"
+                                                 styleClass="p-button-danger p-button-sm"
+                                                 style="margin-left:5px"
+                                                 action="#{pacientesBean.eliminarPaciente(p)}"
+                                                 update="tablaPacientes, messages"
+                                                 onclick="return confirm('¿Está seguro de eliminar al paciente #{p.nombreCompleto}?')"/>
+                            </p:column>
+
+                        </p:dataTable>
+                    </div>
+
+                </h:form>
+
+            </div>
+        </div>
+    </div>
+
+</h:body>
+</html>
