@@ -33,12 +33,14 @@ public class UserBean implements Serializable {
     private User selected;
     private boolean dialogVisible;
     private String confirmPassword;
+    private String passwordOriginal; // Para guardar la contraseña original al editar
 
     @PostConstruct
     public void init() {
         selected = new User();
         dialogVisible = false;
         confirmPassword = "";
+        passwordOriginal = "";
     }
 
     /**
@@ -49,9 +51,9 @@ public class UserBean implements Serializable {
             return userService.listar();
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Error al cargar usuarios", e.getMessage()));
+            addMessage(FacesMessage.SEVERITY_ERROR,
+                    "Error al cargar usuarios",
+                    e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -76,6 +78,7 @@ public class UserBean implements Serializable {
         selected = new User();
         selected.setActive(true);
         confirmPassword = "";
+        passwordOriginal = "";
         dialogVisible = true;
     }
 
@@ -84,8 +87,17 @@ public class UserBean implements Serializable {
      */
     public void edit(User u) {
         clearFacesMessages();
+
+        // Hacer una copia del usuario para no modificar directamente el original
         this.selected = u;
-        this.confirmPassword = u.getPassword();
+
+        // Guardar la contraseña original
+        this.passwordOriginal = u.getPassword();
+
+        // Limpiar los campos de contraseña en el formulario
+        this.selected.setPassword("");
+        this.confirmPassword = "";
+
         dialogVisible = true;
     }
 
@@ -93,13 +105,49 @@ public class UserBean implements Serializable {
      * Guardar usuario (crear o actualizar)
      */
     public void save() {
-        // Validar confirmación de contraseña
-        if (!selected.getPassword().equals(confirmPassword)) {
-            FacesContext.getCurrentInstance().addMessage("frmUsers:msgUser",
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Error", "Las contraseñas no coinciden"));
-            FacesContext.getCurrentInstance().validationFailed();
+        FacesContext ctx = FacesContext.getCurrentInstance();
+
+        // Validación de contraseña
+        boolean esNuevo = (selected.getId() == null);
+        boolean cambioPassword = !selected.getPassword().isEmpty();
+
+        // Si es nuevo usuario, la contraseña es obligatoria
+        if (esNuevo && selected.getPassword().isEmpty()) {
+            addMessage(FacesMessage.SEVERITY_ERROR,
+                    "Error",
+                    "La contraseña es obligatoria para nuevos usuarios");
+            ctx.validationFailed();
             return;
+        }
+
+        // Si se está cambiando la contraseña, validar confirmación
+        if (cambioPassword) {
+            if (confirmPassword == null || confirmPassword.isEmpty()) {
+                addMessage(FacesMessage.SEVERITY_ERROR,
+                        "Error",
+                        "Debe confirmar la contraseña");
+                ctx.validationFailed();
+                return;
+            }
+
+            if (!selected.getPassword().equals(confirmPassword)) {
+                addMessage(FacesMessage.SEVERITY_ERROR,
+                        "Error",
+                        "Las contraseñas no coinciden");
+                ctx.validationFailed();
+                return;
+            }
+
+            if (selected.getPassword().length() < 6) {
+                addMessage(FacesMessage.SEVERITY_ERROR,
+                        "Error",
+                        "La contraseña debe tener al menos 6 caracteres");
+                ctx.validationFailed();
+                return;
+            }
+        } else if (!esNuevo) {
+            // Si no se está cambiando la contraseña, restaurar la original
+            selected.setPassword(passwordOriginal);
         }
 
         // Validar con Bean Validation
@@ -111,49 +159,65 @@ public class UserBean implements Serializable {
                 String message = violation.getMessage();
                 String label = getFieldLabel(field);
 
-                FacesContext.getCurrentInstance().addMessage("frmUsers:msgUser",
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                label + ": " + message, null));
+                addMessage(FacesMessage.SEVERITY_ERROR,
+                        label,
+                        message);
             }
 
-            FacesContext.getCurrentInstance().validationFailed();
+            ctx.validationFailed();
             return;
         }
 
         try {
             // Verificar si el usuario ya existe (solo para nuevos usuarios)
-            if (selected.getId() == null) {
+            if (esNuevo) {
                 User existeUsuario = userService.buscarPorUsuario(selected.getUsuario());
                 if (existeUsuario != null) {
-                    FacesContext.getCurrentInstance().addMessage("frmUsers:msgUser",
-                            new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                    "Error", "El nombre de usuario ya existe"));
-                    FacesContext.getCurrentInstance().validationFailed();
+                    addMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error",
+                            "El nombre de usuario ya existe");
+                    ctx.validationFailed();
                     return;
                 }
 
                 User existeCorreo = userService.buscarPorCorreo(selected.getCorreo());
                 if (existeCorreo != null) {
-                    FacesContext.getCurrentInstance().addMessage("frmUsers:msgUser",
-                            new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                    "Error", "El correo ya está registrado"));
-                    FacesContext.getCurrentInstance().validationFailed();
+                    addMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error",
+                            "El correo ya está registrado");
+                    ctx.validationFailed();
+                    return;
+                }
+            } else {
+                // Verificar que no se duplique el correo (excepto el mismo usuario)
+                User existeCorreo = userService.buscarPorCorreo(selected.getCorreo());
+                if (existeCorreo != null && !existeCorreo.getId().equals(selected.getId())) {
+                    addMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error",
+                            "El correo ya está registrado por otro usuario");
+                    ctx.validationFailed();
                     return;
                 }
             }
 
+            // Guardar usuario
             userService.guardar(selected);
+
             dialogVisible = false;
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "Usuario guardado", "Operación exitosa"));
+            addMessage(FacesMessage.SEVERITY_INFO,
+                    "Éxito",
+                    esNuevo ? "Usuario creado exitosamente" : "Usuario actualizado exitosamente");
+
+            // Limpiar formulario
             selected = new User();
             confirmPassword = "";
+            passwordOriginal = "";
+
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Error al guardar usuario", e.getMessage()));
+            addMessage(FacesMessage.SEVERITY_ERROR,
+                    "Error al guardar usuario",
+                    e.getMessage());
         }
     }
 
@@ -163,14 +227,14 @@ public class UserBean implements Serializable {
     public void delete(User u) {
         try {
             userService.eliminar(u);
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "Usuario eliminado", "El usuario ha sido eliminado permanentemente"));
+            addMessage(FacesMessage.SEVERITY_INFO,
+                    "Usuario eliminado",
+                    "El usuario ha sido eliminado permanentemente");
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Error al eliminar usuario", e.getMessage()));
+            addMessage(FacesMessage.SEVERITY_ERROR,
+                    "Error al eliminar usuario",
+                    e.getMessage());
         }
     }
 
@@ -180,14 +244,14 @@ public class UserBean implements Serializable {
     public void desactivar(User u) {
         try {
             userService.desactivar(u);
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "Usuario desactivado", "El usuario ha sido desactivado"));
+            addMessage(FacesMessage.SEVERITY_INFO,
+                    "Usuario desactivado",
+                    "El usuario ha sido desactivado correctamente");
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Error al desactivar usuario", e.getMessage()));
+            addMessage(FacesMessage.SEVERITY_ERROR,
+                    "Error al desactivar usuario",
+                    e.getMessage());
         }
     }
 
@@ -198,15 +262,23 @@ public class UserBean implements Serializable {
         try {
             u.setActive(true);
             userService.guardar(u);
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "Usuario activado", "El usuario ha sido activado"));
+            addMessage(FacesMessage.SEVERITY_INFO,
+                    "Usuario activado",
+                    "El usuario ha sido activado correctamente");
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Error al activar usuario", e.getMessage()));
+            addMessage(FacesMessage.SEVERITY_ERROR,
+                    "Error al activar usuario",
+                    e.getMessage());
         }
+    }
+
+    /**
+     * Agregar mensaje al contexto de JSF
+     */
+    private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(severity, summary, detail));
     }
 
     /**
@@ -215,7 +287,9 @@ public class UserBean implements Serializable {
     private void clearFacesMessages() {
         FacesContext ctx = FacesContext.getCurrentInstance();
         if (ctx == null) return;
-        for (Iterator<FacesMessage> it = ctx.getMessages(); it.hasNext(); ) {
+
+        Iterator<FacesMessage> it = ctx.getMessages();
+        while (it.hasNext()) {
             it.next();
             it.remove();
         }
@@ -242,35 +316,43 @@ public class UserBean implements Serializable {
     /**
      * Cambiar contraseña de un usuario
      */
-    public void cambiarPassword(User u, String nuevaPass, String confirmPass) {
 
+    public void toggleEstado(User u) {
+        if (u.isActive()) {
+            desactivar(u);
+        } else {
+            activar(u);
+        }
+    }
+
+    public void cambiarPassword(User u, String nuevaPass, String confirmPass) {
         clearFacesMessages();
 
         if (nuevaPass == null || nuevaPass.length() < 6) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "La nueva contraseña debe tener al menos 6 caracteres", null));
+            addMessage(FacesMessage.SEVERITY_ERROR,
+                    "Error",
+                    "La nueva contraseña debe tener al menos 6 caracteres");
             return;
         }
 
         if (!nuevaPass.equals(confirmPass)) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Las contraseñas no coinciden", null));
+            addMessage(FacesMessage.SEVERITY_ERROR,
+                    "Error",
+                    "Las contraseñas no coinciden");
             return;
         }
 
         try {
             userService.cambiarContrasena(u, nuevaPass);
 
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "Contraseña actualizada", "La contraseña fue modificada exitosamente"));
+            addMessage(FacesMessage.SEVERITY_INFO,
+                    "Contraseña actualizada",
+                    "La contraseña fue modificada exitosamente");
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Error al cambiar la contraseña", e.getMessage()));
+            addMessage(FacesMessage.SEVERITY_ERROR,
+                    "Error al cambiar la contraseña",
+                    e.getMessage());
         }
     }
 
@@ -283,15 +365,14 @@ public class UserBean implements Serializable {
         try {
             userService.asignarRol(u, nuevoRol);
 
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "Rol actualizado",
-                            "El usuario ahora es: " + nuevoRol));
+            addMessage(FacesMessage.SEVERITY_INFO,
+                    "Rol actualizado",
+                    "El usuario ahora es: " + nuevoRol);
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Error al cambiar de rol", e.getMessage()));
+            addMessage(FacesMessage.SEVERITY_ERROR,
+                    "Error al cambiar de rol",
+                    e.getMessage());
         }
     }
 
@@ -307,56 +388,15 @@ public class UserBean implements Serializable {
         try {
             userService.cambiarContrasena(u, nueva);
 
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_WARN,
-                            "Contraseña restablecida",
-                            "Nueva contraseña temporal: " + nueva));
+            addMessage(FacesMessage.SEVERITY_WARN,
+                    "Contraseña restablecida",
+                    "Nueva contraseña temporal: " + nueva);
 
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Error al restablecer contraseña", e.getMessage()));
-        }
-    }
-
-    /**
-     * Actualizar correo o nombre de usuario SIN tocar la contraseña
-     */
-    public void actualizarDatosBasicos(User u) {
-
-        clearFacesMessages();
-
-        try {
-            // validaciones rápidas
-            User existenteCorreo = userService.buscarPorCorreo(u.getCorreo());
-            if (existenteCorreo != null && !existenteCorreo.getId().equals(u.getId())) {
-                FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                "Correo ya registrado", null));
-                return;
-            }
-
-            User existenteUsuario = userService.buscarPorUsuario(u.getUsuario());
-            if (existenteUsuario != null && !existenteUsuario.getId().equals(u.getId())) {
-                FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                "El nombre de usuario ya existe", null));
-                return;
-            }
-
-            userService.guardar(u);
-
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "Datos actualizados",
-                            "Correo y nombre de usuario actualizados"));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Error al actualizar datos", e.getMessage()));
+            addMessage(FacesMessage.SEVERITY_ERROR,
+                    "Error al restablecer contraseña",
+                    e.getMessage());
         }
     }
 
