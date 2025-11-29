@@ -19,9 +19,9 @@
             <p:commandButton value="Nuevo Odontólogo"
                              icon="pi pi-plus"
                              styleClass="ui-button-success"
-                             oncomplete="PF('dlgOdontologo').show()"
                              update=":formDialog"
-                             actionListener="#{odontologoBean.nuevo}"/>
+                             oncomplete="PF('dlgOdontologo').show()"
+                             actionListener="#{odontologoBean.setOdontologoSeleccionado(newcom.luisborrayo.clinicasonrisasana.model.Odontologo())}"/>
         </div>
 
         <!-- TABLA -->
@@ -42,10 +42,6 @@
                     #{o.especialidad}
                 </p:column>
 
-                <p:column headerText="Teléfono">
-                    #{o.usuario.telefono}
-                </p:column>
-
                 <p:column headerText="Correo">
                     #{o.usuario.correo}
                 </p:column>
@@ -57,14 +53,14 @@
 
                 <p:column headerText="Acciones" style="width:150px; text-align:center;">
 
-                    <!-- BOTÓN EDITAR -->
+                    <!-- EDITAR -->
                     <p:commandButton icon="pi pi-pencil"
                                      styleClass="ui-button-warning"
                                      update=":formDialog"
                                      oncomplete="PF('dlgOdontologo').show()"
-                                     actionListener="#{odontologoBean.editar(o)}"/>
+                                     actionListener="#{odontologoBean.setOdontologoSeleccionado(o)}"/>
 
-                    <!-- BOTÓN ELIMINAR -->
+                    <!-- ELIMINAR -->
                     <p:commandButton icon="pi pi-trash"
                                      styleClass="ui-button-danger"
                                      actionListener="#{odontologoBean.eliminar(o.id)}"
@@ -79,9 +75,7 @@
 
     </h:form>
 
-
-    <!-- DIÁLOGO PARA CREAR / EDITAR -->
-
+    <!-- DIÁLOGO -->
     <p:dialog id="dialogOdontologo"
               widgetVar="dlgOdontologo"
               header="Odontólogo"
@@ -93,30 +87,24 @@
 
             <div class="p-fluid">
 
-                <p:inputText value="#{odontologoBean.odontologo.usuario.nombres}"
+                <p:inputText value="#{odontologoBean.odontologoSeleccionado.usuario.nombres}"
                              label="Nombres" required="true"/>
 
-                <p:inputText value="#{odontologoBean.odontologo.usuario.apellidos}"
+                <p:inputText value="#{odontologoBean.odontologoSeleccionado.usuario.apellidos}"
                              label="Apellidos" required="true"/>
 
-                <p:inputText value="#{odontologoBean.odontologo.usuario.dpi}"
-                             label="DPI" required="true"/>
-
-                <p:inputText value="#{odontologoBean.odontologo.colegiado}"
+                <p:inputText value="#{odontologoBean.odontologoSeleccionado.colegiado}"
                              label="Colegiado" required="true"/>
 
-                <p:selectOneMenu value="#{odontologoBean.odontologo.especialidad}"
+                <p:selectOneMenu value="#{odontologoBean.odontologoSeleccionado.especialidad}"
                                  label="Especialidad">
                     <f:selectItems value="#{odontologoBean.especialidades}"/>
                 </p:selectOneMenu>
 
-                <p:inputText value="#{odontologoBean.odontologo.usuario.telefono}"
-                             label="Teléfono" required="true"/>
-
-                <p:inputText value="#{odontologoBean.odontologo.usuario.correo}"
+                <p:inputText value="#{odontologoBean.odontologoSeleccionado.usuario.correo}"
                              label="Correo" required="true"/>
 
-                <p:selectOneMenu value="#{odontologoBean.odontologo.usuario.active}"
+                <p:selectOneMenu value="#{odontologoBean.odontologoSeleccionado.usuario.active}"
                                  label="Estado">
                     <f:selectItem itemLabel="Activo" itemValue="true"/>
                     <f:selectItem itemLabel="Inactivo" itemValue="false"/>
@@ -129,7 +117,7 @@
             <p:commandButton value="Guardar"
                              icon="pi pi-check"
                              styleClass="ui-button-success"
-                             action="#{odontologoBean.guardar}"
+                             action="#{odontologoBean.actualizar}"
                              update=":formTabla"
                              oncomplete="PF('dlgOdontologo').hide()"/>
 
