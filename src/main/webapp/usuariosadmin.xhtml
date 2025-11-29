@@ -7,8 +7,8 @@
 
 <h:head>
     <title>Gestión de Usuarios - Sonrisa Sana</title>
-    <h:outputStylesheet library="css" name="common-styles.css"/>
-    <h:outputStylesheet library="css" name="sidebar-styles.css"/>
+    <h:outputStylesheet library="css" name="commonadmin-styles.css"/>
+    <h:outputStylesheet library="css" name="sidebaradmin-styles.css"/>
 
     <style>
         * {
@@ -31,10 +31,10 @@
         /* MAIN CONTENT */
         .main-content {
             flex: 1;
-            margin-left: 250px; /* Ancho de la sidebar */
+            margin-left: 260px; /* Ancho de la sidebar */
             padding: 2rem;
             min-height: 100vh;
-            width: calc(100% - 250px);
+            width: calc(100% - 260px);
         }
 
         .top-bar {
@@ -146,8 +146,8 @@
 <h:body>
     <div class="dashboard-container">
 
-        <!-- SIDEBAR COMPONENT -->
-        <comp:sidebar activePage="usuarios"/>
+        <!-- ✅ SIDEBAR ADMIN COMPONENT -->
+        <comp:sidebaradmin activePage="usuarios"/>
 
         <!-- MAIN CONTENT -->
         <div class="main-content">

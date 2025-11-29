@@ -1,37 +1,32 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:h="jakarta.faces.html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="jakarta.faces.core">
 
 <h:head>
     <title>Panel de Administración - Clínica Sonrisa Sana</title>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
         body {
-            background-color: #f5f5f5;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
+            background-color: #f9f9f9;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        .header-panel {
-            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+        .admin-header {
+            background-color: #1976d2;
             color: white;
-            padding: 1.5rem 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            border-radius: 0;
         }
 
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1400px;
-            margin: 0 auto;
         }
 
-        .header-title {
+        .admin-title {
             font-size: 1.5rem;
             font-weight: 600;
         }
@@ -40,104 +35,96 @@
             text-align: right;
         }
 
-        .user-name {
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .user-role {
-            font-size: 0.875rem;
-            opacity: 0.9;
-            margin-bottom: 0.5rem;
-        }
-
-        .main-content {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-
-        .welcome-section {
-            background: white;
+        .main-panel {
             padding: 2rem;
+            margin-top: 1rem;
+            background-color: white;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-            text-align: center;
         }
 
         .clinic-title {
+            width: 100%;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .clinic-title-text {
             color: #1976d2;
             font-size: 2rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+            font-weight: 700;
         }
 
-        .clinic-subtitle {
-            color: #666;
-            font-size: 1rem;
-        }
-
-        .modules-grid {
+        .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
             margin-top: 2rem;
         }
 
-        .module-card {
+        .admin-card {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
-            overflow: hidden;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        .module-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        .admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(25, 118, 210, 0.2);
+            border-color: #1976d2;
         }
 
-        .module-header {
-            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-            color: white;
-            padding: 1.5rem;
-            font-size: 1.25rem;
+        .card-icon {
+            font-size: 3rem;
+            color: #1976d2;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 0.5rem;
             font-weight: 600;
         }
 
-        .module-body {
-            padding: 1.5rem;
-        }
-
-        .module-description {
+        .card-subtitle {
             color: #666;
             margin-bottom: 1.5rem;
-            line-height: 1.5;
+            font-size: 0.95rem;
         }
 
         .footer-panel {
-            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            background-color: #1976d2;
             color: white;
             text-align: center;
-            padding: 1.5rem;
-            margin-top: 3rem;
+            padding: 1rem;
+            margin-top: 2rem;
+            border-radius: 0;
         }
 
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                text-align: center;
-            }
+        .ui-button {
+            background: linear-gradient(135deg, #1976d2, #2196f3) !important;
+            border: none !important;
+            padding: 0.8rem 2rem !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s !important;
+        }
 
-            .user-info {
-                text-align: center;
-                margin-top: 1rem;
-            }
+        .ui-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(25,118,210,0.3) !important;
+        }
 
-            .modules-grid {
-                grid-template-columns: 1fr;
-            }
+        .ui-button-danger {
+            background: linear-gradient(135deg, #f44336, #e53935) !important;
         }
     </style>
 </h:head>
@@ -146,193 +133,115 @@
     <h:form id="frmAdmin">
 
         <!-- Encabezado -->
-        <div class="header-panel">
+        <p:panel styleClass="admin-header">
             <div class="header-content">
-                <div class="header-title">
-                    <i class="pi pi-th-large" style="margin-right: 0.5rem;"></i>
-                    Panel de Administración
-                </div>
+                <h:outputText value="Panel de Administración" styleClass="admin-title" />
 
                 <div class="user-info">
-                    <div class="user-name">
-                        Bienvenido, <strong>#{loginBean.currentUserFullName}</strong>
-                    </div>
-                    <div class="user-role">
-                        <i class="pi pi-user" style="margin-right: 0.25rem;"></i>
-                        Rol: #{loginBean.currentUserRole}
-                    </div>
+                    <div>Bienvenido, <b>#{loginBean.currentUserFullName}</b></div>
+                    <div>Rol: #{loginBean.currentUserRole}</div>
 
                     <p:commandButton id="btnLogout"
                                      value="Cerrar Sesión"
                                      icon="pi pi-sign-out"
                                      action="#{loginBean.logout}"
                                      ajax="false"
-                                     styleClass="p-button-danger p-button-raised" />
+                                     styleClass="ui-button-danger ui-button-raised"
+                                     style="margin-top:0.5rem;" />
                 </div>
             </div>
-        </div>
+        </p:panel>
 
-        <!-- Contenido Principal -->
-        <div class="main-content">
-
-            <!-- Sección de Bienvenida -->
-            <div class="welcome-section">
-                <div class="clinic-title">
-                    <i class="pi pi-heart" style="margin-right: 0.5rem;"></i>
-                    Clínica Sonrisa Sana
-                </div>
-                <div class="clinic-subtitle">
-                    Sistema de Gestión Integral
-                </div>
+        <!-- Contenido central -->
+        <p:panel styleClass="main-panel">
+            <div class="clinic-title">
+                <h:outputText value="🦷 Clínica Sonrisa Sana" styleClass="clinic-title-text" />
             </div>
 
-            <!-- Grid de Módulos -->
-            <div class="modules-grid">
+            <p:separator style="margin-bottom:2rem;" />
 
-                <!-- GESTIÓN DE USUARIOS -->
-                <div class="module-card">
-                    <div class="module-header">
-                        <i class="pi pi-users" style="margin-right: 0.5rem;"></i>
-                        Gestión de Usuarios
-                    </div>
-                    <div class="module-body">
-                        <div class="module-description">
-                            Administrar cuentas de usuario, asignar roles y gestionar permisos de acceso al sistema.
+            <div class="cards-grid">
+
+                <!-- ✅ Gestión de Usuarios -->
+                <div class="admin-card">
+                    <div>
+                        <div class="card-icon">
+                            <i class="pi pi-users"></i>
                         </div>
-                        <p:commandButton value="Abrir Módulo"
-                                         icon="pi pi-arrow-right"
-                                         styleClass="p-button-primary p-button-raised"
-                                         ajax="false"
-                                         outcome="usuarios.xhtml"
-                                         style="width: 100%;" />
+                        <h3 class="card-title">Gestión de Usuarios</h3>
+                        <p class="card-subtitle">Administrar cuentas, roles y accesos del sistema</p>
                     </div>
+                    <p:button value="Abrir"
+                              icon="pi pi-arrow-right"
+                              outcome="usuariosadmin" />
                 </div>
 
-                <!-- REPORTES -->
-                <div class="module-card">
-                    <div class="module-header">
-                        <i class="pi pi-chart-line" style="margin-right: 0.5rem;"></i>
-                        Reportes
-                    </div>
-                    <div class="module-body">
-                        <div class="module-description">
-                            Visualiza estadísticas, métricas de rendimiento y genera reportes detallados de la clínica.
+                <!-- ✅ Gestión de Pacientes -->
+                <div class="admin-card">
+                    <div>
+                        <div class="card-icon">
+                            <i class="pi pi-user-plus"></i>
                         </div>
-                        <p:commandButton value="Abrir Módulo"
-                                         icon="pi pi-arrow-right"
-                                         styleClass="p-button-primary p-button-raised"
-                                         ajax="false"
-                                         outcome="/paginas/reportes/reportes.xhtml"
-                                         style="width: 100%;" />
+                        <h3 class="card-title">Gestión de Pacientes</h3>
+                        <p class="card-subtitle">Administrar información de pacientes y expedientes</p>
                     </div>
+                    <p:button value="Abrir"
+                              icon="pi pi-arrow-right"
+                              outcome="pacientesadmin" />
                 </div>
 
-                <!-- CITAS -->
-                <div class="module-card">
-                    <div class="module-header">
-                        <i class="pi pi-calendar" style="margin-right: 0.5rem;"></i>
-                        Citas
-                    </div>
-                    <div class="module-body">
-                        <div class="module-description">
-                            Gestión completa de citas médicas y odontológicas, agendamiento y seguimiento.
+                <!-- ✅ Gestión de Citas -->
+                <div class="admin-card">
+                    <div>
+                        <div class="card-icon">
+                            <i class="pi pi-calendar-plus"></i>
                         </div>
-                        <p:commandButton value="Abrir Módulo"
-                                         icon="pi pi-arrow-right"
-                                         styleClass="p-button-primary p-button-raised"
-                                         ajax="false"
-                                         outcome="citas.xhtml"
-                                         style="width: 100%;" />
+                        <h3 class="card-title">Gestión de Citas</h3>
+                        <p class="card-subtitle">Administrar citas médicas y agenda de odontólogos</p>
                     </div>
+                    <p:button value="Abrir"
+                              icon="pi pi-arrow-right"
+                              outcome="citasadmin" />
                 </div>
 
-                <!-- PACIENTES -->
-                <div class="module-card">
-                    <div class="module-header">
-                        <i class="pi pi-id-card" style="margin-right: 0.5rem;"></i>
-                        Pacientes
-                    </div>
-                    <div class="module-body">
-                        <div class="module-description">
-                            Registro y gestión de expedientes clínicos, historial médico y datos de pacientes.
+                <!-- ✅ Gestión de Facturas (En Construcción) -->
+                <div class="admin-card">
+                    <div>
+                        <div class="card-icon">
+                            <i class="pi pi-file-pdf"></i>
                         </div>
-                        <p:commandButton value="Abrir Módulo"
-                                         icon="pi pi-arrow-right"
-                                         styleClass="p-button-primary p-button-raised"
-                                         ajax="false"
-                                         outcome="pacientes.xhtml"
-                                         style="width: 100%;" />
+                        <h3 class="card-title">Gestión de Facturas</h3>
+                        <p class="card-subtitle">Administrar facturas, pagos y estados de cuenta</p>
                     </div>
+                    <p:commandButton value="Próximamente"
+                                     icon="pi pi-clock"
+                                     disabled="true"
+                                     styleClass="ui-button-secondary" />
                 </div>
 
-                <!-- ODONTÓLOGOS -->
-                <div class="module-card">
-                    <div class="module-header">
-                        <i class="pi pi-user-plus" style="margin-right: 0.5rem;"></i>
-                        Odontólogos
-                    </div>
-                    <div class="module-body">
-                        <div class="module-description">
-                            Gestión de personal médico, especialidades, horarios y disponibilidad.
+                <!-- ✅ Reportes (En Construcción) -->
+                <div class="admin-card">
+                    <div>
+                        <div class="card-icon">
+                            <i class="pi pi-chart-bar"></i>
                         </div>
-                        <p:commandButton value="Abrir Módulo"
-                                         icon="pi pi-arrow-right"
-                                         styleClass="p-button-primary p-button-raised"
-                                         ajax="false"
-                                         outcome="odontologos.xhtml"
-                                         style="width: 100%;" />
+                        <h3 class="card-title">Reportes</h3>
+                        <p class="card-subtitle">Reportes y estadísticas del sistema</p>
                     </div>
+                    <p:commandButton value="Próximamente"
+                                     icon="pi pi-clock"
+                                     disabled="true"
+                                     styleClass="ui-button-secondary" />
                 </div>
 
-                <!-- FACTURACIÓN -->
-                <div class="module-card">
-                    <div class="module-header">
-                        <i class="pi pi-dollar" style="margin-right: 0.5rem;"></i>
-                        Facturación
-                    </div>
-                    <div class="module-body">
-                        <div class="module-description">
-                            Control de pagos, facturación, historial de transacciones y gestión financiera.
-                        </div>
-                        <p:commandButton value="Abrir Módulo"
-                                         icon="pi pi-arrow-right"
-                                         styleClass="p-button-primary p-button-raised"
-                                         ajax="false"
-                                         outcome="facturas.xhtml"
-                                         style="width: 100%;" />
-                    </div>
-                </div>
-
-                <!-- CONFIGURACIONES -->
-                <div class="module-card">
-                    <div class="module-header">
-                        <i class="pi pi-cog" style="margin-right: 0.5rem;"></i>
-                        Configuraciones
-                    </div>
-                    <div class="module-body">
-                        <div class="module-description">
-                            Ajustes del sistema, parámetros generales y configuración de la aplicación.
-                        </div>
-                        <p:commandButton value="Abrir Módulo"
-                                         icon="pi pi-arrow-right"
-                                         styleClass="p-button-primary p-button-raised"
-                                         ajax="false"
-                                         outcome="/paginas/configuracion/configuracion.xhtml"
-                                         style="width: 100%;" />
-                    </div>
-                </div>
 
             </div>
-        </div>
+        </p:panel>
 
         <!-- Pie de página -->
-        <div class="footer-panel">
-            <p style="margin: 0;">
-                <i class="pi pi-heart" style="margin-right: 0.5rem;"></i>
-                © 2025 Clínica Sonrisa Sana - Todos los derechos reservados
-            </p>
-        </div>
-
+        <p:panel styleClass="footer-panel">
+            <h:outputText value="© 2025 Clínica Sonrisa Sana — Todos los derechos reservados" />
+        </p:panel>
     </h:form>
 </h:body>
 </html>
