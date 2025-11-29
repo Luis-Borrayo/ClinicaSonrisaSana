@@ -69,11 +69,9 @@
             </h:link>
 
             <!-- Reportes (próximamente) -->
-            <div class="menu-item menu-item-disabled"
-                 title="Próximamente disponible">
+            <h:link outcome="/reportesadmin.xhtml" styleClass="menu-item #{activePage == 'reportes' ? 'active' : ''}">
                 <i class="pi pi-chart-bar"></i> Reportes
-                <span style="font-size: 0.7rem; color: #ffeb3b; margin-left: auto;">Próximamente</span>
-            </div>
+            </h:link>
 
             <!-- Archivos S3 -->
             <h:link outcome="/upload.xhtml"
