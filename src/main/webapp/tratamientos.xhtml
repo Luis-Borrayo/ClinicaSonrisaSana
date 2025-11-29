@@ -2,20 +2,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:comp="http://xmlns.jcp.org/jsf/composite/components">
 
 <h:head>
     <title>Gestión de Tratamientos - Clínica Sonrisa Sana</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>
-        body {
-            background-color: #f5f5f5;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
+    <h:outputStylesheet library="css" name="commonadmin-styles.css"/>
+    <h:outputStylesheet library="css" name="sidebaradmin-styles.css"/>
 
+    <style>
         .page-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -51,155 +46,140 @@
             margin-bottom: 1.5rem;
         }
 
-        .btn-actions {
-            margin-right: 0.5rem;
+        .p-datatable .p-datatable-thead > tr > th {
+            background: linear-gradient(135deg, #1976d2, #2196f3) !important;
+            color: white !important;
+            font-weight: 600;
         }
 
-        .ui-datatable .ui-datatable-header {
-            background: #f8f9fa;
-            border: none;
-        }
-
-        .ui-widget-header {
-            background: #1976d2;
-            color: white;
+        .p-datatable .p-datatable-tbody > tr:hover {
+            background: #e3f2fd !important;
         }
     </style>
 </h:head>
 
 <h:body>
+    <div class="dashboard-container">
 
-    <div class="page-container">
+    <!-- SIDEBAR COMPONENT -->
+    <comp:sidebaradmin activePage="tratamientos"/>
 
-        <h:form id="frmTratamientos">
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
 
-            <!-- Encabezado de página -->
-            <div class="page-header">
-                <div>
-                    <h1 class="page-title">
-                        <i class="pi pi-briefcase" style="margin-right: 0.5rem;"></i>
-                        Gestión de Tratamientos
-                    </h1>
-                </div>
-                <div>
-                    <p:commandButton value="Volver al Panel"
-                                     icon="pi pi-arrow-left"
-                                     styleClass="p-button-secondary"
-                                     ajax="false"
-                                     action="principaladmin?faces-redirect=true" />
-                </div>
-            </div>
-
-            <!-- Mensajes del sistema -->
-            <p:messages id="msgTratamiento" showDetail="true" closable="true" />
-
-            <!-- Contenido principal -->
-            <div class="content-card">
-
-                <!-- Barra de herramientas -->
-                <div class="table-header">
-                    <p:commandButton value="Nuevo Tratamiento"
-                                     icon="pi pi-plus"
-                                     styleClass="p-button-success"
-                                     actionListener="#{tratamientoBean.limpiar}"
-                                     update=":dlgTratamiento:dlgTratamientoForm"
-                                     oncomplete="PF('dlgTratamiento').show();" />
-
-                    <p:commandButton value="Actualizar Tabla"
-                                     icon="pi pi-refresh"
-                                     styleClass="p-button-info"
-                                     update="tblTratamientos"
-                                     actionListener="#{tratamientoBean.cargarLista}"
-                                     style="margin-left: 0.5rem;" />
-                </div>
-
-                <!-- Tabla de tratamientos -->
-                <p:dataTable id="tblTratamientos"
-                             value="#{tratamientoBean.lista}"
-                             var="t"
-                             paginator="true"
-                             rows="10"
-                             rowsPerPageTemplate="5,10,15,20"
-                             paginatorPosition="bottom"
-                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                             currentPageReportTemplate="Mostrando {startRecord} a {endRecord} de {totalRecords} tratamientos"
-                             responsiveLayout="scroll"
-                             styleClass="p-datatable-striped"
-                             emptyMessage="No hay tratamientos registrados"
-                             widgetVar="tblTratamientos">
-
-                    <p:column headerText="ID" sortBy="#{t.id}" style="width:70px; text-align:center;">
-                        <h:outputText value="#{t.id}" />
-                    </p:column>
-
-                    <p:column headerText="Nombre" sortBy="#{t.nombre}" filterBy="#{t.nombre}"
-                              filterMatchMode="contains" style="min-width:150px;">
-                        <h:outputText value="#{t.nombre}" style="font-weight: 600;" />
-                    </p:column>
-
-                    <p:column headerText="Descripción" style="min-width:200px;">
-                        <h:outputText value="#{t.descripcion.length() > 60 ? t.descripcion.substring(0, 60).concat('...') : t.descripcion}"
-                                      title="#{t.descripcion}" />
-                    </p:column>
-
-                    <p:column headerText="Duración" sortBy="#{t.duracion}" style="width:120px; text-align:center;">
-                        <h:outputText value="#{t.duracionFormateada}" />
-                    </p:column>
-
-                    <p:column headerText="Costo" sortBy="#{t.costo}" style="width:140px; text-align:right;">
-                        <h:outputText value="#{t.costoFormateado}" style="font-weight: 600; color: #2ecc71;" />
-                    </p:column>
-
-                    <p:column headerText="Especialidad" sortBy="#{t.especialidad}"
-                              filterBy="#{t.especialidad}" filterMatchMode="equals" style="width:180px;">
-                        <f:facet name="filter">
-                            <p:selectOneMenu onchange="PF('tblTratamientos').filter()"
-                                             styleClass="p-column-filter" style="width: 100%;">
-                                <f:selectItem itemLabel="Todas" itemValue="#{null}" noSelectionOption="true" />
-                                <f:selectItems value="#{tratamientoBean.especialidades}" var="esp"
-                                               itemLabel="#{esp}" itemValue="#{esp}" />
-                            </p:selectOneMenu>
-                        </f:facet>
-                        <p:tag value="#{t.especialidad}" severity="info" />
-                    </p:column>
-
-                    <p:column headerText="Odontólogo" filterBy="#{t.nombreOdontologo}"
-                              filterMatchMode="contains" style="min-width:180px;">
-                        <h:outputText value="#{t.nombreOdontologo}" />
-                    </p:column>
-
-                    <p:column headerText="Acciones" style="width:160px; text-align:center;" exportable="false">
-                        <p:commandButton icon="pi pi-pencil"
-                                         title="Editar tratamiento"
-                                         styleClass="p-button-warning p-button-sm btn-actions"
-                                         actionListener="#{tratamientoBean.editar(t)}"
-                                         update=":dlgTratamiento:dlgTratamientoForm"
-                                         oncomplete="PF('dlgTratamiento').show();">
-                            <p:resetInput target=":dlgTratamiento:dlgTratamientoForm" />
-                        </p:commandButton>
-
-                        <p:commandButton icon="pi pi-trash"
-                                         title="Eliminar permanentemente"
-                                         styleClass="p-button-danger p-button-sm"
-                                         actionListener="#{tratamientoBean.eliminar(t.id)}"
-                                         update="tblTratamientos msgTratamiento">
-                            <p:confirm header="Confirmación"
-                                       message="¿Está seguro de eliminar el tratamiento '#{t.nombre}'? Esta acción no se puede deshacer."
-                                       icon="pi pi-exclamation-triangle" />
-                        </p:commandButton>
-                    </p:column>
-
-                </p:dataTable>
-
-            </div>
-
-        </h:form>
-
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <h1>
+            <i class="pi pi-briefcase"></i>
+            Gestión de Tratamientos Odontológicos
+        </h1>
     </div>
 
-    <!-- DIÁLOGO PARA CREAR/EDITAR TRATAMIENTO -->
-    <p:dialog id="dlgTratamiento"
-              widgetVar="dlgTratamiento"
+    <!-- CONTENT AREA -->
+    <div class="content-area">
+
+    <h:form id="frmTratamientos">
+
+        <!-- Mensajes del sistema -->
+        <p:messages id="msgTratamiento" showDetail="true" closable="true" />
+
+        <!-- Barra de herramientas -->
+        <div class="table-header">
+            <p:commandButton value="Nuevo Tratamiento"
+                             icon="pi pi-plus"
+                             styleClass="p-button-success"
+                             actionListener="#{tratamientoBean.limpiar}"
+                             update=":formDialog"
+                             oncomplete="PF('dlgTratamiento').show();" />
+
+            <p:commandButton value="Actualizar Tabla"
+                             icon="pi pi-refresh"
+                             styleClass="p-button-info"
+                             update="tblTratamientos"
+                             actionListener="#{tratamientoBean.cargarLista}"
+                             style="margin-left: 0.5rem;" />
+        </div>
+
+        <!-- Tabla de tratamientos -->
+        <p:dataTable id="tblTratamientos"
+                     value="#{tratamientoBean.lista}"
+                     var="t"
+                     paginator="true"
+                     rows="10"
+                     rowsPerPageTemplate="5,10,15,20"
+                     paginatorPosition="bottom"
+                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     currentPageReportTemplate="Mostrando {startRecord} a {endRecord} de {totalRecords} tratamientos"
+                     styleClass="p-datatable-striped"
+                     emptyMessage="No hay tratamientos registrados">
+
+            <p:column headerText="ID" sortBy="#{t.id}" style="width:70px; text-align:center;">
+                <h:outputText value="#{t.id}" />
+            </p:column>
+
+            <p:column headerText="Nombre" sortBy="#{t.nombre}" filterBy="#{t.nombre}"
+                      filterMatchMode="contains" style="min-width:150px;">
+                <h:outputText value="#{t.nombre}" style="font-weight: 600;" />
+            </p:column>
+
+            <p:column headerText="Descripción" style="min-width:200px;">
+                <h:outputText value="#{t.descripcion.length() > 60 ? t.descripcion.substring(0, 60).concat('...') : t.descripcion}"
+                              title="#{t.descripcion}" />
+            </p:column>
+
+            <p:column headerText="Duración" sortBy="#{t.duracion}" style="width:120px; text-align:center;">
+                <h:outputText value="#{t.duracionFormateada}" />
+            </p:column>
+
+            <p:column headerText="Costo" sortBy="#{t.costo}" style="width:140px; text-align:right;">
+                <h:outputText value="#{t.costoFormateado}" style="font-weight: 600; color: #2ecc71;" />
+            </p:column>
+
+            <p:column headerText="Especialidad" sortBy="#{t.especialidad}"
+                      filterBy="#{t.especialidad}" filterMatchMode="equals" style="width:180px;">
+                <f:facet name="filter">
+                    <p:selectOneMenu onchange="PF('tblTratamientos').filter()"
+                                     styleClass="p-column-filter" style="width: 100%;">
+                        <f:selectItem itemLabel="Todas" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{tratamientoBean.especialidades}" />
+                    </p:selectOneMenu>
+                </f:facet>
+                <p:tag value="#{t.especialidad}" severity="info" />
+            </p:column>
+
+            <p:column headerText="Odontólogo" filterBy="#{t.nombreOdontologo}"
+                      filterMatchMode="contains" style="min-width:180px;">
+                <h:outputText value="#{t.nombreOdontologo}" />
+            </p:column>
+
+            <p:column headerText="Acciones" style="width:160px; text-align:center;">
+                <p:commandButton icon="pi pi-pencil"
+                                 title="Editar tratamiento"
+                                 styleClass="p-button-warning p-button-sm"
+                                 actionListener="#{tratamientoBean.editar(t)}"
+                                 update=":formDialog"
+                                 oncomplete="PF('dlgTratamiento').show();"
+                                 style="margin-right: 0.5rem;">
+                    <p:resetInput target=":formDialog" />
+                </p:commandButton>
+
+                <p:commandButton icon="pi pi-trash"
+                                 title="Eliminar permanentemente"
+                                 styleClass="p-button-danger p-button-sm"
+                                 actionListener="#{tratamientoBean.eliminar(t.id)}"
+                                 update="tblTratamientos msgTratamiento">
+                    <p:confirm header="Confirmación"
+                               message="¿Está seguro de eliminar el tratamiento '#{t.nombre}'? Esta acción no se puede deshacer."
+                               icon="pi pi-exclamation-triangle" />
+                </p:commandButton>
+            </p:column>
+
+        </p:dataTable>
+
+    </h:form>
+
+    <!-- ✅✅✅ DIÁLOGO DENTRO DEL FORM PRINCIPAL -->
+    <p:dialog widgetVar="dlgTratamiento"
               header="#{tratamientoBean.tratamiento.id == null ? 'Nuevo Tratamiento' : 'Editar Tratamiento'}"
               modal="true"
               width="700"
@@ -208,7 +188,7 @@
               resizable="false"
               closeOnEscape="true">
 
-        <h:form id="dlgTratamientoForm">
+        <h:form id="formDialog">
 
             <p:messages id="msgDialog" closable="true" />
 
@@ -283,7 +263,7 @@
                                        itemValue="#{esp}" />
                     </p:selectOneMenu>
 
-                    <!-- Odontólogo - USANDO TU CONVERTER PERSONALIZADO -->
+                    <!-- Odontólogo -->
                     <p:outputLabel value="Odontólogo:" for="odontologo" indicateRequired="true" />
                     <p:selectOneMenu id="odontologo"
                                      value="#{tratamientoBean.tratamiento.odontologo}"
@@ -320,7 +300,7 @@
                                  icon="pi pi-save"
                                  styleClass="p-button-success"
                                  actionListener="#{tratamientoBean.guardar}"
-                                 update="dlgTratamientoForm :frmTratamientos:tblTratamientos :frmTratamientos:msgTratamiento"
+                                 update="formDialog :frmTratamientos:tblTratamientos :frmTratamientos:msgTratamiento"
                                  oncomplete="if (!args.validationFailed) PF('dlgTratamiento').hide();" />
 
             </div>

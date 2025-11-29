@@ -266,7 +266,7 @@
                                                  title="Editar"
                                                  styleClass="p-button-warning"
                                                  action="#{pacientesBean.editarPaciente}"
-                                                 update="mainForm:messages mainForm:tablaPacientes"
+                                                 update="mainForm"
                                                  process="@this">
                                     <f:setPropertyActionListener value="#{p}" target="#{pacientesBean.pacienteSeleccionado}"/>
                                 </p:commandButton>

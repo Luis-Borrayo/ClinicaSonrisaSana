@@ -3,6 +3,52 @@
    ======================================== */
 
 /* Sidebar Container */
+/* AGREGAR ESTO AL FINAL DE sidebaradmin-styles.css */
+
+/* ========================================
+   MENU ITEM DISABLED (PRÓXIMAMENTE)
+   ======================================== */
+.menu-item-disabled {
+    opacity: 0.6;
+    cursor: not-allowed !important;
+    pointer-events: none;
+}
+
+.menu-item-disabled:hover {
+    background: rgba(255,255,255,0.05) !important;
+    border-left-color: transparent !important;
+    transform: none !important;
+}
+
+/* Fix para el botón de logout */
+.logout-btn-link.p-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #f44336, #e53935) !important;
+    width: 100%;
+    border: none !important;
+    color: white;
+    font-weight: 600;
+    padding: 0.8rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.logout-btn-link.p-button:hover {
+    background: linear-gradient(135deg, #e53935, #d32f2f) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
+    color: white;
+}
+
+.logout-btn-link.p-button i {
+    font-size: 1.1rem;
+}
+
 .sidebar {
     width: 260px;
     background: linear-gradient(180deg, #1976d2 0%, #1565c0 100%);

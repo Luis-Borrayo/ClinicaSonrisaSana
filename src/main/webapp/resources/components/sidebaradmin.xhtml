@@ -16,7 +16,7 @@
     <div class="sidebar">
         <div class="sidebar-header">
             <h2><i class="pi pi-heart"></i> Sonrisa Sana</h2>
-            <p>Sistema de Gestión</p>
+            <p>Panel de Administración</p>
         </div>
 
         <div class="sidebar-menu">
@@ -44,29 +44,36 @@
                 <i class="pi pi-user"></i> Usuarios
             </h:link>
 
-            <!-- Reportes -->
-            <h:link outcome="/reportesadmin.xhtml"
-                    styleClass="menu-item #{cc.attrs.activePage == 'reportes' ? 'active' : ''}">
-                <i class="pi pi-chart-bar"></i> Reportes
+            <!-- Tratamientos -->
+            <h:link outcome="/tratamientos.xhtml"
+                    styleClass="menu-item #{cc.attrs.activePage == 'tratamientos' ? 'active' : ''}">
+                <i class="pi pi-briefcase"></i> Tratamientos
             </h:link>
 
             <!-- Facturación -->
-            <h:link outcome="/facturacionadmin.xhtml"
+            <h:link outcome="/facturas.xhtml"
                     styleClass="menu-item #{cc.attrs.activePage == 'facturacion' ? 'active' : ''}">
                 <i class="pi pi-dollar"></i> Facturación
             </h:link>
 
             <!-- Seguros Médicos -->
-            <h:link outcome="/catalogo_segurosadmin.xhtml"
+            <h:link outcome="/catalogo_seguros.xhtml"
                     styleClass="menu-item #{cc.attrs.activePage == 'seguros' ? 'active' : ''}">
                 <i class="pi pi-shield"></i> Seguros
             </h:link>
 
             <!-- Odontólogos -->
-            <h:link outcome="/catalogo_odontologosadmin.xhtml"
+            <h:link outcome="/catalogo_odontologos.xhtml"
                     styleClass="menu-item #{cc.attrs.activePage == 'odontologos' ? 'active' : ''}">
                 <i class="pi pi-user-plus"></i> Odontólogos
             </h:link>
+
+            <!-- Reportes (próximamente) -->
+            <div class="menu-item menu-item-disabled"
+                 title="Próximamente disponible">
+                <i class="pi pi-chart-bar"></i> Reportes
+                <span style="font-size: 0.7rem; color: #ffeb3b; margin-left: auto;">Próximamente</span>
+            </div>
 
             <!-- Archivos S3 -->
             <h:link outcome="/upload.xhtml"
