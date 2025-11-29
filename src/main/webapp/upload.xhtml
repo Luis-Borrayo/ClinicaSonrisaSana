@@ -410,21 +410,6 @@
                     <p>Sube, descarga y gestiona archivos en el bucket de Amazon S3 de forma segura</p>
                 </div>
 
-                <!-- SECCIÓN DEBUG TEMPORAL -->
-                <div class="debug-section">
-                    <h4>🔍 Información de Debug:</h4>
-                    <p><strong>Bean cargado:</strong> #{fileUploadView != null ? '✅ SI' : '❌ NO'}</p>
-                    <p><strong>Total de archivos:</strong> #{fileUploadView.totalArchivos}</p>
-                    <p><strong>Lista de archivos es null:</strong> #{fileUploadView.archivosS3 == null ? '✅ SI' : '❌ NO'}</p>
-                    <p><strong>Servicio S3 disponible:</strong> #{fileUploadView.s3Service != null ? '✅ SI' : '❌ NO'}</p>
-
-                    <h:form>
-                        <p:commandButton value="Probar Conexión S3"
-                                         action="#{fileUploadView.testS3Connection}"
-                                         update="growl"
-                                         styleClass="ui-button-warning"/>
-                    </h:form>
-                </div>
 
                 <!-- Action Cards -->
                 <div class="action-grid">

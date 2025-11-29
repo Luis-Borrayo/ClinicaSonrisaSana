@@ -1,0 +1,182 @@
+/* ========================================
+   SIDEBAR MEDIC STYLES - PALETA AZUL
+   ======================================== */
+
+/* Sidebar Container - Tema Médico con Azul */
+.medic-sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, #1976d2 0%, #1565c0 100%);
+    color: white;
+    padding: 0;
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Sidebar Header */
+.medic-sidebar .sidebar-header {
+    padding: 2rem 1.5rem;
+    background: rgba(0,0,0,0.1);
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+
+.medic-sidebar .sidebar-header h2 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: white;
+}
+
+.medic-sidebar .sidebar-header p {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    color: rgba(255,255,255,0.8);
+    text-align: center;
+}
+
+/* Sidebar Menu */
+.medic-sidebar .sidebar-menu {
+    flex: 1;
+    padding: 1.5rem 0;
+    overflow-y: auto;
+}
+
+/* Menu Items */
+.medic-sidebar .menu-item {
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    margin: 0.2rem 0.5rem;
+    border-radius: 6px;
+}
+
+.medic-sidebar .menu-item:hover {
+    background: rgba(255,255,255,0.1);
+    border-left-color: #64b5f6;
+    transform: translateX(2px);
+}
+
+.medic-sidebar .menu-item.active {
+    background: rgba(255,255,255,0.15);
+    border-left-color: white;
+    font-weight: 600;
+}
+
+.medic-sidebar .menu-item i {
+    font-size: 1.2rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Sidebar Footer */
+.medic-sidebar .sidebar-footer {
+    padding: 1.5rem;
+    border-top: 2px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.1);
+}
+
+.medic-sidebar .user-info {
+    text-align: center;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+}
+
+.medic-sidebar .user-info p {
+    margin: 0.3rem 0;
+    color: white;
+}
+
+/* Logout Button */
+.medic-sidebar .logout-btn-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #f44336, #e53935);
+    width: 100%;
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.8rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.medic-sidebar .logout-btn-link:hover {
+    background: linear-gradient(135deg, #e53935, #d32f2f);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
+}
+
+.medic-sidebar .logout-btn-link:active {
+    transform: translateY(0);
+}
+
+/* ========================================
+   ANIMACIONES
+   ======================================== */
+
+@keyframes slideInMedic {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.medic-sidebar .menu-item {
+    animation: slideInMedic 0.3s ease forwards;
+}
+
+.medic-sidebar .menu-item:nth-child(1) { animation-delay: 0.05s; }
+.medic-sidebar .menu-item:nth-child(2) { animation-delay: 0.1s; }
+.medic-sidebar .menu-item:nth-child(3) { animation-delay: 0.15s; }
+.medic-sidebar .menu-item:nth-child(4) { animation-delay: 0.2s; }
+.medic-sidebar .menu-item:nth-child(5) { animation-delay: 0.25s; }
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+    .medic-sidebar {
+        width: 0;
+        overflow: hidden;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .medic-sidebar.mobile-open {
+        width: 260px;
+        transform: translateX(0);
+    }
+}
+
+/* Main Content para sidebar médico */
+.main-content {
+    margin-left: 260px;
+    min-height: 100vh;
+}
