@@ -203,14 +203,12 @@ public class TratamientoBean implements Serializable {
         }
     }
 
-    // Método para obtener todas las especialidades disponibles
     public List<String> getEspecialidades() {
         return Arrays.stream(Odontologo.Especialidad.values())
                 .map(Enum::name)
                 .collect(Collectors.toList());
     }
 
-    // Método auxiliar para mensajes
     private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(severity, summary, detail));

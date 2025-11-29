@@ -71,7 +71,6 @@ public class LoginBean implements Serializable {
                         new FacesMessage(FacesMessage.SEVERITY_INFO,
                                 "Bienvenido", user.getNombres() + " " + user.getApellidos()));
 
-                // Redirigir según el rol del usuario - CORREGIDO para /views/
                 String contextPath = externalContext.getRequestContextPath();
                 String redirectPage = getRedirectPageByRole(user.getRole());
                 externalContext.redirect(contextPath + redirectPage);
@@ -97,10 +96,7 @@ public class LoginBean implements Serializable {
         }
     }
 
-    /**
-     * Determina la página de inicio según el rol del usuario
-     * CORREGIDO: Ahora apunta a /views/ en lugar de raíz
-     */
+
     private String getRedirectPageByRole(User.Role role) {
         switch (role) {
             case ADMINISTRADOR:

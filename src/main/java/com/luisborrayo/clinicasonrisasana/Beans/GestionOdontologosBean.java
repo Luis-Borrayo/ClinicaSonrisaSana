@@ -39,7 +39,6 @@ public class GestionOdontologosBean implements Serializable {
     private Odontologo odontologoSeleccionado;
     private Odontologo nuevoOdontologo;
 
-    // Campos del usuario relacionado
     private String nombres;
     private String apellidos;
     private String correo;
@@ -48,7 +47,6 @@ public class GestionOdontologosBean implements Serializable {
     private String password;
     private String confirmPassword;
 
-    // Campos específicos del odontólogo
     private String colegiado;
     private Odontologo.Especialidad especialidad;
     private String horario;
@@ -67,7 +65,6 @@ public class GestionOdontologosBean implements Serializable {
         cargarOdontologos();
     }
 
-    // ==================== CRUD METHODS ====================
 
     public void guardarOdontologo() {
         LOGGER.log(Level.INFO, "=== GUARDANDO ODONTOLOGO ===");

@@ -69,19 +69,14 @@ public class FacturasBean implements Serializable {
         }
     }
 
-    /**
-     * Calcula el total de la factura
-     */
     public void calcularTotal() {
         try {
             BigDecimal subtotal = facturaActual.getSubtotal() != null ? facturaActual.getSubtotal() : BigDecimal.ZERO;
             BigDecimal descuento = facturaActual.getDescuento() != null ? facturaActual.getDescuento() : BigDecimal.ZERO;
             BigDecimal pagosParciales = facturaActual.getPagosParciales() != null ? facturaActual.getPagosParciales() : BigDecimal.ZERO;
 
-            // Total = Subtotal - Descuento - PagosParciales
             BigDecimal total = subtotal.subtract(descuento).subtract(pagosParciales);
 
-            // Asegurarse de que no sea negativo
             if (total.compareTo(BigDecimal.ZERO) < 0) {
                 total = BigDecimal.ZERO;
             }
@@ -100,7 +95,6 @@ public class FacturasBean implements Serializable {
         LOGGER.log(Level.INFO, "=== GUARDANDO FACTURA ===");
 
         try {
-            // Validaciones
             if (facturaActual.getPaciente() == null) {
                 addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Debe seleccionar un paciente");
                 return;
@@ -121,7 +115,6 @@ public class FacturasBean implements Serializable {
                 return;
             }
 
-            // Calcular total antes de guardar
             calcularTotal();
 
             // Guardar
@@ -129,7 +122,6 @@ public class FacturasBean implements Serializable {
 
             addMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Factura guardada correctamente");
 
-            // Recargar lista y limpiar formulario
             facturas = facturasRepository.findAll();
             nuevaFactura();
 
@@ -169,8 +161,6 @@ public class FacturasBean implements Serializable {
     private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, detail));
     }
-
-    // ==================== GETTERS Y SETTERS ====================
 
     public List<Facturas> getFacturas() {
         return facturas;

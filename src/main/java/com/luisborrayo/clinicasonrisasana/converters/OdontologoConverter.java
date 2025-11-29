@@ -18,7 +18,6 @@ public class OdontologoConverter implements Converter<Odontologo> {
 
     @Override
     public Odontologo getAsObject(FacesContext ctx, UIComponent comp, String value) {
-        // Si no hay selección, devuelve null para que 'required' funcione
         if (value == null || value.trim().isEmpty() || "null".equalsIgnoreCase(value)) {
             return null;
         }

@@ -42,9 +42,6 @@ public class FileUploadView implements Serializable {
         listarArchivosS3();
     }
 
-    /**
-     * MÉTODO CORREGIDO: Lista archivos con manejo robusto de errores
-     */
     public void listarArchivosS3() {
         System.out.println("═══════════════════════════════════════════");
         System.out.println("📂 FileUploadView - listarArchivosS3() ejecutado");
@@ -61,7 +58,6 @@ public class FileUploadView implements Serializable {
             System.out.println("✅ S3Service disponible, llamando a listar archivos...");
             List<ArchivoS3> listaTemp = s3Service.listarArchivos();
 
-            // Verificar que la lista no sea null
             if (listaTemp == null) {
                 System.out.println("⚠️ El servicio retornó NULL, inicializando lista vacía");
                 this.archivosS3 = new ArrayList<>();
@@ -77,7 +73,6 @@ public class FileUploadView implements Serializable {
                 }
             }
 
-            // Mensaje al usuario
             addMessage(FacesMessage.SEVERITY_INFO,
                     "Lista Actualizada",
                     "Se encontraron " + archivosS3.size() + " archivos");
@@ -88,10 +83,8 @@ public class FileUploadView implements Serializable {
             System.err.println("   Mensaje: " + e.getMessage());
             e.printStackTrace();
 
-            // Inicializar lista vacía para evitar NullPointerException
             this.archivosS3 = new ArrayList<>();
 
-            // Mostrar mensaje de error al usuario
             addMessage(FacesMessage.SEVERITY_ERROR,
                     "Error al listar",
                     "No se pudieron cargar los archivos: " + e.getMessage());
@@ -100,9 +93,6 @@ public class FileUploadView implements Serializable {
         System.out.println("═══════════════════════════════════════════");
     }
 
-    /**
-     * Sube archivo a S3
-     */
     public void upload() {
         if (file != null && file.getSize() > 0) {
             try {
@@ -143,9 +133,6 @@ public class FileUploadView implements Serializable {
         }
     }
 
-    /**
-     * Maneja subida AJAX
-     */
     public void handleFileUpload(FileUploadEvent event) {
         UploadedFile uploadedFile = event.getFile();
 
@@ -163,7 +150,6 @@ public class FileUploadView implements Serializable {
                     "¡Subida exitosa!",
                     "Archivo subido inmediatamente a S3");
 
-            // Actualizar la lista
             listarArchivosS3();
 
         } catch (IOException e) {
@@ -179,9 +165,6 @@ public class FileUploadView implements Serializable {
         }
     }
 
-    /**
-     * Descarga un archivo
-     */
     public void descargarArchivo(ArchivoS3 archivo) {
         try {
             if (archivo == null || archivo.getKey() == null) {
@@ -227,9 +210,6 @@ public class FileUploadView implements Serializable {
         }
     }
 
-    /**
-     * Elimina un archivo
-     */
     public void eliminarArchivo() {
         if (archivoSeleccionado != null) {
             try {
@@ -263,9 +243,6 @@ public class FileUploadView implements Serializable {
         }
     }
 
-    /**
-     * Abre archivo en nueva pestaña - MÉTODO CORREGIDO
-     */
     public void abrirArchivo(ArchivoS3 archivo) {
         try {
             if (archivo == null || archivo.getKey() == null) {
@@ -276,7 +253,6 @@ public class FileUploadView implements Serializable {
             String url = s3Service.getFileUrl(archivo.getKey());
             FacesContext context = FacesContext.getCurrentInstance();
 
-            // Método más confiable para abrir nueva pestaña
             String script = "window.open('" + url + "', '_blank');";
             context.getPartialViewContext().getEvalScripts().add(script);
 
@@ -290,9 +266,7 @@ public class FileUploadView implements Serializable {
         }
     }
 
-    /**
-     * Prueba la conexión S3
-     */
+
     public void testS3Connection() {
         try {
             System.out.println("🔍 Probando conexión S3 desde Bean...");
@@ -327,10 +301,6 @@ public class FileUploadView implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(severity, summary, detail));
     }
-
-    // ═══════════════════════════════════════════════════════════════
-    // GETTERS Y SETTERS - AGREGAR GETTER PARA s3Service
-    // ═══════════════════════════════════════════════════════════════
 
     public S3Service getS3Service() {
         return s3Service;

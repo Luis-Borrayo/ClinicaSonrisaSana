@@ -132,11 +132,12 @@
                                 <p:resetInput target=":formDialog" />
                             </p:commandButton>
 
+                            <!-- ✅ CORRECCIÓN: Ruta completa al mensaje -->
                             <p:commandButton icon="pi pi-trash"
                                              title="Eliminar permanentemente"
                                              styleClass="p-button-danger p-button-sm"
                                              actionListener="#{tratamientoBean.eliminar(t.id)}"
-                                             update="tblTratamientos msgTratamiento">
+                                             update="tblTratamientos :frmTratamientos:msgTratamiento">
                                 <p:confirm header="Confirmación"
                                            message="¿Está seguro de eliminar el tratamiento '#{t.nombre}'? Esta acción no se puede deshacer."
                                            icon="pi pi-exclamation-triangle" />
@@ -257,6 +258,7 @@
                                              onclick="PF('dlgTratamiento').hide(); return false;"
                                              style="margin-right: 0.5rem;" />
 
+                            <!-- ✅ CORRECCIÓN: Ruta completa al mensaje -->
                             <p:commandButton value="Guardar"
                                              icon="pi pi-save"
                                              styleClass="p-button-success"

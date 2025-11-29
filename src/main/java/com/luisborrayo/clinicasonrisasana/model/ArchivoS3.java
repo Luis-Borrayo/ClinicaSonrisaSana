@@ -27,7 +27,6 @@ public class ArchivoS3 implements Serializable {
         this.contentType = contentType;
     }
 
-    // Getters y Setters
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
 
@@ -46,7 +45,6 @@ public class ArchivoS3 implements Serializable {
     public String getContentType() { return contentType; }
     public void setContentType(String contentType) { this.contentType = contentType; }
 
-    // Método para JSF - fecha como Date
     public Date getFechaModificacion() {
         if (ultimaModificacion == null) {
             return null;
@@ -54,7 +52,6 @@ public class ArchivoS3 implements Serializable {
         return Date.from(ultimaModificacion);
     }
 
-    // Método para tamaño formateado
     public String getTamanioFormateado() {
         if (folder) return "-";
         if (tamanio < 1024) return tamanio + " B";
@@ -63,7 +60,6 @@ public class ArchivoS3 implements Serializable {
         return String.format("%.1f GB", tamanio / (1024.0 * 1024.0 * 1024.0));
     }
 
-    // Método para fecha formateada
     public String getFechaFormateada() {
         if (ultimaModificacion == null) {
             return "-";

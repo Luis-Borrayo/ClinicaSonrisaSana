@@ -178,13 +178,10 @@ public class PacientesBean implements Serializable {
             LOGGER.log(Level.INFO, "✅ Paciente guardado exitosamente - ID: {0}, Nombre: {1}",
                     new Object[]{pacienteGuardado.getId(), pacienteGuardado.getNombreCompleto()});
 
-            // ✅ Limpiar formulario
             limpiarFormulario();
 
-            // ✅ Recargar lista
             cargarPacientes();
 
-            // ✅ Mensaje de éxito
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO,
                             "Éxito",
@@ -202,7 +199,6 @@ public class PacientesBean implements Serializable {
         LOGGER.log(Level.INFO, "=== INICIANDO EDICIÓN DE PACIENTE ===");
         try {
             if (pacienteSeleccionado != null && pacienteSeleccionado.getId() != null) {
-                // ✅ COPIAR TODOS LOS DATOS AL NUEVO PACIENTE
                 this.nuevoPaciente = pacienteSeleccionado;
 
                 // Asignar seguro
@@ -213,7 +209,6 @@ public class PacientesBean implements Serializable {
                     this.odontologoId = pacienteSeleccionado.getOdontologo().getId();
                 }
 
-                // ✅ HACER SCROLL HACIA EL FORMULARIO
                 FacesContext context = FacesContext.getCurrentInstance();
                 context.getPartialViewContext().getEvalScripts().add("window.scrollTo(0, 0);");
 
@@ -300,14 +295,11 @@ public class PacientesBean implements Serializable {
         }
     }
 
-    // ========== MÉTODOS AUXILIARES ==========
-
     private boolean validarPaciente(Pacientes paciente) {
         LOGGER.log(Level.INFO, "=== VALIDANDO PACIENTE ===");
 
         Set<ConstraintViolation<Pacientes>> violations = validator.validate(paciente);
         if (!violations.isEmpty()) {
-            // Agrupar por propiedad para no spamear el usuario si hay muchas violaciones en la misma propiedad
             Map<String, StringBuilder> mensajesPorCampo = new LinkedHashMap<>();
             for (ConstraintViolation<Pacientes> v : violations) {
                 String property = v.getPropertyPath().toString();
@@ -320,7 +312,6 @@ public class PacientesBean implements Serializable {
                 LOGGER.log(Level.WARNING, "Violación: campo={0} mensaje={1}", new Object[]{property, message});
             }
 
-            // Enviar un FacesMessage por cada campo (así aparecen en p:messages)
             for (Map.Entry<String, StringBuilder> e : mensajesPorCampo.entrySet()) {
                 String campo = e.getKey();
                 String texto = e.getValue().toString();
@@ -417,7 +408,6 @@ public class PacientesBean implements Serializable {
         }
     }
 
-    // ========== GETTERS Y SETTERS ==========
 
     public List<Pacientes> getPacientes() {
         if (pacientes == null) {

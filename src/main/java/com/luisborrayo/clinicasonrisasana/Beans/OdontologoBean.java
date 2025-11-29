@@ -41,7 +41,6 @@ public class OdontologoBean implements Serializable {
         lista = odontologoService.obtenerTodosLosOdontologos();
     }
 
-    // elimina por id (llamado desde la tabla)
     public void eliminar(Long id) {
         if (id != null) {
             odontologoService.eliminarOdontologo(id);
@@ -56,7 +55,6 @@ public class OdontologoBean implements Serializable {
         }
     }
 
-    // getters / setters
     public List<Odontologo> getLista() { return lista; }
 
     public Odontologo getOdontologoNuevo() { return odontologoNuevo; }

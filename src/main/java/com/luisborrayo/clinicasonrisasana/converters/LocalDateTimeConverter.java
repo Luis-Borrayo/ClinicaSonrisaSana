@@ -7,6 +7,7 @@ import jakarta.faces.convert.FacesConverter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 @FacesConverter("localDateTimeConverter")
 public class LocalDateTimeConverter implements Converter<LocalDateTime> {
@@ -16,10 +17,14 @@ public class LocalDateTimeConverter implements Converter<LocalDateTime> {
 
     @Override
     public LocalDateTime getAsObject(FacesContext context, UIComponent component, String value) {
-        if (value == null || value.isEmpty()) {
+        if (value == null || value.trim().isEmpty()) {
             return null;
         }
-        return LocalDateTime.parse(value, FORMATTER);
+        try {
+            return LocalDateTime.parse(value, FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Formato de fecha inválido: " + value + ". Use dd/MM/yyyy HH:mm");
+        }
     }
 
     @Override

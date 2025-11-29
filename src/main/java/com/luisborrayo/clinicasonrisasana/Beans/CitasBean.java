@@ -89,28 +89,29 @@ public class CitasBean implements Serializable {
 
     public void guardarCita() {
         try {
-            System.out.println("Guardando cita...");
-            System.out.println("Paciente ID: " + pacienteId);
-            System.out.println("Odontólogo ID: " + odontologoId);
-            System.out.println("Tratamiento ID: " + tratamientoId);
-            System.out.println("Fecha: " + nuevaCita.getFechaCita());
-            System.out.println("Estado: " + nuevaCita.getEstado());
+            if (pacienteId == null || odontologoId == null) {
+                addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Debe seleccionar paciente y odontólogo");
+                return;
+            }
 
-            // Buscar las entidades por ID
+            if (nuevaCita.getFechaCita() == null) {
+                addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Debe seleccionar fecha y hora");
+                return;
+            }
+
             Pacientes paciente = pacienteService.obtenerPacientePorId(pacienteId);
             Odontologo odontologo = odontologoService.obtenerOdontologoPorId(odontologoId);
             Tratamiento tratamiento = tratamientoId != null ?
                     tratamientoService.obtenerTratamientoPorId(tratamientoId) : null;
 
-            if (paciente == null || odontologo == null) {
-                addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Debe seleccionar paciente y odontólogo");
-                return;
-            }
-
-            // Asignar las relaciones
             nuevaCita.setPaciente(paciente);
             nuevaCita.setOdontologo(odontologo);
             nuevaCita.setTratamiento(tratamiento);
+
+            if (nuevaCita.getPaciente() == null || nuevaCita.getOdontologo() == null) {
+                addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al cargar datos del paciente u odontólogo");
+                return;
+            }
 
             if (nuevaCita.getId() == null) {
                 citasService.crearCita(nuevaCita);
@@ -120,16 +121,19 @@ public class CitasBean implements Serializable {
                 addMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Cita actualizada correctamente");
             }
 
-            cargarCitas();
-            nuevaCita = new Citas();
-            pacienteId = null;
-            odontologoId = null;
-            tratamientoId = null;
+            resetForm();
 
         } catch (Exception e) {
             e.printStackTrace();
             addMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo guardar la cita: " + e.getMessage());
         }
+    }
+
+    private void resetForm() {
+        nuevaCita = new Citas();
+        pacienteId = null;
+        odontologoId = null;
+        tratamientoId = null;
     }
 
     public void eliminarCita() {

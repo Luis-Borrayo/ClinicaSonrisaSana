@@ -14,10 +14,6 @@ import jakarta.validation.Validator;
 import java.io.Serializable;
 import java.util.*;
 
-/**
- * Bean para la administración de usuarios (CRUD)
- * Usado en la página de gestión de usuarios
- */
 @Named("userBean")
 @ViewScoped
 public class UserBean implements Serializable {
@@ -255,9 +251,6 @@ public class UserBean implements Serializable {
         }
     }
 
-    /**
-     * Activar usuario
-     */
     public void activar(User u) {
         try {
             u.setActive(true);
@@ -273,17 +266,13 @@ public class UserBean implements Serializable {
         }
     }
 
-    /**
-     * Agregar mensaje al contexto de JSF
-     */
+
     private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(severity, summary, detail));
     }
 
-    /**
-     * Limpiar mensajes de JSF
-     */
+
     private void clearFacesMessages() {
         FacesContext ctx = FacesContext.getCurrentInstance();
         if (ctx == null) return;
@@ -295,9 +284,7 @@ public class UserBean implements Serializable {
         }
     }
 
-    /**
-     * Obtener etiquetas amigables para los campos
-     */
+
     private String getFieldLabel(String fieldName) {
         Map<String, String> labels = new HashMap<>();
         labels.put("correo", "Correo electrónico");
@@ -311,11 +298,7 @@ public class UserBean implements Serializable {
         return labels.getOrDefault(fieldName, fieldName);
     }
 
-    // ==================== FUNCIONES ADMIN ADICIONALES ====================
 
-    /**
-     * Cambiar contraseña de un usuario
-     */
 
     public void toggleEstado(User u) {
         if (u.isActive()) {
@@ -356,9 +339,7 @@ public class UserBean implements Serializable {
         }
     }
 
-    /**
-     * Cambiar rol del usuario sin abrir el diálogo de edición
-     */
+
     public void cambiarRol(User u, User.Role nuevoRol) {
         clearFacesMessages();
 
@@ -400,7 +381,7 @@ public class UserBean implements Serializable {
         }
     }
 
-    // ==================== GETTERS Y SETTERS ====================
+
 
     public User getSelected() {
         return selected;

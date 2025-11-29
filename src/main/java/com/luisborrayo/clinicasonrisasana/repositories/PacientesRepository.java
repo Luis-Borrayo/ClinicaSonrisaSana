@@ -23,9 +23,6 @@ public class PacientesRepository extends BaseRepository<Pacientes, Long> {
         return Pacientes.class;
     }
 
-    /**
-     * Buscar paciente por correo electrónico
-     */
     public Optional<Pacientes> buscarPorEmail(String email) {
         try {
             Pacientes paciente = em.createQuery(
