@@ -27,6 +27,7 @@ public class TratamientoService {
         }
     }
 
+    // ✅ CORREGIDO: Usar findId() del BaseRepository
     public Tratamiento obtenerTratamientoPorId(Long id) {
         try {
             return tratamientoRepository.findId(id);
@@ -46,5 +47,9 @@ public class TratamientoService {
 
     public void eliminarTratamiento(Long id) {
         tratamientoRepository.delete(id);
+    }
+
+    public Tratamiento findById(Long id) {
+        return obtenerTratamientoPorId(id);
     }
 }
